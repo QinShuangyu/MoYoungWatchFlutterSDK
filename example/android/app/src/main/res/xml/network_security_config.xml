@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <!--The following urls are not allowed to use an insecure connection-->
+        <domain includeSubdomains="true">example.com</domain>
+        <domain includeSubdomains="true">cdn.example2.com</domain>
+    </domain-config>
+    　<!--All urls are allowed to use insecure connections by default-->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

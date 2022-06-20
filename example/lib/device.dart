@@ -3,48 +3,48 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moyoung_bluetooth_plugin/moyoung_ble.dart';
 
-import 'package:moyoung_bluetooth_plugin_example/modules/protoclVersion.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/quickView.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/sedentaryReminder.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/setsLocalCity.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/shutDown.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/protocl_version.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/quick_view.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/sedentary_reminder.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/sets_local_city.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/shut_down.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/sleep.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/steps.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/takePhoto.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/temperatureSystem.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/take_photo.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/temperature_system.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/time.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/unitsystem.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/userInfo.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/watchFace.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/user_info.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/watch_face.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/weather.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/BloodOxygen.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/ClassicBluetoothAddress.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/ECG.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/FindWatch.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/blood_oxygen.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/classic_bluetooth_address.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/ecg.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/find_watch.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/Language.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/MusicPlayer.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/PillReminder.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/RSSI.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/TapWake.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/music_player.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/pill_reminder.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/rssi.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/tap_wake.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/Training.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/alarm.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/battery.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/batterySaving.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/bloodPressure.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/bodyTemperature.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/breathingLight.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/battery_saving.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/blood_pressure.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/body_temperature.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/breathing_light.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/brightness.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/contacts.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/displayTime.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/drinkWaterReminder.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/findPhone.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/display_time.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/drink_water_reminder.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/find_phone.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/firmware.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/goalSteps.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/handWashingReminder.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/heartRate.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/heartRateAlarm.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/menstrualCycle.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/notDisturb.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/goal_steps.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/hand_washing_reminder.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/heart_rate.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/heart_rate_alarm.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/menstrual_cycle.dart';
+import 'package:moyoung_bluetooth_plugin_example/modules/not_disturb.dart';
 import 'package:moyoung_bluetooth_plugin_example/modules/notification.dart';
 
 class DevicePage extends StatefulWidget {
@@ -108,7 +108,7 @@ class _DevicePage extends State<DevicePage> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              Text(device.name + ',' + device.address),
+              Text('${device.name},${device.address}'),
 
               Text('connectionState= $_connetionState'),
 

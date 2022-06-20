@@ -74,27 +74,26 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             children: <Widget>[
               ElevatedButton(
-                  child: Text(_permissionTxt),
-                  onPressed: requestPermissions),
+                  onPressed: requestPermissions,
+                  child: Text(_permissionTxt)),
               ElevatedButton(
-                  child: Text(_scanBtnTxt),
-                  onPressed: startScan),
+                  onPressed: startScan,
+                  child: Text(_scanBtnTxt)),
               ElevatedButton(
-                  child: Text(_cancelScanResult),
-                  onPressed: cancelScan),
+                  onPressed: cancelScan,
+                  child: Text(_cancelScanResult)),
 
               ElevatedButton(
-                  child: Text(_contactInfo),
-                  onPressed: selectContact),
+                  onPressed: selectContact,
+                  child: Text(_contactInfo)),
 
               Expanded(
                 child: ListView.separated(
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
-                          title: Text(_deviceList[index].name + ',' + _deviceList[index].address),
+                          title: Text('${_deviceList[index].name},${_deviceList[index].address}'),
                           onTap: () {
                             cancelScan();
-
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                                   return DevicePage(
@@ -118,7 +117,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void requestPermissions() {
-    [Permission.location, Permission.storage]
+    [Permission.location, Permission.storage, Permission.manageExternalStorage]
         .request().then((value) => {
       setState(() {
         Map<Permission, PermissionStatus> statuses = value;
@@ -146,6 +145,7 @@ class _MyAppState extends State<MyApp> {
         _scanBtnTxt = value ? "Scanning" : "Scan filed";
       })
     }).onError((error, stackTrace) => {
+
     });
   }
 
