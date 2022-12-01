@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moyoung_bluetooth_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 class UnitSystemPage extends StatefulWidget {
   final MoYoungBle blePlugin;

@@ -7,7 +7,14 @@ import Flutter
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GeneratedPluginRegistrant.register(with: self)
+//      NKBluetoothManager.shared.setBluetoothConfig()
+      
+      GeneratedPluginRegistrant.register(with: self)
+      //注册自己写的FlutterPlugin
+//      if let registrar = self.registrar(forPlugin: "FlutterBlueToothPlugin") {
+////          FlutterBlueToothPlugin.register(with: registrar)
+//      }
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

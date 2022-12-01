@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:moyoung_bluetooth_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 import 'modules/contact_list_page.dart';
 import 'device.dart';
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   void subscriptStream() {
     _streamSubscriptions.add(
       _blePlugin.bleScanEveStm.listen(
-            (BleScanBean event) async {
+        (BleScanBean event) async {
           setState(() {
             if (event.isCompleted) {
               //Scan completed, do something
@@ -68,32 +68,33 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Watch Flutter Plugin example app'),
+          title: const Text('Plugin example app'),
         ),
         body: Center(
           child: Column(
             children: <Widget>[
               ElevatedButton(
-                  onPressed: requestPermissions,
-                  child: Text(_permissionTxt)),
+                  child: Text(_permissionTxt),
+                  onPressed: requestPermissions),
               ElevatedButton(
-                  onPressed: startScan,
-                  child: Text(_scanBtnTxt)),
+                  child: Text(_scanBtnTxt),
+                  onPressed: startScan),
               ElevatedButton(
-                  onPressed: cancelScan,
-                  child: Text(_cancelScanResult)),
+                  child: Text(_cancelScanResult),
+                  onPressed: cancelScan),
 
               ElevatedButton(
-                  onPressed: selectContact,
-                  child: Text(_contactInfo)),
+                  child: Text(_contactInfo),
+                  onPressed: selectContact),
 
               Expanded(
                 child: ListView.separated(
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
-                          title: Text('${_deviceList[index].name},${_deviceList[index].address}'),
+                          title: Text(_deviceList[index].name + ',' + _deviceList[index].address),
                           onTap: () {
                             cancelScan();
+
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                                   return DevicePage(
@@ -117,7 +118,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void requestPermissions() {
-    [Permission.location, Permission.storage, Permission.manageExternalStorage]
+    [Permission.location, Permission.storage, Permission.manageExternalStorage,
+      Permission.bluetoothConnect, Permission.bluetoothScan, Permission.bluetoothAdvertise]
         .request().then((value) => {
       setState(() {
         Map<Permission, PermissionStatus> statuses = value;
@@ -145,12 +147,12 @@ class _MyAppState extends State<MyApp> {
         _scanBtnTxt = value ? "Scanning" : "Scan filed";
       })
     }).onError((error, stackTrace) => {
-
+      print(error)
     });
   }
 
   Future<void> cancelScan() async {
-    await _blePlugin.cancelScan;
+     await _blePlugin.cancelScan;
     if (!mounted) return;
     setState(() {
       _cancelScanResult = 'cancelScan()';
@@ -160,7 +162,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> selectContact() async {
     final Contact contact = await Navigator.push(context, MaterialPageRoute(
       builder: (context) => FlutterContactsExample(pageContext: context),
-    )
+      )
     );
 
     if (!mounted) return;
@@ -172,71 +174,3 @@ class _MyAppState extends State<MyApp> {
     });
   }
 }
-
-
-
-
-//创建时的代码
-// import 'package:flutter/material.dart';
-// import 'dart:async';
-//
-// import 'package:flutter/services.dart';
-// import 'package:moyoung_bluetooth_plugin/moyoung_bluetooth_plugin.dart';
-//
-// void main() {
-//   runApp(const MyApp());
-// }
-//
-// class MyApp extends StatefulWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   @override
-//   State<MyApp> createState() => _MyAppState();
-// }
-//
-// class _MyAppState extends State<MyApp> {
-//   String _platformVersion = 'Unknown';
-//   final _moyoungBluetoothPlugin = MoyoungBluetoothPlugin();
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     initPlatformState();
-//   }
-//
-//   // Platform messages are asynchronous, so we initialize in an async method.
-//   Future<void> initPlatformState() async {
-//     String platformVersion;
-//     // Platform messages may fail, so we use a try/catch PlatformException.
-//     // We also handle the message potentially returning null.
-//     try {
-//       platformVersion =
-//           await _moyoungBluetoothPlugin.getPlatformVersion() ?? 'Unknown platform version';
-//     } on PlatformException {
-//       platformVersion = 'Failed to get platform version.';
-//     }
-//
-//     // If the widget was removed from the tree while the asynchronous platform
-//     // message was in flight, we want to discard the reply rather than calling
-//     // setState to update our non-existent appearance.
-//     if (!mounted) return;
-//
-//     setState(() {
-//       _platformVersion = platformVersion;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: const Text('Plugin example app'),
-//         ),
-//         body: Center(
-//           child: Text('Running on: $_platformVersion\n'),
-//         ),
-//       ),
-//     );
-//   }
-// }

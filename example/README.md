@@ -1,16 +1,3 @@
-# moyoung_bluetooth_plugin_example
+[Please click to Wiki](https://github.com/ll1935055/MoYoungWatchFlutterSDK/wiki).
 
-Demonstrates how to use the moyoung_bluetooth_plugin plugin.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Welcome to issues](https://github.com/ll1935055/MoYoungWatchFlutterSDK/issues).

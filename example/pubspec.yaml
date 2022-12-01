@@ -1,12 +1,13 @@
-name: moyoung_bluetooth_plugin_example
-description: Demonstrates how to use the moyoung_bluetooth_plugin plugin.
+name: moyoung_ble_plugin_example
+description: Demonstrates how to use the moyoung_ble_plugin plugin.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
+#publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.16.2 <3.0.0"
+  flutter: ">=2.5.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -18,16 +19,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_contacts: ^1.1.4
-  permission_handler: ^9.1.0
+#  logger: ^1.1.0
+  flutter_contacts: 1.1.4
+  permission_handler: 9.0.2
   path_provider: ^2.0.10
-  # HTTP network request library
+    # HTTP network request library
   dio: ^4.0.6
 
-  moyoung_bluetooth_plugin: ^0.0.2
-#  moyoung_bluetooth_plugin:
+  moyoung_ble_plugin: ^1.0.4
+#  moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
-    #   moyoung_bluetooth_plugin: ^x.y.z
+    #   moyoung_ble_plugin: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
@@ -46,18 +48,20 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
-# The following section is specific to Flutter packages.
+# The following section is specific to Flutter.
 flutter:
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -65,7 +69,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/assets-and-images/#resolution-aware.
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages

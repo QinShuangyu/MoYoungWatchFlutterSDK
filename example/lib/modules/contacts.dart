@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
-import 'package:moyoung_bluetooth_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 import 'contact_list_page.dart';
 

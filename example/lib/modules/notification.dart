@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moyoung_bluetooth_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 class NotificationPage extends StatefulWidget {
   final MoYoungBle blePlugin;
@@ -44,7 +44,7 @@ class _NotificationPage extends State<NotificationPage> {
                   onPressed: () => widget.blePlugin.setNotification([
                         NotificationType.facebook,
                         NotificationType.gmail,
-                        NotificationType.kakaoTalk
+                        NotificationType.kakao
                       ])),
               ElevatedButton(
                   child: const Text('ios:getNotification'),

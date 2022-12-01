@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:moyoung_bluetooth_plugin_example/modules/avatar.dart';
+import 'package:moyoung_ble_plugin_example/modules/avatar.dart';
 
 class FlutterContactsExample extends StatefulWidget {
   final BuildContext pageContext;
