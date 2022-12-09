@@ -28,6 +28,9 @@ class _ShutDownPage extends State<ShutDownPage> {
               ElevatedButton(
                   child: const Text('shutDown()'),
                   onPressed: () => widget.blePlugin.shutDown),
+              ElevatedButton(
+                  child: const Text('reset()'),
+                  onPressed: () => widget.blePlugin.reset),
             ])
             )
         )

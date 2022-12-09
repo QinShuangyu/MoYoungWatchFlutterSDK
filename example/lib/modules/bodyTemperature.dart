@@ -108,6 +108,18 @@ class _BodyTemperaturePage extends State<BodyTemperaturePage> {
                   onPressed: () =>
                       widget.blePlugin.queryTimingMeasureTemp(TempTimeType.today),
                   child: const Text("queryTimingMeasureTemp()")),
+              ElevatedButton(
+                  onPressed: () => widget.blePlugin.enableContinueTemp,
+                  child: const Text("enableContinueTemp")),
+              ElevatedButton(
+                  onPressed: () => widget.blePlugin.disableContinueTemp,
+                  child: const Text("disableContinueTemp")),
+              ElevatedButton(
+                  onPressed: () => widget.blePlugin.queryContinueTempState,
+                  child: const Text("queryContinueTempState")),
+              ElevatedButton(
+                  onPressed: () => widget.blePlugin.queryLast24HourTemp,
+                  child: const Text("queryLast24HourTemp")),
             ])
             )
         )

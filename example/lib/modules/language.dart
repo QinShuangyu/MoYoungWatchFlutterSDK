@@ -33,6 +33,14 @@ class _LanguagePage extends State<LanguagePage> {
                   child: const Text('sendDeviceLanguage()'),
                   onPressed: () => widget.blePlugin.sendDeviceLanguage(DeviceLanguageType.languageChinese)),
               ElevatedButton(
+                  child: const Text('queryDeviceVersion()'),
+                  onPressed: () async {
+                    int type = await widget.blePlugin.queryDeviceVersion;
+                    setState(() {
+                      _type = type;
+                    });
+                  }),
+              ElevatedButton(
                   child: const Text('queryDeviceLanguage()'),
                   onPressed: () async {
                     _deviceLanguageBean = await widget.blePlugin.queryDeviceLanguage;

@@ -44,6 +44,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   int _id = -1;
   String _preview = "";
   String _file = "";
+  int _size = 0;
 
   @override
   void initState() {
@@ -129,6 +130,7 @@ class _WatchFacePage extends State<WatchFacePage> {
               Text("id: $_id"),
               Text("preview: $_preview"),
               Text("file: $_file"),
+              Text("size: $_size"),
 
               ElevatedButton(
                   child: const Text('sendDisplayWatchFace(FIRST_WATCH_FACE)'),
@@ -186,6 +188,10 @@ class _WatchFacePage extends State<WatchFacePage> {
                     }
                   }),
               ElevatedButton(
+                child: const Text("abortWatchFaceBackground()"),
+                onPressed: () => widget.blePlugin.abortWatchFaceBackground
+              ),
+              ElevatedButton(
                   child: const Text('querySupportWatchFace()'),
                   onPressed: () async {
                     _supportWatchFaceInfo = await widget.blePlugin.querySupportWatchFace;
@@ -228,6 +234,23 @@ class _WatchFacePage extends State<WatchFacePage> {
               ElevatedButton(
                   child: const Text('sendWatchFace(_watchFacelist)'),
                   onPressed: () => sendWatchFace(_watchFacelist[1])),
+              ElevatedButton(
+                  child: const Text("abortWatchFace()"),
+                  onPressed: () => widget.blePlugin.abortWatchFace
+              ),
+              ElevatedButton(
+                  child: const Text("deleteWatchFace()"),
+                  onPressed: () => widget.blePlugin.deleteWatchFace(_id)
+              ),
+              ElevatedButton(
+                  child: const Text("queryAvailableStorage()"),
+                  onPressed: () async {
+                    int size = await widget.blePlugin.queryAvailableStorage;
+                    setState(() {
+                      _size = size;
+                    });
+                  }
+              ),
             ])
             )
         )

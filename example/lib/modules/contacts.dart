@@ -33,6 +33,7 @@ class _ContactsPage extends State<ContactsPage> {
   int _count = -1;
   int _width = -1;
   int _height = -1;
+  bool _isSupport = false;
 
 
   @override
@@ -104,6 +105,7 @@ class _ContactsPage extends State<ContactsPage> {
                   Text("width: $_width"),
                   Text("height: $_height"),
                   Text("contactCount: $_contactCount"),
+                  Text("isSupport: $_isSupport"),
                   ElevatedButton(
                       onPressed: () async {
                         _contactConfigBean =
@@ -124,6 +126,14 @@ class _ContactsPage extends State<ContactsPage> {
                         });
                       },
                       child: const Text("queryContactCount()")),
+                  ElevatedButton(
+                      onPressed: () async {
+                        bool isSupport = await widget.blePlugin.queryContactNumberSymbol;
+                        setState(() {
+                          _isSupport = isSupport;
+                        });
+                      },
+                      child: const Text("queryContactNumberSymbol()")),
                   ElevatedButton(
                       onPressed: () {
                         if (_contactConfigBean != null) {

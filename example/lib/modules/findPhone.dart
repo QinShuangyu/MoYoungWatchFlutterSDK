@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
@@ -16,6 +18,29 @@ class FindPhonePage extends StatefulWidget {
 }
 
 class _FindPhonePage extends State<FindPhonePage> {
+
+  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+
+  @override
+  void initState() {
+    super.initState();
+    subscriptStream();
+  }
+
+  void subscriptStream() {
+    _streamSubscriptions.add(
+      widget.blePlugin.findPhoneEveStm.listen(
+            (FindPhoneBean event) {
+          switch (event.type) {
+            case FindPhoneType.find:
+              break;
+            case FindPhoneType.complete:
+              break;
+          }
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
