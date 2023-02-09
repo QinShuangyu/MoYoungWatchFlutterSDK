@@ -23,6 +23,7 @@ class _BloodOxygenPage extends State<BloodOxygenPage> {
   int _timingMeasure = -1;
   int _bloodOxygen = -1;
   List<HistoryBloodOxygenBean> _historyList = [];
+  String a = '';
   BloodOxygenInfo? _continueBo;
   int _startTime = -1;
   int _timeInterval = -1;
@@ -51,6 +52,9 @@ class _BloodOxygenPage extends State<BloodOxygenPage> {
                 break;
               case BloodOxygenType.historyList:
                 _historyList = event.historyList!;
+                _historyList.forEach((element) {
+                  a = a + historyBloodOxygenBeanToJson(element) + ";";
+                });
                 break;
               case BloodOxygenType.continueBO:
                 _continueBo = event.continueBo!;
@@ -77,7 +81,8 @@ class _BloodOxygenPage extends State<BloodOxygenPage> {
               Text("continueState: $_continueState"),
               Text("timingMeasure: $_timingMeasure"),
               Text("bloodOxygen: $_bloodOxygen"),
-              Text("historyList[0]: $_historyList"),
+              // Text("historyList[0]: $_historyList"),
+              Text("historyList[0]: $a"),
               Text("startTime: $_startTime"),
               Text("timeInterval: $_timeInterval"),
 

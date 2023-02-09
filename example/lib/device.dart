@@ -155,9 +155,9 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect()"),
                   onPressed: () {
-                    // _blePlugin.connect(device.address);
+                    _blePlugin.connect(device.address);
                     // print(device.address);
-                    _blePlugin.connect("EC:28:65:94:61:1D");
+                    // _blePlugin.connect("EC:28:65:94:61:1D");
                     // _blePlugin.connect("D3:C3:1D:46:73:7A");
                   }),
               ElevatedButton(

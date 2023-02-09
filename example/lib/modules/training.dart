@@ -30,6 +30,7 @@ class _TrainingPage extends State<TrainingPage> {
   int _calories = -1;
   List<int> _hrList = [];
   int _type = -1;
+  late StreamSubscription<dynamic> a;
 
   @override
   void initState() {
@@ -64,16 +65,23 @@ class _TrainingPage extends State<TrainingPage> {
         },
       ),
     );
+  }
 
-    _streamSubscriptions.add(
-      widget.blePlugin.trainingStateEveStm.listen(
-            (int event) {
-          setState(() {
-            _type = event;
-          });
-        },
-      ),
+  void setTrainingStateEveStm() {
+    a = widget.blePlugin.trainingStateEveStm.listen(
+          (int event) {
+        setState(() {
+          _type = event;
+        });
+      },
     );
+    _streamSubscriptions.add(a);
+  }
+
+  void deleteTrainingStateEveStm() {
+    if (_streamSubscriptions.contains(a)) {
+      _streamSubscriptions.remove(a);
+    }
   }
 
   @override
@@ -98,7 +106,10 @@ class _TrainingPage extends State<TrainingPage> {
               Text("type: $_type"),
 
               ElevatedButton(
-                  onPressed: () => widget.blePlugin.startTraining(1),
+                  onPressed: () => {
+                    setTrainingStateEveStm(),
+                    widget.blePlugin.startTraining(1)
+                  },
                   child: const Text("startTraining()")),
               ElevatedButton(
                   onPressed: () =>
@@ -117,10 +128,16 @@ class _TrainingPage extends State<TrainingPage> {
                   child: const Text("setTrainingState(-3)")),
 
               ElevatedButton(
-                  onPressed: () => widget.blePlugin.queryHistoryTraining,
+                  onPressed: () => {
+                    deleteTrainingStateEveStm(),
+                    widget.blePlugin.queryHistoryTraining
+                  },
                   child: const Text("queryHistoryTraining()")),
               ElevatedButton(
-                  onPressed: () => widget.blePlugin.queryTraining(1),
+                  onPressed: () => {
+                    deleteTrainingStateEveStm(),
+                    widget.blePlugin.queryTraining(1)
+                  },
                   child: const Text("queryTraining()")),
             ])
             )
