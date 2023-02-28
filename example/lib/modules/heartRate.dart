@@ -25,7 +25,7 @@ class _HearRatePage extends State<HeartRatePage> {
   List<int> _heartRateList = [];
   int _timeInterval = -1;
   String _heartRateType = "";
-  List<TrainingHeartRateBean> _trainingList = [];
+  String _trainingList = "";
   int _timingMeasure = -1;
 
   @override
@@ -65,7 +65,7 @@ class _HearRatePage extends State<HeartRatePage> {
                 _heartRateType = _hour24MeasureResult!.heartRateType;
                 break;
               case HeartRateType.measureResult:
-                _trainingList = event.trainingList!;
+                _trainingList = heartRateBeanToJson(event);
                 break;
               default:
                 break;

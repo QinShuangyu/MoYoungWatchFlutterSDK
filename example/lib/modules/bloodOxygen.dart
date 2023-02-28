@@ -52,9 +52,9 @@ class _BloodOxygenPage extends State<BloodOxygenPage> {
                 break;
               case BloodOxygenType.historyList:
                 _historyList = event.historyList!;
-                _historyList.forEach((element) {
+                for (var element in _historyList) {
                   a = a + historyBloodOxygenBeanToJson(element) + ";";
-                });
+                }
                 break;
               case BloodOxygenType.continueBO:
                 _continueBo = event.continueBo!;

@@ -22,6 +22,8 @@ class _StepsPage extends State<StepsPage> {
   int _dateType = -1;
   int _timeInterval = -1;
   List _stepsList = [];
+  String list = "";
+
 
   @override
   void initState() {
@@ -75,6 +77,7 @@ class _StepsPage extends State<StepsPage> {
                   Text("dateType: $_dateType"),
                   Text("timeInterval: $_timeInterval"),
                   Text("stepsList: $_stepsList"),
+                  Text("list: $list"),
 
                   ElevatedButton(
                       child: const Text('querySteps'),
@@ -85,6 +88,24 @@ class _StepsPage extends State<StepsPage> {
                   ElevatedButton(
                       child: const Text('queryStepsDetail(todayStepsDetail)'),
                       onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.todayStepsDetail)),
+
+                  ElevatedButton(
+                      child: const Text('get24HourCals()'),
+                      onPressed: () async {
+                        The24HourListBean hour_list = await widget.blePlugin.get24HourCals;
+                        setState(() {
+                          list = the24HourListBeanToJson(hour_list);
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('getAgo24HourCals()'),
+                      onPressed: () => widget.blePlugin.getAgo24HourCals),
+                  ElevatedButton(
+                      child: const Text('get24HourDistances()'),
+                      onPressed: () => widget.blePlugin.get24HourDistances),
+                  ElevatedButton(
+                      child: const Text('getAgo24HourDistances()'),
+                      onPressed: () => widget.blePlugin.getAgo24HourDistances),
                 ],
               ),
             )

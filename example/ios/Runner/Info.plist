@@ -53,6 +53,7 @@
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>bluetooth-central</string>
 		<string>nearby-interaction</string>
 	</array>
@@ -75,5 +76,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
 </dict>
 </plist>

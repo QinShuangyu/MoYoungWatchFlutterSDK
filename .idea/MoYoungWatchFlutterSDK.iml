@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/path_provider_ios/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example_full/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example_full/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/example_full/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/flutter_contacts/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/permission_handler/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/path_provider_ios/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example_full/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example_full/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/example/ios/.symlinks/plugins/flutter_contacts/example_full/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/moyoung_ble_plugin/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/permission_handler/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/.pub" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

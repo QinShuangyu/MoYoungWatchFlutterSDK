@@ -36,6 +36,7 @@ class _TrainingPage extends State<TrainingPage> {
   void initState() {
     super.initState();
     subscriptStream();
+    setTrainingStateEveStm();
   }
 
   void subscriptStream() {
@@ -68,30 +69,33 @@ class _TrainingPage extends State<TrainingPage> {
   }
 
   void setTrainingStateEveStm() {
-    a = widget.blePlugin.trainingStateEveStm.listen(
-          (int event) {
-        setState(() {
-          _type = event;
-        });
-      },
+    _streamSubscriptions.add(
+      widget.blePlugin.trainingStateEveStm.listen(
+        (int event) {
+          setState(() {
+            _type = event;
+          });
+        },
+      ),
     );
-    _streamSubscriptions.add(a);
   }
 
-  void deleteTrainingStateEveStm() {
-    if (_streamSubscriptions.contains(a)) {
-      _streamSubscriptions.remove(a);
-    }
-  }
+  // void deleteTrainingStateEveStm() {
+  //   if (_streamSubscriptions.contains(a)) {
+  //     _streamSubscriptions.remove(a);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              title: const Text("Training"),
-            ),
-            body: Center(child: ListView(children: <Widget>[
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Training"),
+        ),
+        body: Center(
+          child: ListView(
+            children: <Widget>[
               const Text("historyTrainList: as follows"),
               Text("_historyTrainList: ${_historyTrainList.toString()}"),
               const Text("trainingInfo: as follows"),
@@ -104,44 +108,37 @@ class _TrainingPage extends State<TrainingPage> {
               Text("calories: $_calories"),
               Text("hrList: $_hrList"),
               Text("type: $_type"),
-
               ElevatedButton(
-                  onPressed: () => {
-                    setTrainingStateEveStm(),
-                    widget.blePlugin.startTraining(1)
-                  },
-                  child: const Text("startTraining()")),
+                onPressed: () => {widget.blePlugin.startTraining(1)},
+                child: const Text("startTraining(1)"),
+              ),
               ElevatedButton(
-                  onPressed: () =>
-                      widget.blePlugin.setTrainingState(
-                          TrainingHeartRateStateType.trainingComplete),
+                  onPressed: () => widget.blePlugin.setTrainingState(TrainingHeartRateStateType.trainingComplete),
                   child: const Text("setTrainingState(-1)")),
               ElevatedButton(
-                  onPressed: () =>
-                      widget.blePlugin.setTrainingState(
-                          TrainingHeartRateStateType.trainingPause),
+                  onPressed: () => widget.blePlugin.setTrainingState(TrainingHeartRateStateType.trainingPause),
                   child: const Text("setTrainingState(-2)")),
               ElevatedButton(
-                  onPressed: () =>
-                      widget.blePlugin.setTrainingState(
-                          TrainingHeartRateStateType.trainingContinue),
+                  onPressed: () => widget.blePlugin.setTrainingState(TrainingHeartRateStateType.trainingContinue),
                   child: const Text("setTrainingState(-3)")),
-
               ElevatedButton(
-                  onPressed: () => {
-                    deleteTrainingStateEveStm(),
-                    widget.blePlugin.queryHistoryTraining
-                  },
-                  child: const Text("queryHistoryTraining()")),
+                onPressed: () => {
+                  // deleteTrainingStateEveStm(),
+                  widget.blePlugin.queryHistoryTraining,
+                },
+                child: const Text("queryHistoryTraining()"),
+              ),
               ElevatedButton(
-                  onPressed: () => {
-                    deleteTrainingStateEveStm(),
-                    widget.blePlugin.queryTraining(1)
-                  },
-                  child: const Text("queryTraining()")),
-            ])
-            )
-        )
+                onPressed: () => {
+                  // deleteTrainingStateEveStm(),
+                  widget.blePlugin.queryTraining(1),
+                },
+                child: const Text("queryTraining()"),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

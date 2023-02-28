@@ -17,6 +17,7 @@ import 'package:moyoung_ble_plugin_example/modules/temperatureSystem.dart';
 import 'package:moyoung_ble_plugin_example/modules/time.dart';
 import 'package:moyoung_ble_plugin_example/modules/unitsystem.dart';
 import 'package:moyoung_ble_plugin_example/modules/userInfo.dart';
+import 'package:moyoung_ble_plugin_example/modules/vibrationStrength.dart';
 import 'package:moyoung_ble_plugin_example/modules/watchFace.dart';
 import 'package:moyoung_ble_plugin_example/modules/weather.dart';
 import 'package:moyoung_ble_plugin_example/modules/BloodOxygen.dart';
@@ -49,6 +50,7 @@ import 'package:moyoung_ble_plugin_example/modules/menstrualCycle.dart';
 import 'package:moyoung_ble_plugin_example/modules/notDisturb.dart';
 import 'package:moyoung_ble_plugin_example/modules/notification.dart';
 
+import 'modules/GPS.dart';
 import 'modules/HRV.dart';
 import 'modules/calendarEvent.dart';
 import 'modules/electronicCard.dart';
@@ -787,6 +789,30 @@ class _DevicePage extends State<DevicePage> {
                     }
                   },
                   child: const Text("54-CalendarEvent")),
+              ElevatedButton(
+                  onPressed: () {
+                    if (_isConn) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                            return GPSPage(
+                              blePlugin: _blePlugin,
+                            );
+                          }));
+                    }
+                  },
+                  child: const Text("55-GPSPage")),
+              ElevatedButton(
+                  onPressed: () {
+                    if (_isConn) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                            return VibrationStrengthPage(
+                              blePlugin: _blePlugin,
+                            );
+                          }));
+                    }
+                  },
+                  child: const Text("56-VibrationStrengthPage")),
             ],
           ),
         ),
