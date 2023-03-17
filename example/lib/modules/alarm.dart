@@ -24,7 +24,7 @@ class _AlarmPage extends State<AlarmPage> {
         body: Center(
           child: ListView(
             children: [
-              Text("list: $_list"),
+              Text("list: ${_list.map((e) => alarmClockBeanToJson(e))}"),
               ElevatedButton(
                   child: const Text('sendAlarmClock()'),
                   onPressed: () => widget.blePlugin.sendAlarm(AlarmClockBean(

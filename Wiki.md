@@ -142,7 +142,7 @@ ConnectDeviceBean :
 Synchronize the time of your phone and watch
 
   ```
-  _blePlugin.syncTime();
+  _blePlugin.queryTime();
   ```
 
 2. **Sets Time System**

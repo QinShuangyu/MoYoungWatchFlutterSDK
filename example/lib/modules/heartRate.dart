@@ -65,7 +65,11 @@ class _HearRatePage extends State<HeartRatePage> {
                 _heartRateType = _hour24MeasureResult!.heartRateType;
                 break;
               case HeartRateType.measureResult:
-                _trainingList = heartRateBeanToJson(event);
+                if (event.trainingList!.isNotEmpty) {
+                  _trainingList = trainingHeartRateBeanToJson(event.trainingList![0]);
+                } else {
+                  _trainingList = "";
+                }
                 break;
               default:
                 break;
