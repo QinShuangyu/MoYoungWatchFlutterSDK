@@ -78,6 +78,7 @@ class _DevicePage extends State<DevicePage> {
 
   int _connetionState = -1;
   bool _isConn = false;
+  bool _reconnect = true;
 
   String oTAType = "";
 
@@ -100,15 +101,25 @@ class _DevicePage extends State<DevicePage> {
                 } else {
                   _isConn = false;
                 }
+
                 if (event == 2) {
                   addStepsListen();
+                } else if (event == 0) {
+                  delayConnect();
                 }
+
               });
             }
           });
         },
       ),
     );
+  }
+
+  void delayConnect() {
+    if(_reconnect) {
+      Timer(const Duration(seconds: 3), () => _blePlugin.connect(device.address));
+    }
   }
 
   void addStepsListen() {
@@ -158,6 +169,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("connect()"),
                   onPressed: () {
                     _blePlugin.connect(device.address);
+                    _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");
                     // _blePlugin.connect("D3:C3:1D:46:73:7A");
@@ -165,6 +177,7 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text('disconnect()'),
                   onPressed: () async {
+                    _reconnect = false;
                     bool connetionState = await _blePlugin.disconnect;
                     setState(() {
                       if (connetionState) {
@@ -172,6 +185,16 @@ class _DevicePage extends State<DevicePage> {
                       }
                     });
                   }),
+              // ElevatedButton(
+              //     child: const Text('closeGatt()'),
+              //     onPressed: () async {
+              //       bool connetionState = await _blePlugin.closeGatt;
+              //       setState(() {
+              //         if (connetionState) {
+              //           _connetionState = 0;
+              //         }
+              //       });
+              //     }),
               ElevatedButton(
                   child: const Text('reconnect()'),
                   onPressed: () {

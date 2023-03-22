@@ -228,13 +228,8 @@ class _WatchFacePage extends State<WatchFacePage> {
               ElevatedButton(
                   child: const Text('localFileUpload'),
                   onPressed: () =>
-                  // downloadFile("https://qcdn.moyoung.com/files/dc66671e34e4ca2141865daa51867a4c.bin")
-                  widget.blePlugin.uploadLocalFile('/var/mobile/Containers/Data/Application/8B15D347-DFFC-40F6-922E-32829C88ADA2/Documents/dc66671e34e4ca2141865daa51867a4c.bin')
-                      // downloadFile("https://qcdn.moyoung.com/files/eba893d5cfe9da43072d9d182851bbd7.bin")
-              // widget.blePlugin.uploadLocalFile('/var/mobile/Containers/Data/Application/07C22EAF-AF5F-4F5B-9242-3A66695592B0/Documents/eba893d5cfe9da43072d9d182851bbd7.bin')
-                  // downloadFile("https://qcdn.moyoung.com/files/004f77eb6d17d0dc855efe1794420de4.bin")
-                  // widget.blePlugin.uploadLocalFile('/var/mobile/Containers/Data/Application/42A0BAE3-809E-483C-AD74-8DED6EF50C4C/Documents/004f77eb6d17d0dc855efe1794420de4.bin')
-                      // widget.blePlugin.uploadLocalFile('/data/user/0/com.moyoung.moyoung_ble_plugin_example/app_flutter/6554d4265b0550049a9827a48a235840.bin')
+                  // downloadFile("http://qcdn.moyoung.com/files/adc090779afd57d382e2847e41ab0e83.bin")
+                  widget.blePlugin.uploadLocalFile('/var/mobile/Containers/Data/Application/22DCE2E0-9824-4BF7-BA7A-985FABC4767F/Documents/adc090779afd57d382e2847e41ab0e83.bin')
               ),
             ]))));
   }
