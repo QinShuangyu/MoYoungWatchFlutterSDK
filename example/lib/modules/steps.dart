@@ -19,10 +19,9 @@ class StepsPage extends StatefulWidget {
 class _StepsPage extends State<StepsPage> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
   int _stepsChange = -1;
-  int _dateType = -1;
-  int _timeInterval = -1;
-  List _stepsList = [];
   String list = "";
+  StepsCategoryBean stepsCategoryInfo = StepsCategoryBean(historyDay: "", timeInterval: -1, stepsList: []);
+  ActionDetailsBean actionDetailsInfo = ActionDetailsBean(historyDay: "", stepsList: [], distanceList: [], caloriesList: []);
 
 
   @override
@@ -46,9 +45,16 @@ class _StepsPage extends State<StepsPage> {
       widget.blePlugin.stepsDetailEveStm.listen(
             (StepsDetailBean event) {
           setState(() {
-            _dateType = event.dateType!;
-            _timeInterval = event.timeInterval!;
-            _stepsList = event.stepsList!;
+            switch (event.type) {
+              case StepsDetailType.stepsCategoryChange:
+                stepsCategoryInfo = event.stepsCategoryInfo!;
+                break;
+              case StepsDetailType.actionDetailsChange:
+                actionDetailsInfo = event.actionDetailsInfo!;
+                break;
+              default:
+                break;
+            }
           });
         },
       ),
@@ -74,10 +80,9 @@ class _StepsPage extends State<StepsPage> {
               child: ListView(
                 children: [
                   Text("StepsChange=" + _stepsChange.toString()),
-                  Text("dateType: $_dateType"),
-                  Text("timeInterval: $_timeInterval"),
-                  Text("stepsList: $_stepsList"),
                   Text("list: $list"),
+                  Text("stepsCategoryInfo: ${stepsCategoryBeanToJson(stepsCategoryInfo)}"),
+                  Text("actionDetailsInfo: ${actionDetailsBeanToJson(actionDetailsInfo)}"),
 
                   ElevatedButton(
                       child: const Text('querySteps'),
@@ -92,20 +97,14 @@ class _StepsPage extends State<StepsPage> {
                   ElevatedButton(
                       child: const Text('get24HourCals()'),
                       onPressed: () async {
-                        The24HourListBean hour_list = await widget.blePlugin.get24HourCals;
+                        The24HourListBean hourList = await widget.blePlugin.get24HourCals;
                         setState(() {
-                          list = the24HourListBeanToJson(hour_list);
+                          list = the24HourListBeanToJson(hourList);
                         });
                       }),
                   ElevatedButton(
-                      child: const Text('getAgo24HourCals()'),
-                      onPressed: () => widget.blePlugin.getAgo24HourCals),
-                  ElevatedButton(
-                      child: const Text('get24HourDistances()'),
-                      onPressed: () => widget.blePlugin.get24HourDistances),
-                  ElevatedButton(
-                      child: const Text('getAgo24HourDistances()'),
-                      onPressed: () => widget.blePlugin.getAgo24HourDistances),
+                      child: const Text('queryActionDetails()'),
+                      onPressed: () => widget.blePlugin.queryActionDetails(ActionDetailsType.today)),
                 ],
               ),
             )

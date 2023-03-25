@@ -20,6 +20,7 @@ class TakePhotoPage extends StatefulWidget {
 class _TakePhotoPage extends State<TakePhotoPage> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
   String _camera = "";
+  int _delayTime = -1;
   int _phone = -1;
 
   @override
@@ -31,9 +32,18 @@ class _TakePhotoPage extends State<TakePhotoPage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       widget.blePlugin.cameraEveStm.listen(
-            (String event) {
+            (CameraBean event) {
           setState(() {
-            _camera = event;
+            switch (event.type) {
+              case CameraType.takePhotoState:
+                _camera = event.takePhoto!;
+                break;
+              case CameraType.delayTakingState:
+                _delayTime = event.delayTime!;
+                break;
+              default:
+                break;
+            }
           });
         },
       ),
@@ -59,11 +69,18 @@ class _TakePhotoPage extends State<TakePhotoPage> {
             ),
             body: Center(child: ListView(children: <Widget>[
               Text("camera: $_camera"),
+              Text("delayTime: $_delayTime"),
               Text("phone: $_phone"),
 
               ElevatedButton(
                   child: const Text('enterCameraView'),
                   onPressed: () => widget.blePlugin.enterCameraView),
+              ElevatedButton(
+                  child: const Text('sendDelayTaking'),
+                  onPressed: () => widget.blePlugin.sendDelayTaking(100)),
+              ElevatedButton(
+                  child: const Text('queryDelayTaking'),
+                  onPressed: () => widget.blePlugin.queryDelayTaking),
               ElevatedButton(
                   child: const Text('exitCameraView'),
                   onPressed: () => widget.blePlugin.exitCameraView),

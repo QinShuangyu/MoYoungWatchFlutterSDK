@@ -19,6 +19,7 @@ class _NotificationPage extends State<NotificationPage> {
   List _list = [];
   bool _state = false;
   String _number = "";
+  int _firmwareVersion = -1;
   List<int> _messageType = [];
 
   @override
@@ -49,11 +50,9 @@ class _NotificationPage extends State<NotificationPage> {
               Text("list: $_list"),
               Text("state: $_state"),
               Text("number: $_number"),
+              Text("firmwareVersion: $_firmwareVersion"),
               Text("messageType: $_messageType"),
-              ElevatedButton(
-                  child: const Text('android:sendOtherMessageState'),
-                  onPressed: () =>
-                      widget.blePlugin.sendOtherMessageState(true)),
+              ElevatedButton(child: const Text('android:sendOtherMessageState'), onPressed: () => widget.blePlugin.sendOtherMessageState(true)),
               ElevatedButton(
                   child: const Text("android:queryOtherMessageState"),
                   onPressed: () async {
@@ -63,19 +62,38 @@ class _NotificationPage extends State<NotificationPage> {
                     });
                   }),
               ElevatedButton(
-                  child: const Text('sendMessage(MessageInfo()'),
-                  onPressed: () => widget.blePlugin.sendMessage(MessageBean(
-                      message: 'message',
-                      type: BleMessageType.messagePhone,
-                      versionCode: 229,
-                      isHs: true,
-                      isSmallScreen: true))),
+                  child: const Text("queryFirmwareVersion"),
+                  onPressed: () async {
+                    String firmwareVersion = await widget.blePlugin.queryFirmwareVersion;
+                    int index = firmwareVersion.lastIndexOf('-');
+                    String subString = firmwareVersion.substring(index);
+                    String version = '';
+                    subString.replaceAllMapped(RegExp(r'\d'), (Match m) {
+                      version += m[0]!;
+                      return m[0]!;
+                    });
+                    setState(() {
+                      _firmwareVersion = int.parse(version);
+                    });
+                  }),
               ElevatedButton(
-                  child: const Text('android:endCall()'),
-                  onPressed: () => widget.blePlugin.endCall),
-              ElevatedButton(
-                  child: const Text('android:sendCallContactName()'),
-                  onPressed: () => widget.blePlugin.sendCallContactName("嘿嘿")),
+                  child: const Text('sendMessage(MessageInfo())'),
+                  onPressed: () {
+                    Timer(const Duration(seconds: 5), () {
+                      if (_firmwareVersion != -1) {
+                        widget.blePlugin.sendMessage(
+                          MessageBean(
+                              message: 'message',
+                              type: BleMessageType.qq,
+                              versionCode: _firmwareVersion,
+                              isHs: true,
+                              isSmallScreen: true),
+                        );
+                      }
+                    });
+                  }),
+              ElevatedButton(child: const Text('android:endCall()'), onPressed: () => widget.blePlugin.endCall),
+              ElevatedButton(child: const Text('android:sendCallContactName()'), onPressed: () => widget.blePlugin.sendCallContactName("嘿嘿")),
               ElevatedButton(
                   child: const Text('android:queryMessageList()'),
                   onPressed: () async {
@@ -86,11 +104,7 @@ class _NotificationPage extends State<NotificationPage> {
                   }),
               ElevatedButton(
                   child: const Text('ios:setNotification()'),
-                  onPressed: () => widget.blePlugin.setNotification([
-                        NotificationType.facebook,
-                        NotificationType.gmail,
-                        NotificationType.kakao
-                      ])),
+                  onPressed: () => widget.blePlugin.setNotification([NotificationType.facebook, NotificationType.gmail, NotificationType.kakao])),
               ElevatedButton(
                   child: const Text('ios:getNotification'),
                   onPressed: () async {

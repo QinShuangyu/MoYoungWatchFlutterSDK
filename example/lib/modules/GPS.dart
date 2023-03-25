@@ -70,8 +70,6 @@ class _GPSPage extends State<GPSPage> {
       label: 'images',
       extensions: <String>['jpg', 'png'],
     );
-    print(typeGroup);
     final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    print(file);
   }
 }

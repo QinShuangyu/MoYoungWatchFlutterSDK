@@ -36,7 +36,6 @@ class _BloodPressurePage extends State<BloodPressurePage> {
       widget.blePlugin.bloodPressureEveStm.listen(
         (BloodPressureBean event) {
           setState(() {
-            // print(event.type);
             switch (event.type) {
               case BloodPressureType.continueState:
                 _continueState = event.continueState!;

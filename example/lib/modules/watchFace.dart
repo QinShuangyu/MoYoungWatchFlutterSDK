@@ -336,7 +336,6 @@ class _WatchFacePage extends State<WatchFacePage> {
     String name = file.substring(index, file.length);
     String pathFile = "";
     await getApplicationDocumentsDirectory().then((value) => pathFile = value.path + name);
-    print(pathFile);
     return pathFile;
   }
 
@@ -351,7 +350,7 @@ class _WatchFacePage extends State<WatchFacePage> {
     Dio dio = Dio(options);
     await dio
         .download(file, pathFile, onReceiveProgress: (received, total) {})
-        .then((value) => {print("File download completed！"), widget.blePlugin.uploadLocalFile(pathFile)})
+        .then((value) => {widget.blePlugin.uploadLocalFile(pathFile)})
         .onError((error, stackTrace) => {});
   }
 }
