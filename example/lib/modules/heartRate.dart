@@ -38,6 +38,7 @@ class _HearRatePage extends State<HeartRatePage> {
     _streamSubscriptions.add(
       widget.blePlugin.heartRateEveStm.listen(
         (HeartRateBean event) {
+          if (!mounted) return;
           setState(() {
             switch(event.type){
               case HeartRateType.measuring:

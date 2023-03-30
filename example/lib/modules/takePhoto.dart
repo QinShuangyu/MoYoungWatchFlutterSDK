@@ -33,6 +33,7 @@ class _TakePhotoPage extends State<TakePhotoPage> {
     _streamSubscriptions.add(
       widget.blePlugin.cameraEveStm.listen(
             (CameraBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case CameraType.takePhotoState:
@@ -52,6 +53,7 @@ class _TakePhotoPage extends State<TakePhotoPage> {
     _streamSubscriptions.add(
       widget.blePlugin.phoneEveStm.listen(
             (int event) {
+              if (!mounted) return;
           setState(() {
             _phone = event;
           });
@@ -77,7 +79,7 @@ class _TakePhotoPage extends State<TakePhotoPage> {
                   onPressed: () => widget.blePlugin.enterCameraView),
               ElevatedButton(
                   child: const Text('sendDelayTaking'),
-                  onPressed: () => widget.blePlugin.sendDelayTaking(100)),
+                  onPressed: () => widget.blePlugin.sendDelayTaking(3)),
               ElevatedButton(
                   child: const Text('queryDelayTaking'),
                   onPressed: () => widget.blePlugin.queryDelayTaking),

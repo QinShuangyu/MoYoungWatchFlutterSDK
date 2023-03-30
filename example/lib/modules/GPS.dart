@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
@@ -63,13 +62,5 @@ class _GPSPage extends State<GPSPage> {
         ),
       ),
     );
-  }
-
-  Future<void> sendEpoFile() async {
-    const XTypeGroup typeGroup = XTypeGroup(
-      label: 'images',
-      extensions: <String>['jpg', 'png'],
-    );
-    final XFile? file = await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
   }
 }

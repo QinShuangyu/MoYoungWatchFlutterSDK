@@ -33,7 +33,7 @@ class _VibrationStrengthPage extends State<VibrationStrengthPage> {
 
                   ElevatedButton(
                       child: const Text('sendVibrationStrength()'),
-                      onPressed: () => widget.blePlugin.sendVibrationStrength(2)),
+                      onPressed: () => widget.blePlugin.sendVibrationStrength(VibrationStrengthType.low)),
                   ElevatedButton(
                       child: const Text('queryVibrationStrength()'),
                       onPressed: () async => {

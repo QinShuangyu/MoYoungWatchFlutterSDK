@@ -31,6 +31,7 @@ class _NotificationPage extends State<NotificationPage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       widget.blePlugin.callNumberEveStm.listen((String event) {
+        if (!mounted) return;
         setState(() {
           _number = event;
         });

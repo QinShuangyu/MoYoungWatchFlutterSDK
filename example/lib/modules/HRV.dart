@@ -33,6 +33,7 @@ class _HRVPage extends State<HRVPage> {
     _streamSubscriptions.add(
       widget.blePlugin.newHrvEveStm.listen(
             (HrvHandlerBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case HRVType.support:

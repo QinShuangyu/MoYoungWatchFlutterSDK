@@ -37,7 +37,8 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       widget.blePlugin.tempChangeEveStm.listen(
-            (TempChangeBean event) {
+        (TempChangeBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case TempChangeType.continueState:
@@ -65,7 +66,8 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
 
     _streamSubscriptions.add(
       widget.blePlugin.weatherChangeEveStm.listen(
-            (WeatherChangeBean event) {
+        (WeatherChangeBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case WeatherChangeType.updateWeather:
@@ -89,7 +91,8 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
             appBar: AppBar(
               title: const Text("Temperature System"),
             ),
-            body: Center(child: ListView(children: <Widget>[
+            body: Center(
+                child: ListView(children: <Widget>[
               Text("enable: $_enable"),
               Text("temp: $_temp"),
               Text("state: $_state"),
@@ -97,19 +100,9 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
               Text("startTime: $_startTime"),
               Text("tempList: $_tempList"),
               Text("weather: $_tempUnit"),
-
-              ElevatedButton(
-                  onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.celsius),
-                  child: const Text("sendTempUnit()")),
-              ElevatedButton(
-                  onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.fahrenheit),
-                  child: const Text("sendTempUnit()")),
-              ElevatedButton(
-                  onPressed: () => widget.blePlugin.queryTempUnit,
-                  child: const Text("queryTempUnit()")),
-            ])
-            )
-        )
-    );
+              ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.celsius), child: const Text("sendTempUnit()")),
+              ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.fahrenheit), child: const Text("sendTempUnit()")),
+              ElevatedButton(onPressed: () => widget.blePlugin.queryTempUnit, child: const Text("queryTempUnit()")),
+            ]))));
   }
 }

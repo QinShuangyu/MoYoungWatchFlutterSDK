@@ -55,6 +55,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   void subscriptStream() {
     var fileTransEveStm = widget.blePlugin.fileTransEveStm.listen(
       (FileTransBean event) {
+        if (!mounted) return;
         setState(() {
           switch (event.type) {
             case TransType.transStart:
@@ -79,6 +80,7 @@ class _WatchFacePage extends State<WatchFacePage> {
     _streamSubscriptions.add(
       widget.blePlugin.wfFileTransEveStm.listen(
         (FileTransBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case TransType.transStart:

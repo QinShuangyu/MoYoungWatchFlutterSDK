@@ -35,6 +35,7 @@ class _StressPage extends State<StressPage> {
     _streamSubscriptions.add(
       widget.blePlugin.stressEveStm.listen(
             (StressHandlerBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StressHandlerType.support:
@@ -73,7 +74,7 @@ class _StressPage extends State<StressPage> {
             Text("value: $_value"),
             Text("list: $_list"),
             Text("state: $_state"),
-            Text("timingStressInfo: $_timingStressInfo"),
+            Text("timingStressInfo: ${timingStressInfoBeanToJson(_timingStressInfo)}"),
 
             ElevatedButton(
                 onPressed: () => widget.blePlugin.querySupportStress,

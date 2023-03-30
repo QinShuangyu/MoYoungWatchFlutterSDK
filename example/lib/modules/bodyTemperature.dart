@@ -38,6 +38,7 @@ class _BodyTemperaturePage extends State<BodyTemperaturePage> {
     _streamSubscriptions.add(
       widget.blePlugin.tempChangeEveStm.listen(
         (TempChangeBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case TempChangeType.continueState:

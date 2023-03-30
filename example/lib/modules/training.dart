@@ -43,6 +43,7 @@ class _TrainingPage extends State<TrainingPage> {
     _streamSubscriptions.add(
       widget.blePlugin.trainingEveStm.listen(
         (TrainBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case TrainType.historyTrainingChange:
@@ -72,6 +73,7 @@ class _TrainingPage extends State<TrainingPage> {
     _streamSubscriptions.add(
       widget.blePlugin.trainingStateEveStm.listen(
         (int event) {
+          if (!mounted) return;
           setState(() {
             _type = event;
           });

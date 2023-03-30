@@ -1,12 +1,8 @@
 PODS:
-  - file_selector_ios (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_contacts (0.0.1):
     - Flutter
-  - flutter_document_picker (0.0.1):
-    - Flutter
-  - moyoung_ble_plugin (1.0.8):
+  - moyoung_ble_plugin (1.0.18):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -15,23 +11,17 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - file_selector_ios (from `.symlinks/plugins/file_selector_ios/ios`)
   - Flutter (from `Flutter`)
   - flutter_contacts (from `.symlinks/plugins/flutter_contacts/ios`)
-  - flutter_document_picker (from `.symlinks/plugins/flutter_document_picker/ios`)
   - moyoung_ble_plugin (from `.symlinks/plugins/moyoung_ble_plugin/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
 
 EXTERNAL SOURCES:
-  file_selector_ios:
-    :path: ".symlinks/plugins/file_selector_ios/ios"
   Flutter:
     :path: Flutter
   flutter_contacts:
     :path: ".symlinks/plugins/flutter_contacts/ios"
-  flutter_document_picker:
-    :path: ".symlinks/plugins/flutter_document_picker/ios"
   moyoung_ble_plugin:
     :path: ".symlinks/plugins/moyoung_ble_plugin/ios"
   path_provider_foundation:
@@ -40,11 +30,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
 
 SPEC CHECKSUMS:
-  file_selector_ios: 16d57dbbbb03f717b5f930ba45eb099dd2174a1d
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
-  flutter_document_picker: 109ba1c4622e6e62bfced17c22ff544a9a3541f4
-  moyoung_ble_plugin: 93e72ec099982c655f6fb6445e25a22e807afc30
+  moyoung_ble_plugin: dc769e5192a7e1859a10fa9e389278a622288430
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
 

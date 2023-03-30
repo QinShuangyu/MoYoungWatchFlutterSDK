@@ -53,8 +53,8 @@ class _SedentaryReminderPage extends State<SedentaryReminderPage> {
                       SedentaryReminderPeriodBean(
                           startHour: 10,
                           endHour: 20,
-                          period: 30,
-                          steps: 40
+                          period: 2,
+                          steps: 10
                       ))),
               ElevatedButton(
                   child: const Text('querySedentaryReminderPeriod()'),

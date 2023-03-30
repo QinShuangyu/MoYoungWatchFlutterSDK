@@ -33,6 +33,7 @@ class _ECGPage extends State<ECGPage> {
     _streamSubscriptions.add(
       widget.blePlugin.ecgEveStm.listen(
             (EcgBean event) {
+              if (!mounted) return;
           setState(() {
             switch(event.type){
               case ECGType.ecgChangeInts:

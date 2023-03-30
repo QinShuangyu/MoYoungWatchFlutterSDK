@@ -31,6 +31,7 @@ class _RSSIPage extends State<RSSIPage> {
     _streamSubscriptions.add(
       widget.blePlugin.deviceRssiEveStm.listen(
             (int event) {
+              if (!mounted) return;
           setState(() {
             _deviceRssi = event;
           });

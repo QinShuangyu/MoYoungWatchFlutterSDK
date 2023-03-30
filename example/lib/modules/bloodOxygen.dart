@@ -38,6 +38,7 @@ class _BloodOxygenPage extends State<BloodOxygenPage> {
     _streamSubscriptions.add(
       widget.blePlugin.bloodOxygenEveStm.listen(
             (BloodOxygenBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case BloodOxygenType.continueState:

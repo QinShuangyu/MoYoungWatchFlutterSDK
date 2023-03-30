@@ -31,6 +31,7 @@ class _BatterySavingPage extends State<BatterySavingPage> {
     _streamSubscriptions.add(
       widget.blePlugin.batterySavingEveStm.listen(
             (bool event) {
+              if (!mounted) return;
           setState(() {
             _batterSaving = event;
           });

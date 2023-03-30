@@ -35,6 +35,7 @@ class _CalendarEventPage extends State<CalendarEventPage> {
     _streamSubscriptions.add(
       widget.blePlugin.calendarEventEveStem.listen(
             (CalendarEventBean event) {
+              if (!mounted) return;
           setState(() {
             switch(event.type) {
               case CalendarEventType.support:

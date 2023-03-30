@@ -33,6 +33,7 @@ class _BatteryPage extends State<BatteryPage> {
     _streamSubscriptions.add(
       widget.blePlugin.deviceBatteryEveStm.listen(
         (DeviceBatteryBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case DeviceBatteryType.deviceBattery:

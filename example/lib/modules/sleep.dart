@@ -40,6 +40,7 @@ class _SleepPage extends State<SleepPage> {
     _streamSubscriptions.add(
       widget.blePlugin.sleepChangeEveStm.listen(
         (SleepBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case SleepType.sleepChange:
@@ -101,11 +102,11 @@ class _SleepPage extends State<SleepPage> {
                       child: const Text('queryGoalSleepTime'),
                       onPressed: () => widget.blePlugin.queryGoalSleepTime),
                   ElevatedButton(
-                      child: const Text('queryHistorySleep(YESTERDAY_SLEEP)'),
-                      onPressed: () => widget.blePlugin.queryHistorySleep(HistoryTimeType.yesterdaySleep)),
+                      child: const Text('queryHistorySleep(YESTERDAY)'),
+                      onPressed: () => widget.blePlugin.queryHistorySleep(SleepHistoryTimeType.yesterday)),
                   ElevatedButton(
-                      child: const Text('queryHistorySleep(DAY_BEFORE_YESTERDAY_SLEEP)'),
-                      onPressed: () => widget.blePlugin.queryHistorySleep(HistoryTimeType.dayBeforeYesterdaySleep)),
+                      child: const Text('queryHistorySleep(THE_DAY_BEFORE_YESTERDAY)'),
+                      onPressed: () => widget.blePlugin.queryHistorySleep(SleepHistoryTimeType.theDayBeforeYesterday)),
                 ],
               ),
             )

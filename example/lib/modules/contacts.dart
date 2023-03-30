@@ -46,6 +46,7 @@ class _ContactsPage extends State<ContactsPage> {
     _streamSubscriptions.add(
       widget.blePlugin.contactAvatarEveStm.listen(
             (FileTransBean event) {
+              if (!mounted) return;
           setState(() {
             switch(event.type) {
               case TransType.transStart:
@@ -70,6 +71,7 @@ class _ContactsPage extends State<ContactsPage> {
     _streamSubscriptions.add(
       widget.blePlugin.contactEveStm.listen(
         (ContactListenBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case ContactListenType.savedSuccess:

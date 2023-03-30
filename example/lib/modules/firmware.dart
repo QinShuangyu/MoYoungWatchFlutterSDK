@@ -40,6 +40,7 @@ class _FirmwarePage extends State<FirmwarePage> {
     _streamSubscriptions.add(
       widget.blePlugin.oTAEveStm.listen(
         (OTABean event) {
+          if (!mounted) return;
           setState(() {
             switch(event.type){
               case OTAProgressType.downloadStart:

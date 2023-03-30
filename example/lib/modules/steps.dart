@@ -18,10 +18,11 @@ class StepsPage extends StatefulWidget {
 
 class _StepsPage extends State<StepsPage> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-  int _stepsChange = -1;
+  String stepsInfo = "";
+  String historyStepsInfo = "";
   String list = "";
-  StepsCategoryBean stepsCategoryInfo = StepsCategoryBean(historyDay: "", timeInterval: -1, stepsList: []);
-  ActionDetailsBean actionDetailsInfo = ActionDetailsBean(historyDay: "", stepsList: [], distanceList: [], caloriesList: []);
+  String stepsCategoryInfo = "";
+  String actionDetailsInfo = "";
 
 
   @override
@@ -34,8 +35,18 @@ class _StepsPage extends State<StepsPage> {
     _streamSubscriptions.add(
       widget.blePlugin.stepsChangeEveStm.listen(
             (StepsChangeBean event) {
+              if (!mounted) return;
           setState(() {
-            _stepsChange = event.stepsInfo.steps;
+            switch (event.type) {
+              case StepsChangeType.stepChange:
+                stepsInfo = stepInfoBeanToJson(event.stepsInfo!);
+                break;
+              case StepsChangeType.historyStepChange:
+                historyStepsInfo = historyStepInfoBeanToJson(event.historyStepsInfo!);
+                break;
+              default:
+                break;
+            }
           });
         },
       ),
@@ -44,13 +55,14 @@ class _StepsPage extends State<StepsPage> {
     _streamSubscriptions.add(
       widget.blePlugin.stepsDetailEveStm.listen(
             (StepsDetailBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StepsDetailType.stepsCategoryChange:
-                stepsCategoryInfo = event.stepsCategoryInfo!;
+                stepsCategoryInfo = stepsCategoryBeanToJson(event.stepsCategoryInfo!);
                 break;
               case StepsDetailType.actionDetailsChange:
-                actionDetailsInfo = event.actionDetailsInfo!;
+                actionDetailsInfo = actionDetailsBeanToJson(event.actionDetailsInfo!);
                 break;
               default:
                 break;
@@ -79,32 +91,30 @@ class _StepsPage extends State<StepsPage> {
             body: Center(
               child: ListView(
                 children: [
-                  Text("StepsChange=" + _stepsChange.toString()),
+                  Text("stepsInfo: $stepsInfo"),
+                  Text("historyStepsInfo: $historyStepsInfo"),
                   Text("list: $list"),
-                  Text("stepsCategoryInfo: ${stepsCategoryBeanToJson(stepsCategoryInfo)}"),
-                  Text("actionDetailsInfo: ${actionDetailsBeanToJson(actionDetailsInfo)}"),
+                  Text("stepsCategoryInfo: $stepsCategoryInfo"),
+                  Text("actionDetailsInfo: $actionDetailsInfo"),
 
                   ElevatedButton(
                       child: const Text('querySteps'),
                       onPressed: () => widget.blePlugin.querySteps),
                   ElevatedButton(
-                      child: const Text('queryHistorySteps(todayStepsDetail)'),
-                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.todayStepsDetail)),
+                      child: const Text('queryHistorySteps(yesterday)'),
+                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.yesterday)),
+                  /// 获取步数历史记录
                   ElevatedButton(
-                      child: const Text('queryStepsDetail(todayStepsDetail)'),
-                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.todayStepsDetail)),
-
+                      child: const Text('queryHistorySteps(theDayBeforeYesterday)'),
+                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.theDayBeforeYesterday)),
+                  /// 获取最近两天步数半小时分类统计
                   ElevatedButton(
-                      child: const Text('get24HourCals()'),
-                      onPressed: () async {
-                        The24HourListBean hourList = await widget.blePlugin.get24HourCals;
-                        setState(() {
-                          list = the24HourListBeanToJson(hourList);
-                        });
-                      }),
+                      child: const Text('queryStepsDetail(theDayBeforeYesterday)'),
+                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.yesterday)),
+                  /// 获取全天步数、距离和卡路里半小时统计
                   ElevatedButton(
                       child: const Text('queryActionDetails()'),
-                      onPressed: () => widget.blePlugin.queryActionDetails(ActionDetailsType.today)),
+                      onPressed: () => widget.blePlugin.queryActionDetails(StepsDetailDateType.today)),
                 ],
               ),
             )
