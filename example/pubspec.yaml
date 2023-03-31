@@ -26,7 +26,7 @@ dependencies:
     # HTTP network request library
   dio: ^4.0.6
 
-#  moyoung_ble_plugin: ^1.0.17
+#  moyoung_ble_plugin: ^1.0.20
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z
