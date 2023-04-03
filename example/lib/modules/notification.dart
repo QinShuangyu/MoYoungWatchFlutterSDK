@@ -1,7 +1,10 @@
 import 'dart:async';
-import 'dart:ffi';
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_notification_listener/flutter_notification_listener.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -22,12 +25,77 @@ class _NotificationPage extends State<NotificationPage> {
   String _number = "";
   int _firmwareVersion = -1;
   List<int> _messageType = [];
-  List<int> _newMessageType = [];
+  final List<int> _newMessageType = [];
+  bool started = true;
+  bool _loading = false;
+
+  ReceivePort port = ReceivePort();
+  bool hasPort = false;
 
   @override
   void initState() {
     super.initState();
     subscriptStream();
+    initPlatformState();
+  }
+
+  static void _notificationCallback(NotificationEvent evt) {
+    SendPort? send = IsolateNameServer.lookupPortByName("_listener_");
+    if (send == null) print("can't find the sender");
+    send?.send(evt);
+  }
+
+  Future<void> initPlatformState() async {
+    if (Platform.isAndroid) {
+      if (hasPort) {
+        IsolateNameServer.removePortNameMapping("_listener_");
+      }
+      hasPort = IsolateNameServer.registerPortWithName(port.sendPort, "_listener_");
+      NotificationsListener.initialize(callbackHandle: _notificationCallback);
+      port.listen((message) => onData(message));
+      var isR = await NotificationsListener.isRunning;
+      setState(() {
+        started = isR!;
+      });
+    }
+  }
+
+  void onData(NotificationEvent event) {
+    if (_firmwareVersion != -1) {
+      widget.blePlugin.sendMessage(
+        MessageBean(
+          message: event.text.toString(),
+          type: BleMessageType.qq,
+          versionCode: _firmwareVersion,
+          isHs: true,
+          isSmallScreen: true,
+        ),
+      );
+    }
+  }
+
+  void startListening() async {
+    setState(() {
+      _loading = true;
+    });
+    var hasPermission = await NotificationsListener.hasPermission;
+    if (!hasPermission!) {
+      NotificationsListener.openPermissionSettings();
+      return;
+    }
+
+    var isR = await NotificationsListener.isRunning;
+    if (!isR!) {
+      await NotificationsListener.startService(
+        foreground: true,
+        title: "Listener Running",
+        description: "Welcome to having me"
+      );
+    }
+    setState(() {
+      started = true;
+      _loading = false;
+    });
   }
 
   void subscriptStream() {
@@ -56,6 +124,10 @@ class _NotificationPage extends State<NotificationPage> {
                   Text("firmwareVersion: $_firmwareVersion"),
                   Text("messageType: $_messageType"),
                   Text("newMessageType: $_newMessageType"),
+                  Text("started: $started"),
+                  Text("loading: $_loading"),
+
+                  ElevatedButton(onPressed: startListening, child: const Text("start"),),
                   ElevatedButton(
                     child: const Text('android:sendOtherMessageState'),
                     onPressed: () => widget.blePlugin.sendOtherMessageState(!_state),
@@ -94,7 +166,7 @@ class _NotificationPage extends State<NotificationPage> {
                   ElevatedButton(
                       child: const Text('sendMessage(MessageInfo())'),
                       onPressed: () {
-                        Timer(const Duration(seconds: 5), () {
+                        Timer(const Duration(seconds: 10), () {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
