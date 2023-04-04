@@ -41,6 +41,7 @@ class _TakePhotoPage extends State<TakePhotoPage> {
                 break;
               case CameraType.delayTakingState:
                 _delayTime = event.delayTime!;
+                _camera = event.takePhoto!;
                 break;
               default:
                 break;
@@ -80,9 +81,9 @@ class _TakePhotoPage extends State<TakePhotoPage> {
               ElevatedButton(
                   child: const Text('sendDelayTaking'),
                   onPressed: () => widget.blePlugin.sendDelayTaking(3)),
-              ElevatedButton(
-                  child: const Text('queryDelayTaking'),
-                  onPressed: () => widget.blePlugin.queryDelayTaking),
+              // ElevatedButton(
+              //     child: const Text('queryDelayTaking'),
+              //     onPressed: () => widget.blePlugin.queryDelayTaking),
               ElevatedButton(
                   child: const Text('exitCameraView'),
                   onPressed: () => widget.blePlugin.exitCameraView),

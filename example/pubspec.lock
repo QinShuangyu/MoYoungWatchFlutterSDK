@@ -102,14 +102,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
-  flutter_notification_listener:
-    dependency: "direct main"
-    description:
-      name: flutter_notification_listener
-      sha256: "7c88482d0b8bb7aa2eb24dcc8cb473741d6f716892ce3237bb3eb672c377534f"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.3.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
