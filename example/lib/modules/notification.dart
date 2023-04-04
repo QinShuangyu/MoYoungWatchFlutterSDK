@@ -36,67 +36,67 @@ class _NotificationPage extends State<NotificationPage> {
   void initState() {
     super.initState();
     subscriptStream();
-    initPlatformState();
+    // initPlatformState();
   }
 
-  static void _notificationCallback(NotificationEvent evt) {
-    SendPort? send = IsolateNameServer.lookupPortByName("_listener_");
-    if (send == null) print("can't find the sender");
-    send?.send(evt);
-  }
+  // static void _notificationCallback(NotificationEvent evt) {
+  //   SendPort? send = IsolateNameServer.lookupPortByName("_listener_");
+  //   if (send == null) print("can't find the sender");
+  //   send?.send(evt);
+  // }
+  //
+  // Future<void> initPlatformState() async {
+  //   if (Platform.isAndroid) {
+  //     if (hasPort) {
+  //       IsolateNameServer.removePortNameMapping("_listener_");
+  //     }
+  //     hasPort = IsolateNameServer.registerPortWithName(port.sendPort, "_listener_");
+  //     NotificationsListener.initialize(callbackHandle: _notificationCallback);
+  //     port.listen((message) => onData(message));
+  //     var isR = await NotificationsListener.isRunning;
+  //     setState(() {
+  //       started = isR!;
+  //     });
+  //   }
+  // }
 
-  Future<void> initPlatformState() async {
-    if (Platform.isAndroid) {
-      if (hasPort) {
-        IsolateNameServer.removePortNameMapping("_listener_");
-      }
-      hasPort = IsolateNameServer.registerPortWithName(port.sendPort, "_listener_");
-      NotificationsListener.initialize(callbackHandle: _notificationCallback);
-      port.listen((message) => onData(message));
-      var isR = await NotificationsListener.isRunning;
-      setState(() {
-        started = isR!;
-      });
-    }
-  }
+  // void onData(NotificationEvent event) {
+  //   if (_firmwareVersion != -1) {
+  //     widget.blePlugin.sendMessage(
+  //       MessageBean(
+  //         message: event.text.toString(),
+  //         type: BleMessageType.qq,
+  //         versionCode: _firmwareVersion,
+  //         isHs: true,
+  //         isSmallScreen: true,
+  //       ),
+  //     );
+  //   }
+  // }
 
-  void onData(NotificationEvent event) {
-    if (_firmwareVersion != -1) {
-      widget.blePlugin.sendMessage(
-        MessageBean(
-          message: event.text.toString(),
-          type: BleMessageType.qq,
-          versionCode: _firmwareVersion,
-          isHs: true,
-          isSmallScreen: true,
-        ),
-      );
-    }
-  }
-
-  void startListening() async {
-    setState(() {
-      _loading = true;
-    });
-    var hasPermission = await NotificationsListener.hasPermission;
-    if (!hasPermission!) {
-      NotificationsListener.openPermissionSettings();
-      return;
-    }
-
-    var isR = await NotificationsListener.isRunning;
-    if (!isR!) {
-      await NotificationsListener.startService(
-        foreground: true,
-        title: "Listener Running",
-        description: "Welcome to having me"
-      );
-    }
-    setState(() {
-      started = true;
-      _loading = false;
-    });
-  }
+  // void startListening() async {
+  //   setState(() {
+  //     _loading = true;
+  //   });
+  //   var hasPermission = await NotificationsListener.hasPermission;
+  //   if (!hasPermission!) {
+  //     NotificationsListener.openPermissionSettings();
+  //     return;
+  //   }
+  //
+  //   var isR = await NotificationsListener.isRunning;
+  //   if (!isR!) {
+  //     await NotificationsListener.startService(
+  //       foreground: true,
+  //       title: "Listener Running",
+  //       description: "Welcome to having me"
+  //     );
+  //   }
+  //   setState(() {
+  //     started = true;
+  //     _loading = false;
+  //   });
+  // }
 
   void subscriptStream() {
     _streamSubscriptions.add(
@@ -124,10 +124,10 @@ class _NotificationPage extends State<NotificationPage> {
                   Text("firmwareVersion: $_firmwareVersion"),
                   Text("messageType: $_messageType"),
                   Text("newMessageType: $_newMessageType"),
-                  Text("started: $started"),
-                  Text("loading: $_loading"),
+                  // Text("started: $started"),
+                  // Text("loading: $_loading"),
 
-                  ElevatedButton(onPressed: startListening, child: const Text("start"),),
+                  // ElevatedButton(onPressed: startListening, child: const Text("start"),),
                   ElevatedButton(
                     child: const Text('android:sendOtherMessageState'),
                     onPressed: () => widget.blePlugin.sendOtherMessageState(!_state),
