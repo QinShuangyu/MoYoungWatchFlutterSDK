@@ -41,7 +41,6 @@ class _TakePhotoPage extends State<TakePhotoPage> {
                 break;
               case CameraType.delayTakingState:
                 _delayTime = event.delayTime!;
-                _camera = event.takePhoto!;
                 break;
               default:
                 break;

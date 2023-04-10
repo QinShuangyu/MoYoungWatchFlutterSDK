@@ -109,13 +109,13 @@ class _HearRatePage extends State<HeartRatePage> {
               Text("timingMeasure: $_timingMeasure"),
 
               ElevatedButton(
-                  child: const Text('queryLastDynamicRate()'),
+                  child: const Text('queryLastDynamicRate(1)'),
                   onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.firstHeartRate)),
               ElevatedButton(
-                  child: const Text('queryLastDynamicRate()'),
+                  child: const Text('queryLastDynamicRate(2)'),
                   onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.secondHeartRate)),
               ElevatedButton(
-                  child: const Text('queryLastDynamicRate()'),
+                  child: const Text('queryLastDynamicRate(3)'),
                   onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.thirdHeartRate)),
               ElevatedButton(
                   child: const Text('enableTimingMeasureHeartRate(10)'),

@@ -53,6 +53,7 @@ import 'package:moyoung_ble_plugin_example/modules/notification.dart';
 import 'modules/GPS.dart';
 import 'modules/HRV.dart';
 import 'modules/calendarEvent.dart';
+// import 'modules/demo.dart';
 import 'modules/electronicCard.dart';
 import 'modules/pairing.dart';
 
@@ -211,6 +212,18 @@ class _DevicePage extends State<DevicePage> {
                     fontSize: 20,
                     height: 2.0,
                   )),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       if (_isConn) {
+              //         Navigator.push(context,
+              //             MaterialPageRoute(builder: (context) {
+              //               return Demo(
+              //                 blePlugin: _blePlugin, device: widget.device,
+              //               );
+              //             }));
+              //       }
+              //     },
+              //     child: const Text("Demo")),
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
