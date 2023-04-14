@@ -18,13 +18,11 @@ class _HearRatePage extends State<HeartRatePage> {
   int _measuring = -1;
   int _onceMeasureComplete = -1;
   List<HistoryHeartRateBean> _historyHrList = [];
-  MeasureCompleteBean? _measureComplete;
-  String _historyDynamicRateType = "";
-  HeartRateInfo? _hour24MeasureResult;
-  int _startTime = -1;
-  List<int> _heartRateList = [];
-  int _timeInterval = -1;
-  String _heartRateType = "";
+  MeasureCompleteBean? _measureComplete = MeasureCompleteBean(
+    historyDynamicRateType: "",
+    heartRate: HeartRateInfo(heartRateType: '', heartRateList: [], timeInterval: -1, startTime: -1),
+  );
+  final List<HeartRateInfo> _hour24MeasureResultList = [];
   String _trainingList = "";
   int _timingMeasure = -1;
 
@@ -40,7 +38,7 @@ class _HearRatePage extends State<HeartRatePage> {
         (HeartRateBean event) {
           if (!mounted) return;
           setState(() {
-            switch(event.type){
+            switch (event.type) {
               case HeartRateType.measuring:
                 _measuring = event.measuring!;
                 break;
@@ -52,18 +50,9 @@ class _HearRatePage extends State<HeartRatePage> {
                 break;
               case HeartRateType.measureComplete:
                 _measureComplete = event.measureComplete!;
-                _historyDynamicRateType = _measureComplete!.historyDynamicRateType!;
-                _startTime = _measureComplete!.heartRate!.startTime;
-                _heartRateList = _measureComplete!.heartRate!.heartRateList;
-                _timeInterval = _measureComplete!.heartRate!.timeInterval;
-                _heartRateType = _measureComplete!.heartRate!.heartRateType;
                 break;
               case HeartRateType.hourMeasureResult:
-                _hour24MeasureResult = event.hour24MeasureResult!;
-                _startTime = _hour24MeasureResult!.startTime;
-                _heartRateList = _hour24MeasureResult!.heartRateList;
-                _timeInterval = _hour24MeasureResult!.timeInterval;
-                _heartRateType = _hour24MeasureResult!.heartRateType;
+                _hour24MeasureResultList.add(event.hour24MeasureResult!);
                 break;
               case HeartRateType.measureResult:
                 if (event.trainingList!.isNotEmpty) {
@@ -96,18 +85,15 @@ class _HearRatePage extends State<HeartRatePage> {
             appBar: AppBar(
               title: const Text("Hear Rate"),
             ),
-            body: Center(child: ListView(children: [
+            body: Center(
+                child: ListView(children: [
               Text("measuring: $_measuring"),
               Text("onceMeasureComplete: $_onceMeasureComplete"),
               Text("historyHrList[0]: $_historyHrList"),
-              Text("historyDynamicRateType: $_historyDynamicRateType"),
-              Text("startTime: $_startTime"),
-              Text("heartRateList: $_heartRateList"),
-              Text("timeInterval: $_timeInterval"),
-              Text("heartRateType: $_heartRateType"),
+              Text("measureComplete: ${measureCompleteBeanToJson(_measureComplete!)}"),
+              Text("_hour24MeasureResult: ${_hour24MeasureResultList.map((value) => heartRateInfoToJson(value))}"),
               Text("trainingList: $_trainingList"),
               Text("timingMeasure: $_timingMeasure"),
-
               ElevatedButton(
                   child: const Text('queryLastDynamicRate(1)'),
                   onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.firstHeartRate)),
@@ -118,11 +104,8 @@ class _HearRatePage extends State<HeartRatePage> {
                   child: const Text('queryLastDynamicRate(3)'),
                   onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.thirdHeartRate)),
               ElevatedButton(
-                  child: const Text('enableTimingMeasureHeartRate(10)'),
-                  onPressed: () => widget.blePlugin.enableTimingMeasureHeartRate(10)),
-              ElevatedButton(
-                  child: const Text('disableTimingMeasureHeartRate()'),
-                  onPressed: () => widget.blePlugin.disableTimingMeasureHeartRate),
+                  child: const Text('enableTimingMeasureHeartRate(10)'), onPressed: () => widget.blePlugin.enableTimingMeasureHeartRate(10)),
+              ElevatedButton(child: const Text('disableTimingMeasureHeartRate()'), onPressed: () => widget.blePlugin.disableTimingMeasureHeartRate),
               ElevatedButton(
                   child: const Text('queryTimingMeasureHeartRate()'),
                   onPressed: () async {
@@ -132,33 +115,20 @@ class _HearRatePage extends State<HeartRatePage> {
                     });
                   }),
               ElevatedButton(
-                  child: const Text(
-                      'queryTodayHeartRate(TIMING_MEASURE_HEART_RATE)'),
-                  onPressed: () => widget.blePlugin.queryTodayHeartRate(
-                      TodayHeartRateType.timingMeasureHeartRate)),
+                  child: const Text('queryTodayHeartRate(TIMING_MEASURE_HEART_RATE)'),
+                  onPressed: () => widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.timingMeasureHeartRate)),
               ElevatedButton(
                   child: const Text('queryTodayHeartRate(ALL_DAY_HEART_RATE)'),
-                  onPressed: () => widget.blePlugin.queryTodayHeartRate(
-                      TodayHeartRateType.allDayHeartRate)),
+                  onPressed: () {
+                    _hour24MeasureResultList.clear();
+                    widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.allDayHeartRate);
+                  }),
               ElevatedButton(
-                  child: const Text('queryPastHeartRate'),
-                  onPressed: () => widget.blePlugin.queryPastHeartRate(
-                      HistoryHeartRateDay.historyDay)),
-              ElevatedButton(
-                  child: const Text('queryTrainingHeartRate'),
-                  onPressed: () => widget.blePlugin.queryTrainingHeartRate),
-              ElevatedButton(
-                  child: const Text('startMeasureOnceHeartRate'),
-                  onPressed: () => widget.blePlugin.startMeasureOnceHeartRate),
-              ElevatedButton(
-                  child: const Text('stopMeasureOnceHeartRate'),
-                  onPressed: () => widget.blePlugin.stopMeasureOnceHeartRate),
-              ElevatedButton(
-                  child: const Text('queryHistoryHeartRate'),
-                  onPressed: () => widget.blePlugin.queryHistoryHeartRate),
-            ])
-            )
-        )
-    );
+                  child: const Text('queryPastHeartRate'), onPressed: () => widget.blePlugin.queryPastHeartRate(HistoryHeartRateDay.historyDay)),
+              ElevatedButton(child: const Text('queryTrainingHeartRate'), onPressed: () => widget.blePlugin.queryTrainingHeartRate),
+              ElevatedButton(child: const Text('startMeasureOnceHeartRate'), onPressed: () => widget.blePlugin.startMeasureOnceHeartRate),
+              ElevatedButton(child: const Text('stopMeasureOnceHeartRate'), onPressed: () => widget.blePlugin.stopMeasureOnceHeartRate),
+              ElevatedButton(child: const Text('queryHistoryHeartRate'), onPressed: () => widget.blePlugin.queryHistoryHeartRate),
+            ]))));
   }
 }

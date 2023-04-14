@@ -1,966 +1,1130 @@
-Development guide
-
-## 2 usage
-
-### **2.1 Environment configuration**
-
-### 2.1 Initialization
-
-MoyangBle is the entrance of the SDK. The client needs to maintain the instance of MoyangBle, and it needs to initialize the instance of MoyangBle when using it.
-
-```dart
-final MoYangBle _blePlugin = MoYangBle();
+# 1 Initialization
+MoYoungBle is the entrance of the SDK. The client needs to maintain the instance of MoYoungBle, and it needs to initialize the instance of MoYoungBle when using it.
+```
+final MoYoungBle _blePlugin = MoYoungBle();
 ```
 
-### 2.2 Scan BLE device
+# 2 Scan BLE Device
+## 2.1 Sets scan listener
 
-1. **Start scan**
+When the scan is enabled, the scan event listener stream bleScanEveStm will be triggered, and the scan result will be returned through the bleScanEveStm listener stream and stored in the “event” as a BleScanEvent object.
+```dart
+_blePlugin.bleScanEveStm.listen(
+  (BleScanBean event) async {
+    /// Do something with new state 
+  });
+```
+Callback Description（event）:
 
-When scanning Bluetooth devices, it will first obtain the open status of Bluetooth, and only when the permission is allowed and the Bluetooth is turned on can start normal scanning.
+BleScanBean：
 
-Clicking the scan button will trigger the scan event listener stream bleScanEveStm, and the scan result will be returned through the bleScanEveStm listener stream and stored in the event as a BleScanEvent object.
+| callback value | callback value type |  callback value description  |
+| -------------- | :------------------ | :--------------------------: |
+| isCompleted    | bool                |         is completed         |
+| address        | String              |        Device address        |
+| mRssi          | int                 |        equipment rssi        |
+| mScanRecord    | List<int>           | Bluetooth scan device record |
+| name           | String              |        Equipment name        |
 
-  ```dart
-  _blePlugin.startScan(10*1000).then((value) => {
-       /// Do something with new state 
-      }).onError((error, stackTrace) => {
-      });
-  ```
+## 2.2 Start scan
+
+When scanning Bluetooth devices, it will first obtain the open status of Bluetooth, and only when the  permission is allowed and the Bluetooth is turned on can start normal scanning. 
+
+```dart
+_blePlugin.startScan(10*1000).then((value) => {
+     /// Do something with new state 
+    }).onError((error, stackTrace) => {
+  });
+```
 
 Parameter Description :
 
-- The scan duration can be set in milliseconds.
-- When the Bluetooth scan time is not set, the default scan time is 10 seconds
-- Since Bluetooth scanning is a time-consuming operation, it is recommended to set the scanning time to about 10 seconds.
+- The scan duration can be set in milliseconds. 
+- Since Bluetooth scanning is a time-consuming operation, it is recommended to set the scanning time to 10 seconds.
 
-Add event stream listener.
-
-  ```dart
-  _blePlugin.bleScanEveStm.listen(
-    (BleScanEvent event) async {
-      /// Do something with new state 
-    });
-  ```
-
-Callback Description:
-
-BleScanEvent
-
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| isCompleted | bool | is completed |
-| address | String | Device address |
-| mRssi | int | equipment rssi |
-| mScanRecord | List<int> | Bluetooth scan device record |
-| name | String | Equipment name |
-
-
-2. **Cancel scan**
+## 2.3 Cancel scan
 
 Turn off the bluetooth scan, and the result listens to the callback through the bleScanEveStm data stream.
 
-  ```
-  _blePlugin.cancelScan();
-  ```
+```
+_blePlugin.cancelScan;
+```
 
+# 3 Connect
+## 3.1 Sets connect State listener
 
-### 2.3 Connect
-
-1. **Connect**
-
-Get the watch's Mac address by scanning the received CRPScanDevice. Click the Bluetooth connection to connect the device, and the Bluetooth connection monitoring will be triggered at the same time. Monitor connection and callback status via the connStateEveStm data stream. The result is saved in "event". It is recommended to add an appropriate delay when disconnecting and reconnecting, so that the system can recover resources and ensure the connection success rate.
-
-  ```dart
-  _blePlugin.connect(String address);
-  ```
+Gets the watch's Mac address by scanning the received bleScanEveStm. When the device is connected to Bluetooth, it will trigger Bluetooth connection monitoring. The connection and callback state is monitored through the stateEveStm data stream, and the results are saved in "event".
 
 Add event stream listener.
 
-  ```dart
-  _blePlugin.connStateEveStm.listen(
-    (int event) {
-     // Do something with new state
-    }),
-  ```
+```
+_blePlugin.connStateEveStm.listen(
+  (int event) {
+   // Do something with new state
+  }),
+```
 
 ConnectionState:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| STATE_DISCONNECTED | int | 0,disconnected |
-| STATE_CONNECTING | int | 1,connecting |
-| STATE_CONNECTED | int | 2,connected |
-| STATE_DISCONNECTING | int | 3,disconnecting |
+| vlaue              | value type | value description |
+| :----------------- | :--------- | :---------------- |
+| stateDisconnected  | int        | disconnected      |
+| stateConnecting    | int        | connecting        |
+| stateConnected     | int        | connected         |
+| stateDisconnecting | int        | disconnecting     |
 
-2. **isConnected**
+## 3.2 Connect
 
-Get the current status of the watch's successful connection according to the watch's mac address.
+Make a Bluetooth connection to the device by passing in the device's Mac address.
 
-  ```dart
-  bool connectedState = await _blePlugin.isConnected(String address);
-  ```
+```
+_blePlugin.connect(String address);
+```
 
+## 3.3 IsConnected
 
-3. **disconnect**
+Establish a Bluetooth connection with the device by passing in the device's Mac address.
 
-Disconnected watch,disconnect returns true
+```dart
+bool connectedState = await _blePlugin.isConnected(String address);
+```
 
-  ```dart
-  bool disconnect=await _blePlugin.disconnect();
-  ```
+## 3.4 Disconnect
 
+Disconnected watch,disconnect returns true. It is recommended to add an appropriate delay when disconnecting and reconnecting, so that the system can recover resources and guarantee the connection success rate.
 
-4. **reconnect**
+```
+bool disconnect = await _blePlugin.disconnect;
+```
 
-Reconnect the last connected device.(ios Only Method)
+## 3.5 Reconnect
 
-  ```dart
-  await _blePlugin.reconnect();
-  ```
+Reconnect the last connected device.(ios Only Method).
 
+```
+await _blePlugin.reconnect;
+```
 
-4. **connect device**
+## 3.6 Connect Device
 
-Reconnect the last connected device.(ios Only Method)
+Connect peripherals.
 
-  ```dart
-  await _blePlugin.connectDevice(ConnectDeviceBean);
-  ```
+```
+await _blePlugin.connectDevice(ConnectDeviceBean);
+```
+
+Parameter Description :
 
 ConnectDeviceBean :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| mac | String | device address |
-| peripheral | dynamic | peripheral equipment |
+| value      | value type | value description    |
+| :--------- | :--------- | :------------------- |
+| mac        | String     | device address       |
+| peripheral | dynamic    | peripheral equipment |
 
+# 4 Time
 
-### 2.4 Time
+## 4.1 Sync Time
 
-1. **sync Time**
+Synchronize the time of your phone and watch.
 
-Synchronize the time of your phone and watch
+```dart
+_blePlugin.queryTime;
+```
 
-  ```
-  _blePlugin.queryTime();
-  ```
+## 4.2 Sets Time System
 
-2. **Sets Time System**
+Sets the system time of the watch.
 
-Sets the system time of the watch
-
-  ```
-  _blePlugin.sendTimeSystem(TimeSystemType);
-  ```
+```dart
+_blePlugin.sendTimeSystem(TimeSystemType);
+```
 
 Parameter Description :
 
 TimeSystemType:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| TIME_SYSTEM_12 | int | 12-Hour Time |
-| TIME_SYSTEM_24 | int | 24-Hour Time |
+| value        | value type | value description |
+| :----------- | :--------- | :---------------- |
+| timeSystem12 | int        | 12-Hour Time      |
+| timeSystem24 | int        | 24-Hour Time      |
 
-3. **Gets Time System**
+## 4.3 Gets Time System
 
 Gets the time system of the watch.
 
-  ```
-  int imeSystemType = await _blePlugin.queryTimeSystem();
-  ```
+```dart
+int timeSystemType = await _blePlugin.queryTimeSystem;
+```
 
+# 5 Firmware
+## 5.1 Sets firmware listener
 
-### 2.5 Firmware
+```dart
+_blePlugin.oTAEveStm.listen(
+        (OTABean event) {
+           /// Do something with new state,for example:
+          setState(() {
+            switch(event.type){
+              case OTAProgressType.downloadStart:
+                break;
+              case OTAProgressType.downloadComplete:
+                break;
+              case OTAProgressType.progressStart:
+                break;
+              case OTAProgressType.progressChanged:
+                _upgradeProgress = event.upgradeProgress!;
+                break;
+              case OTAProgressType.upgradeCompleted:
+                break;
+              case OTAProgressType.upgradeAborted:
+                break;
+              case OTAProgressType.error:
+                _upgradeError = event.upgradeError!;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+```
 
-1. **Gets firmware version**
+Callback Description （event）:
+
+OTABean：
+
+| value           | value type       | value description                                            |
+| :-------------- | :--------------- | :----------------------------------------------------------- |
+| type            | int              | Gets the type of the callback return value, where Type is the value corresponding to OTAProgressType |
+| upgradeProgress | int              | Upgrade progress                                             |
+| upgradeError    | UpgradeErrorBean | Firmware upgrade error data is reported                      |
+
+UpgradeErrorBean:
+
+| value        | value type | value description |
+| :----------- | :--------- | :---------------- |
+| error        | int        | error type        |
+| errorContent | String     | error content     |
+
+OTAProgressType:
+
+| type             | value | value description                  |
+| :--------------- | :---- | :--------------------------------- |
+| downloadStart    | 1     | Firmware version download starts   |
+| downloadComplete | 2     | Firmware version download complete |
+| progressStart    | 3     | OTA start                          |
+| progressChanged  | 4     | OTA process changes                |
+| upgradeCompleted | 5     | OTA completed                      |
+| upgradeAborted   | 6     | OTA abort                          |
+| error            | 7     | OTA error                          |
+
+## 5.2 Gets firmware version
 
 Gets the current firmware version of the watch.
 
-  ```dart
-  String firmwareVersion = await _blePlugin.queryFirmwareVersion();
-  ```
+```dart
+String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+```
 
-2. **Check firmware**
+## 5.3 Check firmware
 
-Get the latest version information.
+Gets the latest version information.
 
-  ```
-  CheckOtaBean info = await _blePlugin.checkFirmwareVersion();
-  ```
-
-Callback Description:
-
-CheckOtaBean:
-
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| firmwareVersionInfo | FirmwareVersionBean | The latest version information |
-| isLatestVersion | String | Is it the latest version information |
-
-FirmwareVersionBean：
-
-| ack value | callback value type | callback value description |
-  | --- | --- | --- |
-| version | String | Current firmware version number of the watch |
-| changeNotes | String | change note |
-| changeNotesEn | int | english change note |
-| type | bool | Upgrade type, same as OTAType |
-| mcu | int | MCU type, used to distinguish upgrade mode |
-| tpUpgrade | String |     |
-
-OTAType：
-
-| value | value type | value description |
-  | --- | --- | --- |
-| NORMAL_UPGEADE_TYPE | int | 0   |
-| BETA_UPGRADE_TYPE | int | 1   |
-| FORCED_UPDATE_TYPE | int | 2   |
-
-3. **Firmware upgrade**
-
-The firmware upgrade is divided into four upgrade methods.
-
-  ```dart
-  ///The first way to upgrade
-  _platform.hsStartOTA(String address);
-  ///The second way to upgrade
-  _platform.rtStartOTA(String address);
-  ///The third way to upgrade,firmwareUpgradeFlag is true
-  _platform.startOTA(bool firmwareUpgradeFlag);
-  ///The four way to upgrade,firmwareUpgradeFlag is false
-  _platform.startOTA(bool firmwareUpgradeFlag);
-  ```
+```dart
+CheckFirmwareVersionBean bean = await _blePlugin.checkFirmwareVersion(FirmwareVersion info);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| address | String | Device address |
-| firmwareUpgradeFlag | bool | Firmware version update judgment |
+ FirmwareVersion:
+
+| value   | value type | value description                            |
+| :------ | :--------- | :------------------------------------------- |
+| version | String     | Get through _blePlugin.queryFirmwareVersion; |
+| otaType | int        | Upgrade type, from OTAType                   |
+
+OTAType：
+
+| value             | value type | value description |
+| :---------------- | :--------- | :---------------- |
+| normalUpgeadeType | int        | normal upgeade    |
+| betaUpgradeType   | int        | beta upgrade      |
+| forcedUpdateType  | int        | forced update     |
+
+Callback Description:
+
+CheckFirmwareVersionBean
+
+| callback value      | callback value type | callback value description                          |
+| :------------------ | :------------------ | :-------------------------------------------------- |
+| firmwareVersionInfo | FirmwareVersionBean | The latest version information                      |
+| isLatestVersion     | bool                | Check whether the information is the latest version |
+
+FirmwareVersionBean：
+
+| value         | value type | value description                                    |
+| ------------- | :--------- | :--------------------------------------------------- |
+| version       | String     | Current firmware version number of the watch         |
+| changeNotes   | String     | change note                                          |
+| changeNotesEn | int        | english change note                                  |
+| type          | bool       | Upgrade type, same as OTAType                        |
+| mcu           | int        | MCU type, used to distinguish upgrade mode           |
+| tpUpgrade     | String     | Whether you need to upgrade tp, the default is false |
+
+OTAType：
+
+| value             | value type | value description |
+| :---------------- | :--------- | :---------------- |
+| normalUpgeadeType | int        | normal upgeade    |
+| betaUpgradeType   | int        | beta upgrade      |
+| forcedUpdateType  | int        | forced update     |
+
+## 5.4 Satrt OTA<Android partial support>
+
+The firmware upgrade is divided into four upgrade methods.The calling method is as follows:
+
+Note: There is no first and second upgrade methods on the ios side.
+
+```dart
+_blePlugin.startOTA(OtaBean info);
+```
+
+Parameter Description :
+
+OtaBean:
+
+| value   | value type | value description                                            |
+| :------ | :--------- | :----------------------------------------------------------- |
+| address | int        | The mac address of the device                                |
+| type    | int        | The type of firmware upgrade method obtained by the mcu obtained according to the firmware version of the device,the value is OTAMcuType |
+
+OTAMcuType:
+
+| type | value | value description         |
+| :-------- | :---- | :------------------------ |
+| startHsOta  | 1     | The first way to upgrade  |
+| startRtkOta | 2     | The second way to upgrade |
+| startOta  | 3     | The third way to upgrade  |
+| startDefaultOta   | 4     | The four way to upgrade   |
 
 the upgrade method is determined according to the mcu value in the firmware version information of the current watch.
 
 The mcu value of the firmware version is obtained by the checkFirmwareVersion method.
 
-  ```
-  switch (mcu) {
-        case 4:
-        case 8:
-        case 9:
-          oTAType = "OTA_FIRST";
-          String hsDfuAddress = await _blePlugin.queryHsDfuAddress;
-          await _blePlugin.hsStartOTA(hsDfuAddress);
-          break;
-        case 7:
-        case 11:
-        case 71:
-        case 72:
-          oTAType = "OTA_SECOND";
-          await _blePlugin.rtStartOTA(address);
-          break;
-        case 10:
-          oTAType = "OTA_THIRD";
-          await _blePlugin.startOTA(true);
-          break;
+```dart
+switch (mcu) {
+  case 4:
+  case 8:
+  case 9:
+    oTAType = OTAMcuType.startHsOta;
+        ///The first way to upgrade,<Only android support>
+    await _blePlugin
+        .startOTA(OtaBean(address: address, type: OTAMcuType.startHsOta));
+    break;
+  case 7:
+  case 11:
+  case 71:
+  case 72:
+    oTAType = OTAMcuType.startRtkOta;
+        ///The second way to upgrade,<Only android support>
+    await _blePlugin
+        .startOTA(OtaBean(address: address, type: OTAMcuType.startRtkOta));
+    break;
+  case 10:
+    oTAType = OTAMcuType.startOta;
+        ///The third way to upgrade
+    await _blePlugin
+        .startOTA(OtaBean(address: address, type: OTAMcuType.startOta));
+    break;
+  default:
+    oTAType = OTAMcuType.startDefaultOta;
+        ///The four way to upgrade
+    await _blePlugin
+        .startOTA(OtaBean(address: address, type: OTAMcuType.startDefaultOta));
+    break;
+}
+```
+
+Note: When it is the first upgrade method, the address uses the mac address in the OTA upgrade mode obtained through _blePlugin.queryDeviceOtaStatus;
+
+## 5.5 Abort OTA<Android partial support>
+
+Firmware abort is divided into three methods. Among them, the third upgrade method and the fourth upgrade method share a suspension method
+
+Abort the firmware upgrade by the upgrade type obtained when the firmware version was upgraded.
+
+Note: The ios side does not support the first and second upgrade methods, that is, the OTAMcuType parameter does not support the values of startHsOta and startRtkOta.
+
+```dart
+_blePlugin.abortOTA(OTAMcuType);
+```
+
+## 5.6 Watch OTA status<Android partial support>
+
+```dart
+int deviceDfuStatus = await _blePlugin.queryDeviceOtaStatus;
+```
+
+## 5.7 Gets Hs OTA address
+
+Get the mac address in OTA mode.
+
+```dart
+String hsDfuAddress = await _blePlugin.queryHsOtaAddress;
+```
+
+## 5.8 Enable Hs OTA
+
+```dart
+_blePlugin.enableHsOta;
+```
+
+## 5.9 Gets Goodix OTA type
+
+```dart
+int type = await _blePlugin.queryOtaType;
+```
+
+# 6 Battery
+## 6.1 Sets Device Battery listener
+
+Sets the watch battery monitoring stream deviceBatteryEveStm to return data about the watch battery.
+
+```dart
+_blePlugin.deviceBatteryEveStm.listen(
+      (DeviceBatteryBean event) {
+    /// Do something with new state,for example:
+    setState(() {
+      switch(event.type){
+        case DeviceBatteryType.deviceBattery:
+     		  _deviceBattery = event.deviceBattery!;
+              break;
+        case DeviceBatteryType.subscribe:
+              _subscribe = event.subscribe!;
+              break;
         default:
-          oTAType = "OTA_FOUR";
-          await _blePlugin.startOTA(false);
-          break;
+              break;  
       }
-  ```
+    });
+  },
+),
+```
 
-4. **Abort upgrade**
-
-Firmware abort is divided into three methods.
-
-  ```dart
-  ///First Termination Method
-  _platform.hsAbortOTA();
-  ///Second abort method
-  _platform.rtAbortOTA();
-  ///Third abort method
-  _platform.abortOTA();
-  ```
-
-The abort method is determined according to the oTAType saved when the current watch firmware version is upgraded.
-
-  ```
-  switch (oTAType) {
-        case "OTA_FIRST":
-          await _blePlugin.hsAbortOTA();
-          break;
-        case "OTA_SECOND":
-          await _blePlugin.rtAbortOTA();
-          break;
-        default:
-          await _blePlugin.abortOTA();
-          break;
-     }
-  ```
-
-5. **Watch DFU status**
-
-  ```dart
-  int deviceDfuStatus = await _platform.queryDeviceDfuStatus();
-  ```
-
-6. **Query Hs dfu address**
-
-  ```dart
-  String hsDfuAddress = await _platform.queryHsDfuAddress();
-  ```
-
-7. **Enable Hs Dfu**
-
-  ```dart
-  _platform.enableHsDfu();
-  ```
-
-8. **Query Goodix dfu type**
-
-  ```dart
-  int type = await _platform.queryDfuType();
-  ```
-
-
-### 2.6 Battery
-
-1. **Set Device Battery**
-
-Set the watch battery monitoring stream connDeviceBatteryEveStm to return data about the watch battery.
-
-  ```dart
-  _blePlugin.deviceBatteryEveStm.listen(
-          (DeviceBatteryBean event) {
-            // Do something with new state
-          });
-  ```
-
-Callback Description(event):
+Callback Description（event）:
 
 DeviceBatteryBean:
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| enable | bool | Whether the battery subscription is successful |
-| deviceBattery | int | watch battery |
+| callback value | callback value type | callback value description                                   |
+| :------------- | :------------------ | :----------------------------------------------------------- |
+| type           | int                 | Gets the type of the callback return value, where Type is the value corresponding to DeviceBatteryType |
+| subscribe      | bool                | Whether the battery subscription is successful               |
+| deviceBattery  | int                 | watch battery                                                |
 
-2. **Gets Device Battery**
+DeviceBatteryType:
+
+| type          | value | value description                                            |
+| :------------ | :---- | :----------------------------------------------------------- |
+| subscribe     | 1     | Data that represents a power subscription listening callback |
+| deviceBattery | 2     | Represents the data for the power monitor callback           |
+
+## 6.2 Gets Device Battery
 
 Gets the current battery of the watch. When the battery level of the watch exceeds 100, it means the watch is charging.
 
-The result is returned through the data stream deviceBatteryEveStmand stored in the deviceBattery field in "event"
+The result is returned through the data stream deviceBatteryEveStm and stored in the deviceBattery field in "event".
 
-  ```dart
-  _blePlugin.queryDeviceBattery();
-  ```
+```dart
+_blePlugin.queryDeviceBattery;
+```
 
-3. **Subscription battery**
+## 6.3 Subscription battery
 
-When the battery of the watch changes, the result is returned through the data stream deviceBatteryEveStmand saved in the subscribe field in "event".
+When the battery of the watch changes, the result is returned through the data stream deviceBatteryEveStm and saved in the subscribe field in "event".
 
-  ```
-  _blePlugin.subscribeDeviceBattery();
-  ```
+```dart
+_blePlugin.subscribeDeviceBattery;
+```
 
+# 7 UserInfo
+## 7.1 Sets UserInfo
 
-### 2.7 User Info
+Sets the user's personal information to the watch.
 
-1. **sendUserInfo**
-
-Set the user's personal information to the watch.
-
-  ```
-  _blePlugin.sendUserInfo(UserBean info);
-  ```
+```dart
+_blePlugin.sendUserInfo(UserBean info);
+```
 
 Parameter Description :
 
 UserBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| weight | int | Weight (used to calculate calories) |
-| height | int | Height (used to calculate the distance of the activity) |
-| gender | int | Gender (used to measure blood pressure or blood oxygen) |
-| age | int | Age (for measuring blood pressure or blood oxygen) |
+| value  | value type | value description                                       |
+| :----- | :--------- | :------------------------------------------------------ |
+| weight | int        | Weight (used to calculate calories)                     |
+| height | int        | Height (used to calculate the distance of the activity) |
+| gender | int        | Gender (used to measure blood pressure or blood oxygen) |
+| age    | int        | Age (for measuring blood pressure or blood oxygen)      |
 
-2. **Sets step length**
+## 7.2 Sets step length
 
-In the watch firmware 1.6.6 and above, you can set the step length to the watch to calculate the activity data more accurately
+In the watch firmware 1.6.6 and above, you can set the step length to the watch to calculate the activity data more accurately.
 
-  ```dart
-  _blePlugin.sendStepLength(int stepLength);
-  ```
+The parameter stepLength represents the distance between each step, in centimeters.
+
+```dart
+_blePlugin.sendStepLength(int stepLength);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| stepLength | int | Distance between each step, in centimeters. |
+| value      | value type | value description                           |
+| :--------- | :--------- | :------------------------------------------ |
+| stepLength | int        | Distance between each step, in centimeters. |
 
+# 8 Weather
 
-### 2.8 Weather
-
-1. **Weather listener**
+## **8.1 Sets weather listener**
 
 The watch can save real-time weather for 2 hours, and the weather information will be cleared after 2 hours. When the watch does not have today's weather information, the watch will reset the weather when it switches to the weather interface.
 
-Set up a weather listener weatherChangeEveStm, and the update result of the weather state is returned through the data stream and saved in the "event".
+Sets the weather to monitor weatherChangeEveStm, return the update result of the weather status through the data stream, and return it as a WeatherChangeBean object.
 
-  ```dart
-  _blePlugin.weatherChangeEveStm.listen(
-          (int event) {
-             // Do something with new state
+```dart
+ _blePlugin.weatherChangeEveStm.listen(
+        (WeatherChangeBean event) {
+          /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case WeatherChangeType.updateWeather:
+                break;
+              case WeatherChangeType.tempUnitChange:
+                _weather = event.tempUnit!;
+                break;
+              default:
+                break;
+            }
           });
-  ```
+        });
+```
 
-2. **Today's weather**
+Callback Description（event） :
 
-Set the watch's weather for today
+WeatherChangeBean:
 
-  ```
-  _blePlugin.sendTodayWeather(TodayWeatherBean info);
-  ```
+| callback value | callback value type | callback value description                                   |
+| :------------- | :------------------ | :----------------------------------------------------------- |
+| type           | int                 | Weather change return value type, the type is WeatherChangeType |
+| tempUnit       | int                 | Temperature unit                                             |
+
+WeatherChangeType:
+
+| value          | value type | value description                                            |
+| :------------- | :--------- | :----------------------------------------------------------- |
+| updateWeather  | 1          | Represents the data returned by the weather change monitor   |
+| tempUnitChange | 2          | Represents the data returned by the temperature change monitor |
+
+## 8.2 Sets today's weather
+
+Set the watch's weather for today.
+
+```dart
+_blePlugin.sendTodayWeather(TodayWeatherBean info);
+```
 
 Parameter Description :
 
 TodayWeatherBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| city | String | City |
-| lunar | String | Lunar Festival (not necessary) |
-| festival | String | festival(not necessary) |
-| pm25 | int | PM2.5 |
-| temp | int | Real-time temperature |
-| weatherId | int | Weather status,Parameter source WeatherId |
+| value     | value type | value description                         |
+| :-------- | :--------- | :---------------------------------------- |
+| city      | String     | City                                      |
+| lunar     | String     | Lunar Festival (not necessary)            |
+| festival  | String     | festival(not necessary)                   |
+| pm25      | int        | PM2.5                                     |
+| temp      | int        | Real-time temperature                     |
+| weatherId | int        | Weather status,Parameter source WeatherId |
 
 WeatherId：
 
-| value | value type | value description |
-  | --- | --- | --- |
-| CLOUDY | partly cloudy | 0   |
-| FOGGY | fog | 1   |
-| OVERCAST | overcast | 2   |
-| RAINY | rainy | 3   |
-| SNOWY | snowy | 4   |
-| SUNNY | sunny | 5   |
-| SANDSTORM | sandstorm | 6   |
-| HAZE | haze | 7   |
+|   type    | value | value description |
+| :-------: | :---- | :---------------: |
+|  cloudy   | 0     |   partly cloudy   |
+|   foggy   | 1     |        fog        |
+| overcast  | 2     |     overcast      |
+|   rainy   | 3     |       rainy       |
+|   snowy   | 4     |       snowy       |
+|   sunny   | 5     |       sunny       |
+| sandstorm | 6     |     sandstorm     |
+|   haze    | 7     |       haze        |
 
-3. **Weather in the next 7 days**
+## 8.3 Sets weather in the next 7 days
 
 Sets the weather for the next 7 days to the watch.
 
-  ```dart
-  _blePlugin.sendFutureWeather(FutureWeatherListBean info);
-  ```
-
+```
+_blePlugin.sendFutureWeather(FutureWeatherListBean info);
+```
 
 Parameter Description :
 
 FutureWeatherListBean:
 
-| value | value type | value description |
-| --- | --- | --- |
-| future | List<FutureWeatherBean> | future weather |
+| value  | value type              | value description |
+| :----- | :---------------------- | :---------------- |
+| future | List<FutureWeatherBean> | future weather    |
 
 FutureWeatherBean:
 
-| value | value type | value description |
-| --- | --- | --- |
-| weatherId | int | weather Id |
-| lowTemperature | int | lowest temperature |
-| highTemperature | int | maximum temperature |
+| value           | value type |  value description  |
+| --------------- | :--------- | :-----------------: |
+| weatherId       | int        |     weather Id      |
+| lowTemperature  | int        | lowest temperature  |
+| highTemperature | int        | maximum temperature |
 
-### 2.9 Steps
+# 9 Steps
 
-1. **Sets steps listeners**
+## 9.1 Sets steps listener
 
-Set a step change listener connStepChangeEveStm, the result is returned through the data stream, and saved in "event" as the EventConnStepChange object.
+Sets the steps change listener stepsChangeEveStm, and the result is saved in the "event" through the data stream return, which is returned as a StepsChangeBean object.
 
-  ```dart
-  _blePlugin.stepsChangeEveStm.listen(
-          (StepChangeBean event) {
-              // Do something with new state
-    });
-  ```
+```dart
+_blePlugin.stepsChangeEveStm.listen(
+        (StepsChangeBean event) {
+            /// Do something with new state
+  });
+```
 
-Callback Description(event):
+Callback Description（event）:
 
-StepChangeBean：
-
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| stepInfo | CRPStepInfo | Current step information |
-| past | int | days |
-| pastStepInfo | CRPStepInfo | Past step information |
-
-CRPStepInfo:
+StepsChangeBean：
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| steps | int | steps |
-| distance | int | Distance (in meters) |
-| calories | int | Calories (units of kilocalories) |
-| time | int | Activity duration, (the default value is 0, which means the watch does not support) |
+| :------------- | :------------------ | :------------------------- |
+| stepInfo       | StepsChange         | steps information          |
+| timeType       | int                 | days,from StepsTimeType    |
 
-2. **Today's steps**
+StepsChange:
 
-Query today's step count data. The query result will be obtained through the stepsChangeEveStm listening stream and saved in the StepChangeBean.stepInfo field.
+| value    | value type | value description                                            |
+| :------- | :--------- | :----------------------------------------------------------- |
+| steps    | int        | steps                                                        |
+| distance | int        | Distance (in meters)                                         |
+| calories | int        | Calories (units of kilocalories)                             |
+| time     | int        | Activity duration, (the default value is 0, which means the watch does not support) |
 
-  ```
-  _platform.syncSteps;
-  ```
+StepsTimeType:
 
-3. **Historical steps**
+| value                   | value type | value description          |
+| :---------------------- | :--------- | :------------------------- |
+| todaySteps              | 1          | today steps                |
+| yesterdaySteps          | 2          | yesterday steps            |
+| dayBeforeYesterdaySteps | 3          | day before yesterday steps |
+
+## 9.2 Gets today's steps
+
+Get today's step count data. The query result will be obtained through the stepsChangeEveStm monitoring stream, and the type is todaySteps.
+
+```dart
+_blePlugin.querySteps;
+```
+
+## 9.3 Gets historical steps
 
 The watch can save the number of activity steps in the past three days, and can query the number of activity steps in a certain day.
 
-Query the activity steps data in a certain day. The query result will be obtained through the connTrainingEveStm listening stream and saved in the trainingInfo.past field and trainingInfo.pastStepInfo field.
+Gets the activity steps data in a certain day. The query result will be obtained through the stepsChangeEveStm listening stream, and the type is yesterdaySteps or dayBeforeYesterdaySteps.
 
-  ```
-  _platform.syncHistorySteps(PastTimeType);
-  ```
+```dart
+_blePlugin.queryHistorySteps(HistoryTimeType);
+```
 
 Parameter Description :
 
-PastTimeType:
+HistoryTimeType:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| YESTERDAY_STEPS | int | 1   |
-| DAY_BEFORE_YESTERDAY_STEPS | int | 2   |
-| YESTERDAY_SLEEP | int | 3   |
-| DAY_BEFORE_YESTERDAY_SLEEP | int | 4   |
+Use yesterdaySteps and dayBeforeYesterdaySteps parameters.
 
-4. **Step statistics listener**
+| value                   | value type | value description |
+| :---------------------- | :--------- | :---------------- |
+| yesterdaySteps          | int        | 1                 |
+| dayBeforeYesterdaySteps | int        | 2                 |
+| yesterdaySleep          | int        | 3                 |
+| dayBeforeYesterdaySleep | int        | 4                 |
 
-Set a step category listener stepsCategoryEveStm, and the result is returned through the data stream and saved in the "event" as the StepsCategoryBean object.
+## 9.4 Sets steps Detail listener
 
-  ```dart
-  _blePlugin.stepsCategoryEveStm.listen(
-          (StepsCategoryBean event) {
-      /// Do something with new state
-    });
-  ```
+Set a step detail listener stepsDetailEveStm, and the result is saved in the "event" through the data stream return, which is returned as a StepsDetailBean object.
 
-Callback Description(event):
+```dart
+ _blePlugin.stepsDetailEveStm.listen(
+     /// Do something with new state，for example:
+        (StepsDetailBean event) {
+          if (!mounted) return;
+          setState(() {
+            switch (event.type) {
+              case StepsDetailType.stepsCategoryChange:
+                stepsCategoryInfo = event.stepsCategoryInfo!;
+                break;
+              case StepsDetailType.actionDetailsChange:
+                actionDetailsInfo = event.actionDetailsInfo!;
+                break;
+              default:
+                break;
+            }
+          });
+        },
+      ),
+```
+
+Callback Description（event）:
+
+StepsDetailBean：
+
+| callback value    | callback value type | callback value description                                   |
+| :---------------- | :------------------ | :----------------------------------------------------------- |
+| type              | int                 | Weather change return value type, the type is StepsDetailType |
+| stepsCategoryInfo | StepsCategoryBean   | The last two and a half hours                                |
+| actionDetailsInfo | ActionDetailsBean   | Data on the number of steps taken throughout the day         |
+
+Parameter Description :
+
+StepsDetailType:
+
+| type                | value | value description                                            |
+| ------------------- | ----- | ------------------------------------------------------------ |
+| stepsCategoryChange | 1     | Obtain the callbacks of the half-hour statistics of the last two days |
+| actionDetailsChange | 2     | Gets the callback of the all-day step statistics             |
 
 StepsCategoryBean：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| dateType | int |     |
-| timeInterval | int |     |
-| stepsList | List<Integer> |     |
+| value        | value type |
+| ------------ | ---------- |
+| historyDay   | String     |
+| timeInterval | int        |
+| stepsList    | List<int>  |
 
-5. **Get step statistics**
+ActionDetailsBean:
+
+| value        | value type |
+| ------------ | ---------- |
+| historyDay   | String     |
+| stepsList    | List<int>  |
+| distanceList | List<int>  |
+| caloriesList | List<int>  |
+
+
+
+## 9.5 Gets steps Detail
 
 Some watches support categorical statistics for the past two days.
 
-Query classification statistics for the past two days. The query result will be obtained through the stepsCategoryEveStm listening stream and saved in "event" as the StepsCategoryBean object.
+Gets classification statistics for the past two days. The query result will be obtained through the stepsDetailEveStm listening stream and saved in "event" as the StepsDetailBean object.
 
-  ```dart
-  _platform.queryStepsCategory(StepsCategoryDateType);
-  ```
+```
+_blePlugin.queryStepsDetail(StepsDetailDateType);
+```
 
 Parameter Description :
 
-StepsCategoryDateType:
+StepsDetailDateType:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| TODAY_STEPS_CATEGORY | int | 0   |
-| YESTERDAY_STEPS_CATEGORY | int | 2   |
+| type                   | value | value description        |
+| :--------------------- | :---- | :----------------------- |
+| todayStepsCategory     | 0     | today steps category     |
+| yesterdayStepsCategory | 2     | yesterday steps category |
 
+# 10 Sleep
 
-### 2.10 Sleep
+## 10.1 Sets sleep listener
 
-1. **Sleep listener**
+Sets up a sleep monitor sleepChangeEveStm, and save the returned value in "event" with the value of the SleepBean object.
 
-Set up a sleep monitor connSleepChangeEveStm, and save the returned value in "event" with the value of the ConnSleepBean object.
+```dart
+      _blePlugin.sleepChangeEveStm.listen(
+        (SleepBean event) {
+          /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case SleepType.sleepChange:
+                _totalTime = event.sleepInfo!.totalTime!;
+                _restfulTime = event.sleepInfo!.restfulTime!;
+                _lightTime = event.sleepInfo!.lightTime!;
+                _soberTime = event.sleepInfo!.soberTime!;
+                _remTime = event.sleepInfo!.remTime!;
+                break;
+              case SleepType.historySleepChange:
+                _timeType = event.historySleep!.timeType!;
+                _totalTime = event.historySleep!.sleepInfo!.totalTime!;
+                _restfulTime = event.historySleep!.sleepInfo!.restfulTime!;
+                _lightTime = event.historySleep!.sleepInfo!.lightTime!;
+                _soberTime = event.historySleep!.sleepInfo!.soberTime!;
+                _remTime = event.historySleep!.sleepInfo!.remTime!;
+                break;
+              case SleepType.goalSleepTimeChange:
+                _goalSleepTime = event.goalSleepTime!;
+                break;
+              default:
+                break;
+            }
+          });
+        },
+      ),
+```
 
-  ```dart
-  _blePlugin.sleepChangeEveStm.listen(
-          (SleepBean event) {
-       // Do something with new state
-    });
-  ```
-
-Callback Description(event):
+Callback Description（event）:
 
 SleepBean：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| sleepInfo | CRPSleepInfo | Current sleep information |
-| past | int | days |
-| pastSleepInfo | CRPSleepInfo | Past sleep information |
+| callback value | callback value type | callback value description                              |
+| :------------- | :------------------ | :------------------------------------------------------ |
+| type           | int                 | Weather change return value type, the type is SleepType |
+| sleepInfo      | SleepInfo           | Current sleep information                               |
+| historySleep   | HistorySleepBean    | Historical sleep information                            |
+| goalSleepTime  | int                 | Target sleep time                                       |
+
+SleepType:
+
+| value               | value type | value description                                      |
+| :------------------ | :--------- | :----------------------------------------------------- |
+| sleepChange         | 1          | Gets the data returned by the current sleep monitor    |
+| historySleepChange  | 2          | Gets the data returned by the historical sleep monitor |
+| goalSleepTimeChange | 3          | Get the data returned by the target sleep time         |
 
 SleepInfo：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| SLEEP_STATE_REM | int | 3   |
-| SLEEP_STATE_RESTFUL | int | 2   |
-| SLEEP_STATE_LIGHT | int | 1   |
-| SLEEP_STATE_SOBER | int | 0   |
-| totalTime | int | Total sleep time |
-| restfulTime | int | restful time |
-| lightTime | int | light time |
-| soberTime | int | awake time |
-| remTime | int | rem time |
+| value       | value type | value description |
+| :---------- | :--------- | :---------------- |
+| totalTime   | int        | Total sleep time  |
+| restfulTime | int        | restful time      |
+| lightTime   | int        | light time        |
+| soberTime   | int        | awake time        |
+| remTime     | int        | rem time          |
 
-CRPSleepInfo.DetailBean:
+HistorySleepBean：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| startTime | int | start time |
-| endTime | int | end time |
-| totalTime | int | total time |
-| type | int | sleep state |
+| value     | value type | value description                                            |
+| :-------- | :--------- | :----------------------------------------------------------- |
+| timeType  | int        | days,from HistoryTimeType                                    |
+| sleepInfo | SleepInfo  | Specifies the user's historical sleep information for the date type |
 
-2. **Today's sleep**
+Parameter Description :
+
+HistoryTimeType:
+
+Use yesterdaySleep and dayBeforeYesterdaySleep parameters.
+
+| value                   | value type | value description |
+| :---------------------- | :--------- | :---------------- |
+| yesterdaySteps          | int        | 1                 |
+| dayBeforeYesterdaySteps | int        | 2                 |
+| yesterdaySleep          | int        | 3                 |
+| dayBeforeYesterdaySleep | int        | 4                 |
+
+## 10.2 Gets today's sleep
 
 The sleep clear time of the watch is 8 pm, and the sleep time recorded by the watch is from 8 pm to 10 am the next day.
 
-Query detailed data for a training. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.sleepInfo field
+Gets detailed data for a training. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.sleepInfo field.
 
-  ```dart
-  _platform.syncSleep;
-  ```
+```dart
+_blePlugin.querySleep;
+```
 
-3. **Historical sleep**
+Built-in algorithm to increase rem sleep for watches that do not support rem.
 
-The watch can save the sleep data of the past three
-days, and can query the sleep data of a certain day.
+```dart
+_blePlugin.queryRemSleep;
+```
 
-Query the sleep data of a certain day. The query result will be obtained through the connSleepChangeEveStm listening stream and saved in the ConnSleepBean.past field and the ConnSleepBean.pastSleepInfo field.
+## 10.3 Gets historical sleep
 
-  ```dart
-  _platform.syncHistorySleep(PastTimeType);
-  ```
+The watch can save the sleep data of the past three days, and can query the sleep data of a certain day.
+
+Gets the sleep data of a certain day. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.past field and the SleepBean.pastSleepInfo field.
+
+```dart
+_blePlugin.queryHistorySleep(HistoryTimeType);
+```
+
+## 10.4 Sets goal sleep time
+
+The watch sets the target sleep time in minutes.
+
+The time must be a multiple of 10, with a minimum of 10 and a maximum of 750.
+
+```dart
+_blePlugin.sendGoalSleepTime(10);
+```
+
+## 10.5 Gets gole sleep time
+
+Gets the sleep data of a certain day. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.past field and the SleepBean.goalSleepTime field.
+
+```dart
+_blePlugin.queryGoalSleepTime;
+```
+
+# 11 Unit system
+
+## 11.1 Sets the unit system
+
+The watch supports setting the time system to metric and imperial.
+
+```
+/// type see UnitSystemType
+_blePlugin.sendUnitSystem(UnitSystemType);
+```
 
 Parameter Description :
 
-PastTimeType:
+ UnitSystemType:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| YESTERDAY_STEPS | int | 1   |
-| DAY_BEFORE_YESTERDAY_STEPS | int | 2   |
-| YESTERDAY_SLEEP | int | 3   |
-| DAY_BEFORE_YESTERDAY_SLEEP | int | 4   |
+| value          | value type | value description |
+| :------------- | :--------- | :---------------- |
+| metricSystem   | byte       | 0                 |
+| imperialSystem | byte       | 1                 |
 
+## 11.2 Gets the unit system
 
-### 2.11 Unit system
+```
+int unitSystemType = await _blePlugin.queryUnitSystem;
+```
 
-1. **Sets the unit system**
-
-The watch supports setting the time system to metric and imperial
-
-  ```dart
-  /// type see CRPMetricSystemType
-  _blePlugin.sendUnitSystem(UnitSystemType);
-  ```
-
-Parameter Description :
-
-UnitSystemType:
-
-| value | value type | value description |
-  | --- | --- | --- |
-| METRIC_SYSTEM | byte | 0   |
-| IMPERIAL_SYSTEM | byte | 1   |
-
-2. **Gets the unit system**
-
-  ```dart
-  int unitSystemType = await _blePlugin.queryUnitSystem();
-  ```
-
-
-### 2.12 Quick view
-
-1. **Sets the quick view**
+# 12 Quick view
+## 12.1 Sets the quick view
 
 Turns the quick view on or off.
 
-  ```dart
-  /// quickViewState: true enable; false otherwise.
-  _blePlugin.sendQuickView(bool enable);
-  ```
+```dart
+/// quickViewState: true enable; false otherwise.
+_blePlugin.sendQuickView(bool enable);
+```
 
-2. **Gets the quick view**
+## 12.2 Gets the quick view
 
 Gets the quick view state of the device.
 
-  ```dart
-  bool quickViewState = await _blePlugin.queryQuickView();
-  ```
+```dart
+bool quickViewState = await _blePlugin.queryQuickView;
+```
 
-3. **Sets the effective time for quick view**
+## 12.3 Sets the effective time for quick view
 
-The watch supports setting the effective time period for turning the wrist and turning on the screen, and it is only valid when turning the wrist and turning on the screen within the set time period
+The watch supports setting the effective time period for turning the wrist and turning on the screen, and it is only valid when turning the wrist and turning on the screen within the set time period.
 
-  ```dart
-  _blePlugin.sendQuickViewTime(PeriodTimeBean info);
-  ```
+```dart
+_blePlugin.sendQuickViewTime(PeriodTimeBean info);
+```
 
 Parameter Description :
 
 PeriodTimeBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| endHour | int | end time hours |
-| endMinute | int | end time in minutes |
-| startHour | int | start time hours |
-| startMinute | int | start time in minutes |
+| value       | value type | value description     |
+| ----------- | ---------- | --------------------- |
+| endHour     | int        | end time hours        |
+| endMinute   | int        | end time in minutes   |
+| startHour   | int        | start time hours      |
+| startMinute | int        | start time in minutes |
 
-4. **Gets the effective time for quick view**
+## 12.4 Gets the effective time for quick view
 
-  ```dart
-  PeriodTimeResultBean info = await _blePlugin.queryQuickViewTime();
-  ```
+```dart
+PeriodTimeResultBean info = await _blePlugin.queryQuickViewTime;
+```
 
 Callback Description:
 
-PeriodTimeResultBean:
+PeriodTimeResultBean: 
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| periodTimeType | int |     |
-| periodTimeInfo | PeriodTimeInfo |     |
+| -------------- | ------------------- | -------------------------- |
+| periodTimeType | int                 | type of event              |
+| periodTimeInfo | PeriodTimeBean      | specific event             |
 
+PeriodTimeType：
 
-### 2.13 Goal steps
+| value            | value type | value description |
+| ---------------- | ---------- | ----------------- |
+| doNotDistrubType | int        | 1                 |
+| quickViewType    | int        | 2                 |
 
-1. **Sets goal steps**
+Notes：PeriodTimeResultBean is a class shared by Do not disturb and Quick View. By specifying the type of periodTimeType, it indicates that the returned periodTimeInfo belongs to the information of that function
+
+# 13 Goal steps
+## 13.1 Sets goal steps
 
 Push the user's target step number to the watch. When the number of activity steps on the day reaches the target number of steps, the watch will remind you to reach the target.
 
-  ```dart
-  _blePlugin.sendGoalSteps(int goalSteps);
-  ```
+```dart
+_blePlugin.sendGoalSteps(int goalSteps);
+```
 
-2. **Gets goal steps**
+## 13.2 Gets goal steps
 
-Gets the target number of steps set in the watch
+Gets the target number of steps set in the watch.
 
-  ```dart
-  int goalSteps = await _blePlugin.queryGoalSteps();
-  ```
+```dart
+int goalSteps = await _blePlugin.queryGoalSteps;
+```
 
-3. **Set Daily Goals**
-
-Daily goals are to set daily target values.
-
-  ```dart
-  _blePlugin.sendDailyGoals(
-      DailyGoalsInfoBean(
-          steps: 100,
-          calories： 500，
-          trainingTime: 300
-      )
-  );
-  ```
-
-DailyGoalsInfoBean:
-
-| steps | calories | trainingTime |
-  | --- | --- | --- |
-| int | int | int |
-| Target number of steps | Target calories (kilocalories) | Target exercise duration (unit: minute) |
-
-
-4. **Querying Daily Goals**
-
-  ```dart
-  DailyGoalsInfoBean dailGoalsInfo = _blePlugin.queryDailyGoals()
-  ```
-
-5. **Set workout day goals**
-
-Exercise day is to mark a day as an exercise day. You can set a separate target value. The target value of the exercise day overrides the daily target value.
-
-  ```dart
-  _blePlugin.sendTrainingDayGoals(
-      DailyGoalsInfoBean(
-          steps: 100,
-          calories： 500，
-          trainingTime: 300
-      )
-  );
-  ```
-
-6. **Look up workout day goals**
-
-  ```dart
-  DailyGoalsInfoBean dailGoalsInfo = _blePlugin.queryTrainingDayGoals()
-  ```
-
-7. **Set up a workout Day**
-
-  ```dart
-  _blePlugin.sendTrainingDays(
-      TrainingDayInfoBean(
-          enable: false,
-          trainingDays: [0, 1, 2]
-      )
-  );
-  ```
-
-TrainingDayInfoBean:
-
-| enable | trainingDays |
-  | --- | --- |
-| boolean | int[] |
-| Enable or not | Exercise day, the same alarm clock |
-
-
-8. **Check Exercise Day**
-
-  ```dart
-  TrainingDayInfoBean trainingDay = _blePlugin.queryTrainingDay()
-  ```
-
-
-### 2.14 Watchface
-
-1. **Sets watchface index**
+# 14 Watchface
+## 14.1 Sets watchface index
 
 The watch supports a variety of different watchfaces, which can be switched freely.
 
-Send watchface type,Parameters provided by WatchFaceType
+Send watchface type,Parameters provided by WatchFaceType.
 
-  ```dart
-  /// type see CRPWatchFaceType
-  _blePlugin.sendDisplayWatchFace(WatchFaceType);
-  ```
+```
+_blePlugin.sendDisplayWatchFace(WatchFaceType);
+```
 
 WatchFaceType:
 
-| **FIRST_WATCH_FACE** | **SECOND_WATCH_FACE** | **THIRD_WATCH_FACE** |
-  | --- | --- | --- |
-| 0x01 | 0x02 | 0x03 |
+| value           | value type | value description |
+| --------------- | ---------- | ----------------- |
+| firstWatchFace  | int        | 0x01              |
+| secondWatchFace | int        | 0x02              |
+| thirdWatchFace  | int        | 0x03              |
 
-2. **Gets the watchface**
+## 14.2 Gets the watchface
 
-Gets the type that the watch face is currently using.
+Gets the watchface being displayed.
 
-  ```
-  int watchFaceType = await _blePlugin.queryDisplayWatchFace();
-  ```
+```dart
+int watchFace = await _blePlugin.queryDisplayWatchFace;
+```
 
-3. **Gets the watchface layout**
+## 14.3 Gets the watchface layout
 
-  ```dart
-  WatchFaceLayoutBean info = await _blePlugin.queryWatchFaceLayout();
-  ```
+```dart
+WatchFaceLayoutBean info = await _blePlugin.queryWatchFaceLayout;
+```
 
 Parameter Description :
 
 WatchFaceLayoutBean：
 
-| backgroundPictureMd5 | compressionType | height | textColor | thumHeight | thumWidth | timeBottomContent | timePosition | timeTopContent | width |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| The background image MD5 has a length of 32 bits. When padded with 0, the background image restores the default background. | The compression type(LZO,RGB_DEDUPLICATION,RGB_LINE, ORIGINAL) | The watch face height default 240 px. | font color(RGB) | The thum watch face width,The default is 0, which means it is not supported | The thum watch face width,The default is 0, which means it is not supported | content displayed | time position | content | The watch face width default 240 px. |
+| value                | value type | value description                                            |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| backgroundPictureMd5 | String     | The background image MD5 has a length of 32 bits. When padded with 0, the background image  restores the default background. |
+| compressionType      | String     | The compression type(LZO,RGB_DEDUPLICATION,RGB_LINE, ORIGINAL) |
+| height               | int        | The watch face height default 240 px.                        |
+| textColor            | int        | font color(RGB)                                              |
+| thumHeight           | int        | The thum watch face height,The default is 0, which means it is not supported |
+| thumWidth            | int        | The thum watch face width,The default is 0, which means it is not supported |
+| timeBottomContent    | int        | content displayed                                            |
+| timePosition         | int        | time position                                                |
+| timeTopContent       | int        | content                                                      |
+| width                | int        | The watch face width default 240 px.                         |
 
 WatchFaceLayoutType:
 
-| **WATCH_FACE_TIME_TOP** | **Time is at the top right** |
-  | --- | --- |
-| WATCH_FACE_TIME_BOTTOM | Time is at the bottom right |
-| WATCH_FACE_CONTENT_CLOSE | Do not display anything |
-| WATCH_FACE_CONTENT_DATE | Date |
-| WATCH_FACE_CONTENT_SLEEP | Sleep |
-| WATCH_FACE_CONTENT_HEART_RATE | Heart Rate |
-| WATCH_FACE_CONTENT_STEP | Steps |
+| value                     | value type | value description           |
+| ------------------------- | ---------- | --------------------------- |
+| watchFaceTimeTop          | int        | Time is at the top right    |
+| watchFaceTimeBottom       | int        | Time is at the bottom right |
+| watchFaceContentclose     | int        | Do not display anything     |
+| watchFaceContentDate      | int        | Date                        |
+| watchFaceContentSleep     | int        | Sleep                       |
+| watchFaceContentHeartRate | int        | Heart Rate                  |
+| watchFaceContentStep      | int        | Steps                       |
 
-4. **Sets the watchface layout**
+## 14.4 Sets the watchface layout
 
-  ```dart
-  _blePlugin.sendWatchFaceLayout(WatchFaceLayoutBean info);
-  ```
+```dart
+_blePlugin.sendWatchFaceLayout(WatchFaceLayoutBean info);
+```
 
-5. **Sets the watchface background**
+## **14.5 Sets watchface background Listener**Training
 
-The dial of the 1.3-inch color screen supports the replacement of the background image with a picture size of 240 * 240 px. Compressed indicates whether the picture needs to be compressed (the watch with the master control of 52840 does not support compression and is fixed to false); timeout indicates the timeout period, in seconds. The progress is called back by _blePlugin.connLazyFileTransEveStm.listen
+Sets up a watchface background transmission monitor fileTransEveStm, and save the returned value in "event" with the value of the FileTransBean object.
 
-  ```dart
-  await _blePlugin.sendWatchFaceBackground(WatchFaceBackgroundBean info);
-  ```
+```dart
+_blePlugin.fileTransEveStm.listen(
+      (FileTransBean event) {
+       /// Do something with new state,for example:
+        setState(() {
+          switch (event.type) {
+            case TransType.transStart:
+              break;
+            case TransType.transChanged:
+              _progress = event.progress!;
+              break;
+            case TransType.transCompleted:
+              break;
+            case TransType.error:
+              _error = event.error!;
+              break;
+            default:
+              break;
+          }
+        });
+      },
+    );
+```
+
+Callback Description（event）:
+
+FileTransBean：
+
+| callback value | callback value type | callback value description                                  |
+| -------------- | ------------------- | ----------------------------------------------------------- |
+| type           | int                 | Weather change return value type, the type is TransType     |
+| isError        | bool                | Determine whether the dial background transmission is wrong |
+| progress       | int                 | Dial background transfer progress                           |
+
+TransType：
+
+| type           | value | value description                                            |
+| -------------- | ----- | ------------------------------------------------------------ |
+| transStart     | 1     | Indicates that the dial background is obtained and the data returned by the monitor is transmitted |
+| transChanged   | 2     | Retrieves the data returned by the dial background transmission monitor |
+| transCompleted | 3     | It means to obtain the data returned by monitoring the dial background after transmission |
+| error          | 4     | Indicates dial background transmission error listening for returned data |
+
+## 14.6 Sets the watchface background
+
+The dial of the 1.3-inch color screen supports the replacement of the background image with a picture size of 240 * 240 px. Compressed indicates whether the picture needs to be compressed (the watch with the master control of 52840 does not support compression and is fixed to false); timeout indicates the timeout period, in seconds. The progress is called back by _blePlugin.fileTransEveStm.listen.
+
+```dart
+_blePlugin.sendWatchFaceBackground(WatchFaceBackgroundBean info);
+```
 
 
 Parameter Description :
 
 WatchFaceBackgroundBean:
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| bitmap | Uint8List | The bitmap of background image |
-| thumbBitmap | Uint8List | The bitmap of thumbnail |
-| type | String | WatchFaceLayoutBean.WatchFaceLayoutType |
-| thumbWidth | int | width of thumbBitmap |
-| thumbHeight | int | height of thumbBitmap |
-| width | int | width of bitmap |
-| height | int | height of bitmap |
+| callback value | callback value type | callback value description              |
+| -------------- | ------------------- | --------------------------------------- |
+| bitmap         | Uint8List           | The bitmap of background image          |
+| thumbBitmap    | Uint8List           | The bitmap of thumbnail                 |
+| type           | String              | WatchFaceLayoutBean.WatchFaceLayoutType |
+| thumbWidth     | int                 | width of thumbBitmap                    |
+| thumbHeight    | int                 | height of thumbBitmap                   |
+| width          | int                 | width of bitmap                         |
+| height         | int                 | height of bitmap                        |
 
-6. **Interrupt dial background image transmission**
-   The transmission of dial background image is interrupted during transmission.
-
-  ```dart
-  await _blePlugin.abortWatchFaceBackground
-  ```
-
-7. **Watchface background Listener**
-
-
-Monitor the process of sending the dial background.
-
-```dart
-var lazyFileTransEveStm = _blePlugin.lazyFileTransEveStm.listen(
-          (WatchFaceBgProgressBean event) {
-        /// Do something with new state
-      },
-    );
-    lazyFileTransEveStm.onError((error) {
-      print(error.toString());
-    });
-```
-
-Callback Description:
-
-WatchFaceBgProgressBean:
-
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| isError | bool | Is it wrong |
-| progress | int | transfer progress |
-
-8. **Get support watchface type**
+## 14.7 Gets support watchface type
 
 When the watch switches dials, it needs to query the type supported by the dial.
 
 ```dart
-SupportWatchFaceBean info = await _blePlugin.querySupportWatchFace();
+SupportWatchFaceBean info = await _blePlugin.querySupportWatchFace;
 ```
 
-Return value description：
+callback description：
 
 SupportWatchFaceBean:
 
-| displayWatchFace | supportWatchFaceList |
-| --- | --- |
+| displayWatchFace                    | supportWatchFaceList |
+| ----------------------------------- | -------------------- |
 | The currently displayed dial number | Types of watch faces |
 
-9. **Gets the watchface store**
+## 14.8 Gets the watchface store
 
-According to the watchface type supported by the watch, obtain a list of watchfaces that the watch can be replaced.
+According to the watchface type supported by the watch, obtain a list of watchfaces that the watch can be replaced. 
 
 Gets the list of available watch faces by way of paging query.
 
@@ -970,2075 +1134,2413 @@ List<WatchFaceBean> listInfo= await _blePlugin.queryWatchFaceStore(WatchFaceStor
 
 WatchFaceStoreBean :
 
-| watchFaceSupportList | firmwareVersion | pageCount | pageIndex |
-| --- | --- | --- | --- |
-| watchface support type | Dial firmware version number | Number of watch faces per page | current page number |
-| parameters are obtained by the _blePlugin.querySupportWatchFace |     |     |     |
+| value                | value type | value description              |
+| -------------------- | ---------- | ------------------------------ |
+| watchFaceSupportList | List<int>  | watchface support type         |
+| firmwareVersion      | String     | Dial firmware version number   |
+| pageCount            | int        | Number of watch faces per page |
+| pageIndex            | int        | current page number            |
 
-10. **Get the watchface information of the watchface ID**
+Precautions:
 
-  ```dart
-  WatchFaceIdBean info = await _blePlugin.queryWatchFaceOfID(id);
-  ```
+watchFaceSupportList:parameters are obtained by the _blePlugin.querySupportWatchFace.
 
+firmwareVersion:Get the firmware version number through _blePlugin.queryFirmwareVersion.
+
+## 14.9 Gets the watchface information of the watchface ID
+
+```dart
+WatchFaceIdBean info = await _blePlugin.queryWatchFaceOfID(id);
+```
 
 Parameter Description :
 
 WatchFaceIdBean:
 
-| value | value type | value description |
-| --- | --- | --- |
-| id  | int | The information of the dial is obtained by the id of the dial, and the parameters are obtained by the _blePlugin.queryDisplayWatchFace |
+| value | value type | value description                                            |
+| ----- | ---------- | ------------------------------------------------------------ |
+| id    | int        | The information of the dial is obtained by the id of the dial, and the parameters are obtained by the _blePlugin.queryDisplayWatchFace |
 
-Return value description：
+callback description：
 
 WatchFaceIdBean:
 
 | callback value | callback value type | callback value description |
-| --- | --- | --- |
-| watchFace | WatchFace | watch face file |
-| error | String | error message |
-| code | int | return code |
+| -------------- | ------------------- | -------------------------- |
+| watchFace      | WatchFace           | watch face file            |
+| error          | String              | error message              |
+| code           | int                 | return code                |
 
 WatchFace:
 
-| id  | preview | file |
-| --- | --- | --- |
-| file id | Watchface Image preview link | Watchface file download link |
+| value   | value type | value description             |
+| ------- | ---------- | ----------------------------- |
+| id      | int        | file id                       |
+| preview | String     | Watchface  Image preview link |
+| file    | String     | Watchface file download link  |
 
-11. **Sending a watchface file**
+## 14.10 Sets watchface file listener
 
-Send the watchface file of the new watchface to the watch, during which the watch will restart.
-
-````
 ```dart
-_blePlugin.sendWatchFace(CustomizeWatchFaceBean,timeout);
+      _blePlugin.wfFileTransEveStm.listen(
+        (FileTransBean event) {
+          /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case TransType.transStart:
+                break;
+              case TransType.transChanged:
+                _progress = event.progress!;
+                break;
+              case TransType.transCompleted:
+                _progress = event.progress!;
+                break;
+              case TransType.error:
+                _error = event.error!;
+                break;
+              default:
+                break;
+            }
+          });
+        },
+      ),
 ```
-````
+
+Callback Description（event）:
+
+FileTransBean：
+
+| callback value | callback value type | callback value description                              |
+| -------------- | ------------------- | ------------------------------------------------------- |
+| type           | int                 | Weather change return value type, the type is TransType |
+| isError        | bool                | Check whether the dial file transfer is incorrect       |
+| progress       | int                 | Dial file transfer progress                             |
+
+TransType：
+
+| type           | value | value description                                            |
+| -------------- | ----- | ------------------------------------------------------------ |
+| transStart     | 1     | Retrieves the dial file and begins transmitting the data returned by the listener |
+| transChanged   | 2     | Retrieves the data returned by the dial file transfer listener |
+| transCompleted | 3     | Indicates that the data returned after the dial file transfer is completed |
+| error          | 4     | Indicates a dial file transfer error listening for returned data |
+
+## 14.11 Sets a watchface file
+
+Send the watchface file of the new watchface to the watch, during which the watch will restart. 
+
+```dart
+_blePlugin.sendWatchFace(SendWatchFaceBean bean);
+```
 
 Parameter Description :
 
+SendWatchFaceBean:
+
+| value                | value type             | value description                |
+| -------------------- | ---------------------- | -------------------------------- |
+| watchFaceFlutterBean | CustomizeWatchFaceBean | Dial file information            |
+| timeout              | int                    | The dial file transfer timed out |
+
 CustomizeWatchFaceBean:
 
-| value | value type | value description |
-| --- | --- | --- |
-| index | int | file id |
-| file | String | The address where the watch face file is stored |
+| value | value type | value description                               |
+| ----- | ---------- | ----------------------------------------------- |
+| index | int        | file id                                         |
+| file  | String     | The address where the watch face file is stored |
 
-12. **Stop sending the dial file**
-
-  ```dart
-  _blePlugin.abortWatchFace
-  ```
-
-13. **Remove the dial**
-
-This watch support delete dial, delete the result through CRPWatchFaceDeleteCallback callback.
-
-  ```dart
-  _blePlugin.deleteWatchFace(int id)
-  ```
-
-14. **Example Query the available storage space of a watch**
-
-Check the available storage space of Seche watch to determine whether the watch can be downloaded a new watch face. Through CRPAvailableStorageCallback. OnAvailableSize () callback.
-
-  ```dart
-  _blePlugin.queryAvailableStorage
-  ```
-
-
-### 2.15 Alarm
-
-1. **Sets alarm**
+# 15 Alarm
+## 15.1 Sets alarm
 
 The watch supports three alarm clocks, and the alarm clock information can be set according to the alarm clock serial number. Single alarm clock supports setting date.
 
-  ```dart
-  _blePlugin.sendAlarm(AlarmClockBean info);
-  ```
+```dart
+_blePlugin.sendAlarm(AlarmClockBean info);
+```
 
 Parameter Description :
 
 AlarmClockBean:
 
-| id  | hour | minute | repeatMode | enable |
-  | --- | --- | --- | --- | --- |
-| Alarm id | hour (24-hour format) | minute | Repeat mode | enable |
+| value      | value type | value description     |
+| ---------- | ---------- | --------------------- |
+| id         | int        | AlarmId               |
+| hour       | int        | hour (24-hour format) |
+| minute     | int        | minute                |
+| repeatMode | int        | from RepeatMode       |
+| enable     | bool       | enable                |
 
-Alarm id：
+AlarmId：
 
-| FIRST_CLOCK | **SECOND_CLOCK** | THIRD_CLOCK |
-  | --- | --- | --- |
+| firstClock        | **secondClock**    | thirdClock        |
+| ----------------- | ------------------ | ----------------- |
 | First alarm clock | Second alarm clock | Third alarm clock |
 
-Repeat mode：
+RepeatMode：
 
-| SINGLE | SUNDAY | MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | EVERYDAY |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| single                    | sunday           | monday           | tuesday           | wednesday           | thursday           | friday           | saturday           | everyday |
+| ------------------------- | ---------------- | ---------------- | ----------------- | ------------------- | ------------------ | ---------------- | ------------------ | -------- |
 | Single, only valid today. | Repeat on Sunday | Repeat on Monday | Repeat on Tuesday | Repeat on Wednesday | Repeat on Thursday | Repeat on Friday | Repeat on Saturday | Everyday |
 
-2. **Gets all alarm**
+## 15.2 Gets all alarm
 
 Gets all alarm clock information saved by the watch.
 
-  ```dart
-  List<AlarmClockBean> listInfo = await _blePlugin.queryAllAlarm();
-  ```
+```dart
+List<AlarmClockBean> listInfo = await _blePlugin.queryAllAlarm;
+```
 
-3. **Setting an Alarm (New version)**
+# 16 Language
 
-The alarm number cannot exceed the maximum number (8).
+## 16.1 Sets the watch language
 
-  ```dart
-  _blePlugin.sendNewAlarm(AlarmClockBean(
-                    enable: true,
-                    hour: 1,
-                    id: AlarmClockBean.firstClock,
-                    minute: 0,
-                    repeatMode: AlarmClockBean.everyday))
-  ```
+Sets the language of the watch. When setting the language, the language version will be set. Simplified Chinese is set to the Chinese version, and non-simplified Chinese is set to the international version.
 
-4. **Deleting an Alarm Clock (New version)**
-
-  ```dart
-  _blePlugin.deleteNewAlarm(int id)
-  ```
-
-5. **Delete all alarms (new version)**
-
-  ```dart
-  _blePlugin.deleteAllNewAlarm
-  ```
-
-6. **Querying All Alarms (new version)**
-
-  ```dart
-  List<AlarmClockBean> list = _blePlugin.queryAllNewAlarm
-  ```
-
-
-### 2.16 Language
-
-1. **Sets the watch language**
-
-Set the language of the watch. When setting the language, the language version will be set. Simplified Chinese is set to the Chinese version, and non-simplified Chinese is set to the international version.
-
-  ```dart
-  _blePlugin.sendDeviceLanguage(DeviceLanguageType);
-  ```
+```dart
+_blePlugin.sendDeviceLanguage(DeviceLanguageType);
+```
 
 Parameter Description :
 
 DeviceLanguageType:
 
-| LANGUAGE_ENGLISH | LANGUAGE_CHINESE | LANGUAGE_JAPANESE | LANGUAGE_KOREAN | LANGUAGE_GERMAN | LANGUAGE_FRENCH | LANGUAGE_SPANISH | LANGUAGE_ARABIC | LANGUAGE_RUSSIAN | LANGUAGE_TRADITIONAL |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| English | Chinese Simplified | Japanese | Korean | German | French | Spanish | Arabic | Russian | traditional Chinese |
+| value                  | value type | value description   |
+| ---------------------- | ---------- | ------------------- |
+| languageEnglish        | int        | English             |
+| languageChinese        | int        | Chinese Simplified  |
+| languageJapanese       | int        | Japanese            |
+| languageKorean         | int        | Korean              |
+| languageGerman         | int        | German              |
+| languageFrensh         | int        | French              |
+| languageSpanish        | int        | Spanish             |
+| languageArabic         | int        | Arabic              |
+| languageRussian        | int        | Russian             |
+| languageTraditional    | int        | traditional Chinese |
+| languageUkrainian      | int        | Ukrainian           |
+| languageItalian        | int        | Italian             |
+| languagePortuguese     | int        | Portuguese          |
+| languageDutch          | int        | Dutch               |
+| languagePolish         | int        | Polish              |
+| languageSwedish        | int        | Swedish             |
+| languageFinnish        | int        | Finnish             |
+| languageDanish         | int        | Danish              |
+| languageNorwegian      | int        | Norwegian           |
+| languageHungarian      | int        | Hungarian           |
+| languageCzech          | int        | Czech               |
+| languageBulgarian      | int        | Bulgarian           |
+| languageRomanian       | int        | Romanian            |
+| languageSlovakLanguage | int        | Slovak Language     |
+| languageLatvian        | int        | Latvian             |
 
 Precautions: Italian and Portuguese only support watch firmware 1.7.1 and above.
 
-2. **Querying the Watch Version**
+## 16.2 Gets the watch language
 
-Check watch are using the version of the results by CRPDeviceVersionCallback. OnDeviceVersion () callback.
+Gets the language that the watch is using and the list of languages supported by the watch. 
 
-  ```dart
-  _blePlugin.queryDeviceVersion
-  ```
-
-
-3. **Gets the watch language**
-
-Gets the language that the watch is using and the list of languages supported by the watch.
-
-  ```dart
-  DeviceLanguageBean info = await _blePlugin.queryDeviceLanguage();
-  ```
-
+```dart 
+DeviceLanguageBean info = await _blePlugin.queryDeviceLanguage;
+```
 
 Callback Description:
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| languageType | List<int> | All language types |
-| type | int | current language type |
+| callback value | callback value type | callback  value description |
+| -------------- | ------------------- | --------------------------- |
+| languageType   | List<int>           | All language types          |
+| type           | int                 | current language type       |
 
-### 2.17 Notification
+# 17 Notification
 
-1. **Sets other message**
-
-Enable or disable other push notifications.
-
-  ```dart
-  _blePlugin.sendOtherMessageState(bool enable);
-  ```
-
-Parameter Description :
-
-| value | value type | value description |
-  | --- | --- | --- |
-| messageState | bool | true:enable false:disable |
-
-2. **Gets other message**
-
-Gets other message push status.
-
-  ```dart
-  bool enable = await _blePlugin.queryOtherMessageState();
-  ```
-
-3. **Send message**
+## 17.1 Sets message
 
 Send various types of message content to the watch.
 
-  ```dart
-  _blePlugin.sendMessage(MessageBean info);
-  ```
+```
+_blePlugin.sendMessage(MessageBean info);
+```
 
 Parameter Description :
 
 MessageBean:
 
-| message | type | versionCode | isHs | isSmallScreen |
-  | --- | --- | --- | --- | --- |
-| Message content | Messagetype(BleMessageType) | Firmware version (for example: MOY-AA2-1.7.6,which is 176) | Whether the MCU is HS, please confirm the MCU | Is the watch screen smaller than |
+| **value**     | value type | value description                                          |
+| ------------- | ---------- | ---------------------------------------------------------- |
+| message       | String     | Message content                                            |
+| type          | int        | Messagetype(BleMessageType)                                |
+| versionCode   | int        | Firmware version (for example: MOY-AA2-1.7.6,which is 176) |
+| isHs          | bool       | Whether the MCU is HS, please confirm the MCU              |
+| isSmallScreen | bool       | Is the watch screen smaller than                           |
 
 BleMessageType:
 
-| **MESSAGE_PHONE** | **phone** |
-  | --- | --- |
-| MESSAGE_SMS | SMS |
-| MESSAGE_WECHAT | WeChat (Chinese Edition) |
-| MESSAGE_QQ | QQ  |
-| MESSAGE_FACEBOOK | FACEBOOK |
-| MESSAGE_TWITTER | TWITTER |
-| MESSAGE_WHATSAPP | WHATSAPP |
-| MESSAGE_WECHAT_IN | WeChat (International Edition) |
-| MESSAGE_INSTAGREM | INSTAGREM |
-| MESSAGE_SKYPE | SKYPE |
-| MESSAGE_KAKAOTALK | KAKAOTALK |
-| MESSAGE_LINE | LINE |
-| MESSAGE_OTHER | Other |
+| **value**        | value type | value description              |
+| ---------------- | ---------- | ------------------------------ |
+| messagePhone     | int        | phone                          |
+| messageSms       | int        | SMS                            |
+| messageWechat    | int        | WeChat (Chinese Edition)       |
+| messageQQ        | int        | QQ                             |
+| messageFacebook  | int        | FACEBOOK                       |
+| messageTwitter   | int        | TWITTER                        |
+| messageWhatsapp  | int        | WHATSAPP                       |
+| messageWechatIn  | int        | WeChat (International Edition) |
+| messageInstagrem | int        | INSTAGREM                      |
+| messageSkype     | int        | SKYPE                          |
+| messageKakaotalk | int        | KAKAOTALK                      |
+| messageLine      | int        | LINE                           |
+| messageOther     | int        | Other                          |
 
-
-4. **End call**
+## 17.2 End call<Only android support>
 
 When the watch receives a push of a phone type message, the watch will vibrate for a fixed time. Call this interface to stop the watch from vibrating when the watch answers the call or hangs up the call.
 
-  ```dart
-  _blePlugin.endCall();
-  ```
+```dart
+_blePlugin.endCall;
+```
 
-5. **Set Notification**
+## 17.3 Sets up other push notifications<Only ios support>
 
-Enable or disable other notifications.(Only ios support)
+Enable or disable other push notifications
 
-  ```dart
-  _blePlugin.setNotification([
-      NotificationType.facebook,
-      NotificationType.gmail,
-      NotificationType.kakao
-  ]);
-  ```
-
-NotificationType:
-
-| type | call | sms | wechat | qq  | facebook | twitter | instagram | skype | whatsApp | line |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| id  | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   |
-| support | yes | yes | yes | yes | yes | yes | yes | yes | yes | yes |
-
-| type | kakao | email | messenger | zalo | telegram | viber | nateOn | gmail | calenda | dailyHunt |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| id  | 10  | 11  | 12  | 13  | 14  | 15  | 16  | 17  | 18  | 19  |
-| support | yes | yes | yes | yes | yes | yes | yes | yes | yes | yes |
-
-| type | outlook | yahoo | inshorts | phonepe | gpay | paytm | swiggy | zomato | uber | ola |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| id  | 20  | 21  | 22  | 23  | 24  | 25  | 26  | 27  | 28  | 29  |
-| support | yes | no  | no  | no  | no  | no  | no  | no  | no  | no  |
-
-| type | reflexApp | snapchat | ytMusic | youTube | linkEdin | amazon | flipkart | netFlix | hotstar | amazonPrime |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| id  | 30  | 31  | 32  | 33  | 34  | 35  | 36  | 37  | 38  | 39  |
-| support | no  | no  | no  | no  | no  | no  | no  | no  | no  | no  |
-
-| type | googleChat | wynk | googleDrive | dunzo | gaana | missCall | whatsAppBusines | other |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| id  | 40  | 41  | 42  | 43  | 44  | 45  | 46  | 128 |
-| support | no  | no  | no  | no  | no  | yes | yes | yes |
-
-
-5. **Get Notification**
-
-Get other Notifications.(Only ios support)
-
-  ```dart
-  _blePlugin.getNotification();
-  ```
-
-6. **Set the outgoing number to listen**
-
-A watch that supports calls can make a call on the watch. The CRPCallNumberListener command is used to obtain the calling number.
-
-  ```dart
-  _blePlugin.callNumberEveStm.listen((String event) {
-      ......
-    }),
-  ```
-
-7. **Set the name of the contact to call**
-
-Only send the name of the outgoing contact. The incoming contact still uses sendMessage.
-
-  ```dart
-  _blePlugin.sendCallContactName(neme)
-  ```
-
-8. **Example Query the list of messages supported by the watch**
-
-Some watches have built-in lists of supported App messages. Through CRPMessageListCallback. OnMessageList () callback.
-
-  ```dart
-  List<int> messageType = _blePlugin.queryMessageList
-  ```
-
-
-### 2.19 Sedentary reminder
-
-1. **Sets sedentary reminder**
-
-Turn sedentary reminders on or off.
-
-  ```dart
-  _blePlugin.sendSedentaryReminder(bool enable);
-  ```
+```
+_blePlugin.setNotification(List<int> NotificationType);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| enable | bool | true:enable false:disable |
+NotificationType:
 
-2. **Gets sedentary reminder**
+| **value** | value type | value description |
+| --------- | ---------- | ----------------- |
+| phone     | int        | 0                 |
+| messages  | int        | 1                 |
+| wechat    | int        | 2                 |
+| qq        | int        | 3                 |
+| facebook  | int        | 4                 |
+| twitter   | int        | 5                 |
+| instagram | int        | 6                 |
+| skype     | int        | 7                 |
+| whatsApp  | int        | 8                 |
+| line      | int        | 9                 |
+| kakaoTalk | int        | 10                |
+| gmail     | int        | 11                |
+| messenger | int        | 12                |
+| zalo      | int        | 13                |
+| telegram  | int        | 14                |
+| viber     | int        | 15                |
 
-Query sedentary reminder status
+## 17.4 Gets other push notifications<Only ios support>
 
-  ```darrt
-  bool enable = await _blePlugin.querySedentaryReminder();
-  ```
+```dart
+List<int> NotificationType = await _blePlugin.getNotification;
+```
 
-3. **Set sedentary reminder time**
+# 18 Sedentary reminder
 
-Set the effective period of sedentary reminder.
+## 18.1 Sets sedentary reminder
 
-  ```dart
-  _blePlugin.sendSedentaryReminderPeriod(SedentaryReminderPeriodBean info);
-  ```
+Turn sedentary reminders on or off.
+
+```dart
+_blePlugin.sendSedentaryReminder(bool enable);
+```
+
+## 18.2 Gets sedentary reminder
+
+Gets sedentary reminder status.
+
+```dart
+bool enable = await _blePlugin.querySedentaryReminder;
+```
+
+## 18.3 Sets sedentary reminder time
+
+Sets the effective period of sedentary reminder.
+
+```dart
+_blePlugin.sendSedentaryReminderPeriod(SedentaryReminderPeriodBean info);
+```
 
 Parameter Description :
 
 SedentaryReminderPeriodBean:
 
-| period | steps | startHour | endHour |
-  | --- | --- | --- | --- |
-| Sedentary reminder period (unit: minute) | Maximum number of steps | Start time (24-hour clock) | End time (24-hour clock) |
+| **value** | value type | value description                        |
+| --------- | ---------- | ---------------------------------------- |
+| period    | int        | Sedentary reminder period (unit: minute) |
+| steps     | int        | Maximum number of steps                  |
+| startHour | int        | Start time (24-hour clock)               |
+| endHour   | int        | End time (24-hour clock)                 |
 
-4. **Get sedentary reminder time**
+## 18.4 Get sedentary reminder time
 
 Query the watch for sedentary reminder valid period.
 
-  ```dart
-  SedentaryReminderPeriodBean info = await _blePlugin.querySedentaryReminderPeriod()
-  ```
+```dart
+SedentaryReminderPeriodBean info = await _blePlugin.querySedentaryReminderPeriod()
+```
 
+# 19 Find the watch
 
-### 2.20 **Find the watch**
-
-````
-Find the watch, the watch will vibrate for a few seconds after receiving this command
+Find the watch, the watch will vibrate for a few seconds after receiving this command.
 
 ```dart
-_blePlugin.findDevice();
+_blePlugin.findDevice;
 ```
-````
 
-### 2.21 **Heart rate**
+# 20 Heart rate
 
-1. **Set heart rate listener**
+## 20.1 Sets heart rate listener
 
-All heart rate related data will pass the _blePlugin.connHeartRateEveStm.listen callback
+All heart rate related data will pass the _blePlugin.heartRateEveStm.listen callback.
 
-  ```dart
-   _blePlugin.heartRateEveStm.listen(
-      (event) {
-        /// Do something with new state
-      }),
-  ```
+```dart
+_blePlugin.heartRateEveStm.listen(
+        (HeartRateBean event) {
+            /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case HeartRateType.measuring:
+                _measuring = event.measuring!;
+                break;
+              case HeartRateType.onceMeasureComplete:
+                _onceMeasureComplete = event.onceMeasureComplete!;
+                break;
+              case HeartRateType.bloodOxygen:
+                _historyHrList = event.historyHrList!;
+                break;
+              case HeartRateType.measureComplete:
+                _measureComplete = event.measureComplete!;
+                break;
+              case HeartRateType.hourMeasureResult:
+                _hour24MeasureResult = event.hour24MeasureResult!;
+                break;
+              case HeartRateType.measureResult:
+                _trainingList = event.trainingList!;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+```
 
-
-Callback Description:
+Callback Description（event）:
 
 HeartRateBean：
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| measuring | int | The last dynamic heart rate measurement result |
-| onceMeasureComplete | int | Take a heart rate measurement |
-| historyHRList | List<HistoryHeartRateBean> | Historical heart rate data |
-| historyDynamicRateType | CRPHistoryDynamicRateType |     |
-| measureComplete | CRPHeartRateInfo |     |
-| hour24MeasureResult | CRPHeartRateInfo | Heart rate measurement data for today or the previous day |
-| movementList | List<MovementHeartRateBean> | Dynamic heart rate data |
+| callback value      | callback value type         | callback  value description                                  |
+| ------------------- | --------------------------- | ------------------------------------------------------------ |
+| type                | int                         | Get the corresponding return value according to type, where type is the value corresponding to HeartRateType |
+| measuring           | int                         | The last dynamic heart rate measurement result               |
+| onceMeasureComplete | int                         | Take a heart rate measurement                                |
+| historyHrList       | List<HistoryHeartRateBean>  | Historical heart rate data                                   |
+| measureComplete     | MeasureCompleteBean         | Heart rate data                                              |
+| hour24MeasureResult | HeartRateInfo               | Heart rate measurement data for today or the previous day    |
+| trainingList        | List<TrainingHeartRateBean> | Dynamic heart rate data                                      |
 
 HistoryHeartRateBean：
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| date | String | date |
-| hr  | int | heart rate |
+| callback value | callback value type | callback  value description |
+| -------------- | ------------------- | --------------------------- |
+| date           | String              | date                        |
+| hr             | int                 | heart rate                  |
 
-MovementHeartRateBean：
+MeasureCompleteBean:
 
-| type | startTime | endTime | validTime | steps | distance | calories |
-| --- | --- | --- | --- | --- | --- | --- |
-| Sport | mode | Start time (unit:milliseconds) | End time (unit:milliseconds) | Effective duration of exercise (unit: second) | Number of steps (partial motion mode is not supported) | Calories |
+| callback value         | callback value type | callback  value description          |
+| ---------------------- | ------------------- | ------------------------------------ |
+| historyDynamicRateType | String              | Heart rate type, exercise heart rate |
+| heartRate              | HeartRateInfo       | heart rate                           |
 
-Sport mode：
+HeartRateInfo:
 
-| **WALK_TYPE** | **RUN_TYPE** | **BIKING_TYPE** | **ROPE_TYPE** | **BADMINTON_TYPE** | **BASKETBALL_TYPE** | **FOOTBALL_TYPE** | **SWIM_TYPE** |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Walking | Run | bicycle | rope skipping | badminton | basketball | football | Swim |
+| callback value | callback value type | callback  value description     |
+| -------------- | ------------------- | ------------------------------- |
+| startTime      | int                 | start measure heart rate time   |
+| heartRateList  | List<int>           | heart rate list                 |
+| timeInterval   | int                 | Heart rate measurement interval |
+| heartRateType  | String              | Heart rate measurement type     |
 
-2. **Query last dynamic heart rate measurement**
+TrainingHeartRateBean：
 
-The dynamic heart rate is measured in an unconnected state and the watch can save the last measurement.
+| type          | startTime                       | endTime                       | validTime                                    | steps                                   | distance                                               | calories |
+| ------------- | ------------------------------- | ----------------------------- | -------------------------------------------- | --------------------------------------- | ------------------------------------------------------ | -------- |
+| SportModeType | Start time (unit: milliseconds) | End time (unit: milliseconds) | Effective duration of exercise(unit: second) | Number of steps (partial motion mode is | Active distance (partial motion mode is not supported) | Calories |
 
-Query the last measured heart rate record saved by the watch. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.measuring field.
+SportModeType：
 
-  ```dart
-  await _blePlugin.queryLastDynamicRate(HistoryDynamicRateType);
-  ```
+| callback value     | callback value type | callback  value description |
+| ------------------ | ------------------- | --------------------------- |
+| walkType           | int                 | Walking                     |
+| runType            | int                 | Run                         |
+| outdoorCyclingType | int                 | outdoor cycling             |
+| ropeType           | int                 | rope                        |
+| badmintonType      | int                 | badminton                   |
+| basketballType     | int                 | basketball                  |
+| footballType       | int                 | football                    |
+| swimType           | int                 | swim                        |
+| mountaineeringType | int                 | mountaineering              |
+| tennisType         | int                 | tennis                      |
+| rugbyType          | int                 | rugby                       |
+| golfType           | int                 | golf                        |
+| yogaType           | int                 | yoga                        |
+| workoutType        | int                 | workout                     |
+| danceType          | int                 | dance                       |
+| baseballType       | int                 | baseball                    |
+| ellipticalType     | int                 | elliptical                  |
+| indoorCyclingType  | int                 | indoor cycling              |
+| freeTrainingType   | int                 | free training               |
+| boatingType        | int                 | boating                     |
+| trailRunningType   | int                 | trail running               |
+| skiType            | int                 | ski                         |
+| bowlingType        | int                 | bowling                     |
+| dumbbellsType      | int                 | dumbbells                   |
+| sitUpsType         | int                 | sit ups                     |
+| onFootType         | int                 | on foot                     |
+| indoorWalkType     | int                 | indoor walk                 |
+| indoorRunType      | int                 | indoor run                  |
+| cricketType        | int                 | cricket                     |
+| kabAddiType        | int                 | kabAddi                     |
 
+HeartRateType:
 
-HistoryDynamicRateType:
+| type                | value | value description                                            |
+| ------------------- | ----- | ------------------------------------------------------------ |
+| measuring           | 1     | Gets the heart rate measurement                              |
+| onceMeasureComplete | 2     | Measuring once heart rate                                    |
+| heartRate           | 3     | Gets history once heart rate                                 |
+| measureComplete     | 4     | Data when heart rate measurement is completed                |
+| hourMeasureResult   | 5     | Gets heart rate measurement data                             |
+| measureResult       | 6     | Gets Action data,Query the saved heart rate measurements in three sports modes |
+
+## 20.2 Gets last action heart rate measurement
+
+The dynamic heart rate is measured in an unconnected state and the watch can save the last measurement. 
+
+Query the last measured heart rate record saved by the watch. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.measuring field，type is measuring.
+
+```dart
+_blePlugin.queryLastDynamicRate(HistoryDynamicRateType);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-| --- | --- | --- |
-| FIRST_HEART_RATE | String | first |
-| SECOND_HEART_RATE | String | second |
-| THIRD_HEART_RATE | String | third |
+HistoryDynamicRateType:
 
-3. **Enable timing to measure heart rate**
+| value           | value type | value description |
+| --------------- | ---------- | ----------------- |
+| firstHeartRate  | String     | first             |
+| secondHeartRate | String     | second            |
+| thirdHeartRate  | String     | third             |
+
+## 20.3 Enable timing to measure heart rate
 
 The watch supports 24-hour timed measurement of heart rate, starting from 00:00, you can set the measurement interval, the time interval is a multiple of 5 minutes.
 
-  ```dart
-  _blePlugin.enableTimingMeasureHeartRate(int interval);
-  ```
+```dart
+_blePlugin.enableTimingMeasureHeartRate(int interval);
+```
 
-4. **Disable timing to measure heart rate**
+## 20.4 Disable timing to measure heart rate
 
 Turn off the timing to measure the heart rate.
 
-  ```
-  await _blePlugin.disableTimingMeasureHeartRate();
-  ```
+```dart
+_blePlugin.disableTimingMeasureHeartRate;
+```
 
-5. **Query timing to measure heart rate status**
+## 20.5 Gets timing to measure heart rate status
 
-The query timing measures the heart rate on state,
+The query timing measures the heart rate on state.
 
-  ```dart
-  int timeHR = await _blePlugin.queryTimingMeasureHeartRate();
-  ```
+```dart
+int timeHR = await _blePlugin.queryTimingMeasureHeartRate;
+```
 
-6. **Query today's heart rate measurement data**
+## 20.6 Gets today's heart rate measurement data
 
-Today's heart rate measurement is divided into two types, which are obtained according to the measurement method supported by the corresponding watch.
+Today's heart rate measurement is divided into two types, which are obtained according to the measurement method supported by the corresponding watch. 
 
-Query today's measured heart rate value. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.hour24MeasureResult field.
+Query today's measured heart rate value. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.hour24MeasureResult field，type is hourMeasureResult.
 
-  ```dart
-  await _blePlugin.queryTodayHeartRate(TodayHeartRateType);
-  ```
-
+```dart
+_blePlugin.queryTodayHeartRate(TodayHeartRateType);
+```
 
 TodayHeartRateType：
 
-| TIMING_MEASURE_HEART_RATE | **ALL_DAY_HEART_RATE** |
-| --- | --- |
-| Timed heart rate measurement | 24-hour continuous measurement |
+| type                   | value | value description              |
+| ---------------------- | ----- | ------------------------------ |
+| timingMeasureHeartRate | 1     | Timed heart rate measurement   |
+| allDayHeartRate        | 2     | 24-hour continuous measurement |
 
-7. **Query historical heart rate data**
+## 20.7 Gets historical heart rate data
 
-Query the heart rate data of the previous day. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.hour24MeasureResult field.
+Query the heart rate data of the previous day. The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.hour24MeasureResult field，type is hourMeasureResult.
 
-  ```dart
-  await _blePlugin.queryPastHeartRate();
-  ```
+```dart
+_blePlugin.queryPastHeartRate;
+```
 
-8. **Query Action data**
+## 20.8 Gets Action data
 
 Some watchs support heart rate measurement in a variety of motion modes. The measurements include other motion-related data such as heart rate and calories. This interface is used to obtain data such as calories. The watch can save the last three sports data. Supporting 24-hour continuous measurement of the watch, the exercise heart rate can be obtained from the 24-hour heart rate data according to the movement up time; other watch exercise heart rate and dynamic heart rate acquisition methods are consistent.
 
-The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.movementList field.
+The query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.trainingList field，type is measureResult.
 
-  ```
-  await _blePlugin.queryMovementHeartRate();
-  ```
+```dart
+_blePlugin.queryTrainingHeartRate;
+```
 
-9. **Measuring once heart rate**
+## 20.9 Measuring once heart rate
 
-Start measuring a single heart rate, the query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.onceMeasureComplete field.
+Start measuring a single heart rate, the query result will be obtained through the heartRateEveStm listening stream and saved in the HeartRateBean.measureComplete field，type is onceMeasureComplete.
 
-  ```
-  await _blePlugin.startMeasureOnceHeartRate();
-  ```
+```
+_blePlugin.startMeasureOnceHeartRate;
+```
 
-10. **Stop once heart rate**
+## 20.10 Stop once heart rate
 
 End a once measurement. A measurement time that is too short will result in no measurement data.
 
-  ```
-  await _blePlugin.stopMeasureOnceHeartRate();
-  ```
+```
+_blePlugin.stopMeasureOnceHeartRate;
+```
 
-11. **Query history once heart rate**
+## 20.11 Gets history once heart rate
 
-To query the historical heart rate, the query result will be obtained through the heartRateEveStm monitoring stream and saved in the HeartRateBean.historyHRList field.
+To query the historical heart rate, the query result will be obtained through the heartRateEveStm monitoring stream and saved in the HeartRateBean.historyHrList field,type is heartRate.
 
-  ```
-  await _blePlugin.queryHistoryHeartRate();
-  ```
+```
+_blePlugin.queryHistoryHeartRate;
+```
 
+# 21 Blood pressure
 
-### **2.22 Blood pressure**
+## 21.1 Sets blood pressure listener
 
-1. **Set blood pressure listener**
+```dart
+       _blePlugin.bloodPressureEveStm.listen(
+        (BloodPressureBean event) {
+            /// Do something with new state，for example:
+          setState(() {
+            switch (event.type) {
+              case BloodPressureType.continueState:
+                _continueState = event.continueState!;
+                break;
+              case BloodPressureType.pressureChange:
+                _bean = event.pressureChange!;
+                _systolicBloodPressure = _bean!.sbp!;
+                _diastolicBloodPressure = _bean!.dbp!;
+                break;
+              case BloodPressureType.historyList:
+                _historyBpList = event.historyBpList!;
+                break;
+              case BloodPressureType.continueBP:
+                info = event.continueBp!;
+                _startTime = info!.startTime!;
+                _timeInterval = info!.timeInterval!;
+                break;
+              default:
+                break;
+            }
+          });
+        }),
+```
 
-  ```dart
-   _blePlugin.bloodPressureEveStm.listen(
-          (event) {
-      // Do something with new state
-    });
-  ```
-
-Callback Description(event):
+Callback Description（event）:
 
 BloodPressureBean：
 
+| callback value | callback value type            | callback value description                                   |
+| -------------- | ------------------------------ | ------------------------------------------------------------ |
+| type           | int                            | Get the corresponding return value according to type, where type is the value corresponding to BloodPressureType |
+| continueState  | bool                           | Continue to display blood pressure status                    |
+| pressureChange | BloodPressureChangeBean        | Obtain the current diastolic and systolic blood pressure     |
+| historyBPList  | List<HistoryBloodPressureBean> | historical blood pressure                                    |
+| continueBP     | BloodPressureInfo              | 24 hour blood pressure                                       |
+
+BloodPressureType:
+
+| type           | value | value description                                            |
+| -------------- | ----- | ------------------------------------------------------------ |
+| continueState  | 1     | Query continue blood pressure state                          |
+| pressureChange | 2     | Stop measuring blood pressure and return the high and low pressure values |
+| historyList    | 3     | Query history once blood pressure                            |
+| continueBP     | 4     | Query last 24 hour blood pressure                            |
+
+BloodPressureChangeBean：
+
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| continueState | boolean | Continue to display blood pressure status |
-| bloodPressureChange | int | blood pressure change |
-| bloodPressureChange1 | int | blood pressure change |
-| historyBPList | List<HistoryBloodPressureBean> | historical blood pressure |
-| continueBP | BloodPressureInfo | 24 hour blood pressure |
+| -------------- | ------------------- | -------------------------- |
+| sbp            | int                 | Systolic blood pressure    |
+| dbp            | int                 | Diastolic blood pressure   |
 
 HistoryBloodPressureBean:
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| date | String | date of measurement |
-| sbp | int |     |
-| dbp | int |     |
+| -------------- | ------------------- | -------------------------- |
+| date           | String              | date of measurement        |
+| sbp            | int                 | systolic blood pressure    |
+| dbp            | int                 | diastolic blood pressure   |
 
 BloodPressureInfo:
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| startTime | int | Start measuring time |
-| timeInterval | int | Intervals |
+| -------------- | ------------------- | -------------------------- |
+| startTime      | int                 | Start measuring time       |
+| timeInterval   | int                 | Intervals                  |
 
-TimeType:
+## 21.2 Measuring blood pressure
 
-| TODAY | YESTERDAY |
-  | --- | --- |
-| today | yesterday |
+```
+_blePlugin.startMeasureBloodPressure;
+```
 
-2. **Measuring blood pressure**
+## 21.3 Stop measuring blood pressure
 
-  ```
-  _blePlugin.startMeasureBloodPressure;
-  ```
+Stop measuring blood pressure, too short a measurement time will result in no measurement results.
 
-3. **Stop measuring blood pressure**
+The measurement results are monitored through the bloodPressureEveStm data stream, and the returned high and low pressure values are stored in BloodPressureBean.bloodPressureChange and BloodPressureBean.bloodPressureChange1, respectively,type is pressureChange.
 
-Stop measuring blood pressure, too short a measurement time will result in no measurement results.The measurement results are monitored through the connBloodPressureEveStm data stream, and the value is stored in BloodPressureBean.bloodPressureChange and ConnBloodOxygenBean.bloodPressureChange1.
+```
+_blePlugin.stopMeasureBloodPressure;
+```
 
-  ```
-  _blePlugin.stopMeasureBloodPressure;
-  ```
+## 21.4 Enable continue blood pressure
 
-4. **Enable continue blood pressure**
+```
+_blePlugin.enableContinueBloodPressure;
+```
 
-  ```
-  _blePlugin.enableContinueBloodPressure;
-  ```
+## 21.5 Disable continue blood pressure
 
-5. **Disable continue blood pressure**
+```
+_blePlugin.disableContinueBloodPressure;
+```
 
-  ```
-   _blePlugin.disableContinueBloodPressure;
-  ```
+## 21.6 Gets continue blood pressure state
 
-6. **Query continue blood pressure state**
+The measurement results are monitored through the bloodPressureEveStmdata stream, and the continue blood pressure state is stored in BloodPressureBean.continueState,type is continueState.
 
-The measurement results are monitored through the bloodPressureEveStmdata stream, and the value is stored in BloodPressureBean.continueState
+```
+_blePlugin.queryContinueBloodPressureState;
+```
 
-  ```
-  _blePlugin.queryContinueBloodPressureState;
-  ```
+## 21.7 Gets last 24 hour blood pressure
 
-7. **Query last 24 hour blood pressure**
+The measurement results are monitored through the bloodPressureEveStmdata stream, and the last 24 hour blood pressure is stored in BloodPressureBean.continueBP,type is continueBP.
 
-The measurement results are monitored through the bloodPressureEveStmdata stream, and the value is stored in BloodPressureBean.continueBP
+```
+_blePlugin.queryLast24HourBloodPressure;
+```
 
-  ```
-  _blePlugin.queryLast24HourBloodPressure;
-  ```
+## 21.8 Gets history once blood pressure
 
-8. **Query history once blood pressure**
+The measurement results are monitored through the bloodPressureEveStmdata stream, and the history once blood pressure is stored in BloodPressureBean.historyBPList,type is historyList.
 
-The measurement results are monitored through the bloodPressureEveStmdata stream, and the value is stored in BloodPressureBean.historyBPList
+```
+_blePlugin.queryHistoryBloodPressure;
+```
 
-  ```
-  _blePlugin.queryHistoryBloodPressure;
-  ```
+# 22 Blood oxygen
 
+## 22.1 Sets blood oxygen listener
 
-### **2.23 Blood oxygen**
+```dart
+_blePlugin.bloodOxygenEveStm.listen(
+   (BloodOxygenBean event) {
+      /// Do something with new state，for example:
+     switch (type) {
+              case BloodOxygenType.continueState:
+                _continueState = event.continueState!;
+                break;
+              case BloodOxygenType.timingMeasure:
+                _timingMeasure = event.timingMeasure!;
+                break;
+              case BloodOxygenType.bloodOxygen:
+                _bloodOxygen = event.bloodOxygen!;
+                break;
+              case BloodOxygenType.historyList:
+                _historyList = event.historyList!;
+                break;
+              case BloodOxygenType.continueBO:
+                _continueBo = event.continueBo!;
+                startTime = _continueBo!.startTime!;
+                timeInterval = _continueBo!.timeInterval!;
+                break;
+              default:
+                break;
+            }
+  });
+```
 
-1. **1. Set blood oxygen listener**
-
-  ```dart
-  _blePlugin.bloodOxygenEveStm.listen(
-    (event) {
-      // Do something with new state
-    })；
-  ```
-
-Callback Description:
+Callback Description（event）:
 
 BloodOxygenBean：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| continueState | boolean | Timed blood oxygen status |
-| timingMeasure | int | Timed oximetry status |
-| bloodOxygen | int | Measure blood oxygen results |
-| historyList | List<HistoryBloodOxygenBean> | Historical SpO2 information |
-| continueBO | BloodOxygenInfo | Timed blood oxygen information |
+| callback value | callback value type          | callback value description                                   |
+| -------------- | ---------------------------- | ------------------------------------------------------------ |
+| type           | int                          | Get the corresponding return value according to type, where type is the value corresponding to BloodOxygenType |
+| continueState  | bool                         | Timed blood oxygen status                                    |
+| timingMeasure  | int                          | Timed oximetry status                                        |
+| bloodOxygen    | int                          | Measure blood oxygen results                                 |
+| historyList    | List<HistoryBloodOxygenBean> | Historical SpO2 information                                  |
+| continueBO     | BloodOxygenInfo              | Timed blood oxygen information                               |
+
+BloodOxygenType:
+
+| type          | value | value description                              |
+| ------------- | ----- | ---------------------------------------------- |
+| continueState | 1     | Gets continue blood oxygen state               |
+| timingMeasure | 2     | Gets timing measurement of blood oxygen status |
+| bloodOxygen   | 3     | Gets blood oxygen measurement results          |
+| historyList   | 4     | Gets history once blood oxygen                 |
+| continueBO    | 5     | Gets timing blood oxygen                       |
 
 HistoryBloodOxygenBean:
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| date | String | date |
-| bo  | int |     |
+| -------------- | ------------------- | -------------------------- |
+| date           | String              | date                       |
+| bo             | int                 | blood oxygen               |
 
 BloodOxygenInfo：
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| startTime | int | Start measuring time |
-| timeInterval | int | time interval |
+| -------------- | ------------------- | -------------------------- |
+| startTime      | int                 | Start measuring time       |
+| timeInterval   | int                 | time interval              |
 
-2. **Measuring blood oxygen**
+## 22.2 Measuring blood oxygen
 
-  ```
-  _blePlugin.startMeasureBloodOxygen;
-  ```
+```
+_blePlugin.startMeasureBloodOxygen;
+```
 
-3. **Stop measuring blood oxygen**
+## 22.3 Stop measuring blood oxygen
 
-When the blood oxygen measurement is stopped, if the measurement time is too short, there will be no measurement results. The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.bloodOxygen.
+When the blood oxygen measurement is stopped, if the measurement time is too short, there will be no measurement results. 
 
-  ```
-  _blePlugin.stopMeasureBloodOxygen;
-  ```
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.bloodOxygen,type is bloodOxygen.
 
-4. **Enable timing measure blood oxygen**
+```
+_blePlugin.stopMeasureBloodOxygen;
+```
+
+## 22.4 Enable timing measure blood oxygen
 
 measure period = interval * 5 (mins)
 
-  ```
-  _blePlugin.enableTimingMeasureBloodOxygen(int interval);
-  ```
+```
+_blePlugin.enableTimingMeasureBloodOxygen(int interval);
+```
 
-5. **Disable timing measure blood oxygen**
+## 22.5 Disable timing measure blood oxygen
 
-  ```
-  _blePlugin.disableTimingMeasureBloodOxygen;
-  ```
+```
+_blePlugin.disableTimingMeasureBloodOxygen;
+```
 
-6. **Query timing measure blood oxygen state**
+## 22.6 Gets timing measure blood oxygen state
 
-The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.timingMeasure.
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.timingMeasure,type is timingMeasure.
 
-  ```
-  _blePlugin.queryTimingBloodOxygenMeasureState;
-  ```
+```
+_blePlugin.queryTimingBloodOxygenMeasureState;
+```
 
-7. **Query timing blood oxygen**
+## 22.7 Gets timing blood oxygen
 
-The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueBO.
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueBO,type is continueBO.
 
-  ```
-  _blePlugin.queryTimingBloodOxygen(BloodOxygenTimeType);
-  ```
+```
+_blePlugin.queryTimingBloodOxygen(BloodOxygenTimeType);
+```
 
 Parameter Description :
 
 BloodOxygenTimeType:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| TODAY | String | today |
-| YESTERDAY | String | yesterday |
+| value     | value type | value description |
+| --------- | ---------- | ----------------- |
+| today     | String     | today             |
+| yesterday | String     | yesterday         |
 
-8. **Enable continue blood oxygen**
+## 22.8 Enable continue blood oxygen
 
-  ```
-  _blePlugin.enableContinueBloodOxygen;
-  ```
+```
+_blePlugin.enableContinueBloodOxygen;
+```
 
-9. **Disable continue blood oxygen**
+## 22.9 Disable continue blood oxygen
 
-  ```
-  _blePlugin.disableContinueBloodOxygen;
-  ```
+```
+_blePlugin.disableContinueBloodOxygen;
+```
 
-10. **Query continue blood oxygen state**
+## 22.10 Gets continue blood oxygen state
 
-The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueState.
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueState,type is continueState.
 
-  ```
-  _blePlugin.queryContinueBloodOxygenState;
-  ```
+```
+_blePlugin.queryContinueBloodOxygenState;
+```
 
-11. **Query last 24 hour blood oxygen**
+## 22.11 Gets last 24 hour blood oxygen
 
-The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueBO.
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.continueBO,type is continueBO.
 
-  ```
-  _blePlugin.queryLast24HourBloodOxygen;
-  ```
+```
+_blePlugin.queryLast24HourBloodOxygen;
+```
 
-12. **Query history once blood oxygen**
+## 22.12 Gets history once blood oxygen
 
-The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.historyList.
+The measurement results are monitored through the bloodOxygenEveStm data stream, and the value is stored in BloodOxygenBean.historyList,type is historyList.
 
-  ```
-  _blePlugin.queryHistoryBloodOxygen;
-  ```
+```
+_blePlugin.queryHistoryBloodOxygen;
+```
 
+# 23 Take a photo
 
-### **2.24 Take a photo**
+## 23.1 Sets photo monitor listener
 
-1. **Enable camera view**
+```dart
+_blePlugin.cameraEveStm.listen(
+  (CameraBean event) {
+    // Do something with new state
+    if (!mounted) return;
+          setState(() {
+            switch (event.type) {
+              case CameraType.takePhotoState:
+                _camera = event.takePhoto!;
+                break;
+              case CameraType.delayTakingState:
+                _delayTime = event.delayTime!;
+                break;
+              default:
+                break;
+            }
+          });
+  });
+```
 
-  ```
-  _blePlugin.enterCameraView;
-  ```
+Callback Description（event）:
 
-2. **Exit camera view**
+CameraBean:
 
-  ```
-  _blePlugin.exitCameraView;
-  ```
+| callback value | callback value type | callback value description                                   |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to CameraType |
+| takePhoto      | String              | Start taking pictures                                        |
+| delayTime      | int                 | The time of a time-lapse photograph                          |
 
-3. **Set photo monitor**
+CameraType：
 
-Long press the watch photo interface to trigger the camera's camera command.
+| type             | value | value description                      |
+| ---------------- | ----- | -------------------------------------- |
+| takePhotoState   | 1     | Start taking a picture of the callback |
+| delayTakingState | 2     | A callback for a time-lapse photo      |
 
-  ```dart
-  _blePlugin.cameraEveStm.listen(
-    (event) {
-      // Do something with new state
-    });
-  ```
+## 23.2 Enable camera view
 
+```
+_blePlugin.enterCameraView;
+```
 
-### **2.25 Mobile phone related operations**
+## 23.3 Exit camera view
+
+```
+_blePlugin.exitCameraView;
+```
+
+## 23.4 Sets time-lapse photo
+
+Unit: second.
+
+```dart
+_blePlugin.sendDelayTaking(100));
+```
+
+## 23.5 Gets the time of a time-lapse photo
+
+The data is returned by listening to the cameraEveStm.
+
+```dart
+_blePlugin.queryDelayTaking;
+```
+
+# 24 Mobile phone related operations
+
+Set up a listener for phone-related operations such as music control, hanging up, and callbacks. The result is returned via the data stream phoneEveStm.
+
+The value data comes from PhoneOperationType and matches it
 
 ```dart
 _blePlugin.phoneEveStm.listen(
-  (event) {
+  (int event) {
     // Do something with new state
   })；
 ```
 
-Callback Description(event):
+PhoneOperationType:
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| event | int | The value data comes from CRPPhoneOperationType and matches it |
+| value            | value type | value description                                            |
+| ---------------- | ---------- | ------------------------------------------------------------ |
+| musicPlayOrPause | int        | Play / Pause                                                 |
+| musicPrevious    | int        | Previous                                                     |
+| musicNext        | int        | Next                                                         |
+| rejectIncoming   | int        | Hang up the phone. You can press and hold the trigger on the call alert interface. |
+| volumeUp         | int        | Turn up the volume                                           |
+| volumeDown       | int        | Turn down the volume                                         |
+| musicPlay        | int        | Play                                                         |
+| musicPause       | int        | Pause                                                        |
 
-CRPPhoneOperationType:
+# 25 RSSI<Only android support>
 
-| value | value type | value description |
-| --- | --- | --- |
-| MUSIC_PLAY_OR_PAUSE | byte | Play / Pause |
-| MUSIC_PREVIOUS | byte | Previous |
-| MUSIC_NEXT | byte | Next |
-| REJECT_INCOMING | byte | Hang up the phone. You can press and hold the trigger on the call alert interface. |
-| VOLUME_UP | byte | Turn up the volume |
-| VOLUME_DOWN | byte | Turn down the volume |
-| MUSIC_PLAY | byte | Play |
-| MUSIC_PAUSE | byte | Pause |
+## 25.1 Sets RSSI listener
 
-### 2.26 RSSI
+Set up an RSSI listener deviceRssiEveStm, which returns the RSSI value through the data stream.
 
-1. **Set RSSI listening**
+```dart
+_blePlugin.deviceRssiEveStm.listen(
+  (int event) {
+    // Do something with new state
+  });
+```
 
-  ```dart
-  _blePlugin.deviceRssiEveStm.listen(
-    (event) {
-      // Do something with new state
-    });
-  ```
+## 25.2 Read the watch RSSI
 
-2. **Read the watch RSSI**
+Read the real-time RSSI value of the watch. The query result will be obtained through the deviceRssiEveStm listening stream.
 
-Read the real-time RSSI value of the watch. The query result will be obtained through the deviceRssiEveStm listening stream and saved in the "event" field.
+```
+_blePlugin.readDeviceRssi;
+```
 
-  ```
-  _blePlugin.readDeviceRssi;
-  ```
+# 26 Shut down
 
+```
+ _blePlugin.shutDown;
+```
 
-### **2.27 Shut down**
+# 27 Do not disturb
 
-1. **Shut down**
-
-  ```dart
-   _blePlugin.shutDown;
-  ```
-
-2. **factory data reset**
-
-  ```dart
-  _blePlugin.reset()
-  ```
-
-
-### **2.28 Do not disturb**
-
-1. **Set the do not disturb time**
+## 27.1 Sets the do not disturb time
 
 The watch supports the Do Not Disturb period. Do not display message push and sedentary reminders during the time.
 
-  ```dart
-   _blePlugin.sendDoNotDisturbTime(PeriodTimeBean);
-  ```
+```dart
+ _blePlugin.sendDoNotDisturbTime(PeriodTimeBean info);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| startHour | int | Start time hours (24-hour clock) |
-| startMinute | int | Start time minutes |
-| endHour | int | End time hours (24-hour clock) |
-| endMinute | int | End time minutes |
+PeriodTimeBean:
 
+| value       | value type | value description                |
+| ----------- | ---------- | -------------------------------- |
+| startHour   | int        | Start time hours (24-hour clock) |
+| startMinute | int        | Start time minutes               |
+| endHour     | int        | End time hours (24-hour clock)   |
+| endMinute   | int        | End time minutes                 |
 
-2. **Get the do not disturb time**
+## 27.2 Gets the do not disturb time
 
 Check if do not disturb the time set by the watch.
 
-  ```dart
-  PeriodTimeResultBean  info =await _blePlugin.queryDoNotDisturbTime;
-  ```
+```dart
+PeriodTimeResultBean info = await _blePlugin.queryDoNotDisturbTime;
+```
 
 Callback Description(event):
+
+PeriodTimeResultBean:
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| periodTimeType | int |     |
-| periodTimeInfo | PeriodTimeInfo |     |
+| -------------- | ------------------- | -------------------------- |
+| periodTimeType | int                 | type of event              |
+| periodTimeInfo | PeriodTimeBean      | specific event             |
 
+periodTimeType:
 
-### **2.29 Breathing light**
+| value            | value type | value description |
+| ---------------- | ---------- | ----------------- |
+| doNotDistrubType | int        | 1                 |
+| quickViewType    | int        | 2                 |
 
-1. **Sets the breathing light**
+Notes：PeriodTimeResultBean is a class shared by Do not disturb and Quick View. By specifying the type of periodTimeType, it indicates that the returned periodTimeInfo belongs to the information of that function
 
-  ```dart
-  _blePlugin.sendBreathingLight(bool enable);
-  ```
+# 28 Breathing light
 
-2. **Gets the status of the breathing light**
+## 28.1 Sets the breathing light<Only android support>
 
-  ```dart
-  bool isEable=await _blePlugin.queryBreathingLight;
-  ```
+```dart
+_blePlugin.sendBreathingLight(bool enable);
+```
 
+## 28.2 Gets the status of the breathing light<Only android support>
 
-### 2.30 ECG
+```dart
+bool isEable= await _blePlugin.queryBreathingLight;
+```
 
-1. **Set ECG listener**
+# 29 ECG
 
-Set the ECG monitor and get the return value through connLazyEgcEveStm.
+## 29.1 Sets ECG listener
 
-  ```dart
-  _blePlugin.lazyEcgEveStm.listen(
-    (event) {
-      // Do something with new state
-    })；
-  ```
+Sets the ECG monitor and get the return value through ecgEveStm.
 
-Callback Description(event):
+```dart
+_blePlugin.ecgEveStm.listen(
+        (EgcBean event) {
+             /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case ECGType.ecgChangeInts:
+                _ints = event.ints!;
+                break;
+              case ECGType.measureComplete:
+                break;
+              case ECGType.date:
+                _date = event.date!;
+                break;
+              case ECGType.cancel:
+                break;
+              case ECGType.fail:
+                break;
+            }
+          });
+        });
+```
+
+Callback Description（event）:
 
 EgcBean:
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| ints | int[] | ECG information |
-| measureComplete | int | ECG measurement completed |
-| date | Date |     |
-| isCancel | boolean | Whether to turn off the ECG test |
-| isFail | boolean | Whether the ECG test failed |
+| callback value | callback value type | callback value description                                   |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to ECGType |
+| ints           | int[]               | ECG information                                              |
+| date           | Date                | date                                                         |
 
-2. **Measuring ECG**
+ECGType:
 
-Start to measure the ECG, the ECG measurement time is 30 seconds, and the user needs to touch the left and right electrodes of the watch with both hands. The value is obtained by listening to the lazyEcgEveStm data stream, and the value is saved in EgcBean.ints
+| type            | value | value description        |
+| --------------- | ----- | ------------------------ |
+| ecgChangeInts   | 1     | measure ECG              |
+| measureComplete | 2     | ECG measurement complete |
+| date            | 3     | ECG measurement date     |
+| cancel          | 4     | ECG measurement off      |
+| fail            | 5     | ECG measurement failed   |
 
-  ```dart
-  _blePlugin.startECGMeasure;
-  ```
+## 29.2 Measuring ECG
 
-3. **Stop measuring ECG**
+Start to measure the ECG, the ECG measurement time is 30 seconds, and the user needs to touch the left and right electrodes of the watch with both hands. The value is obtained by listening to the ecgEveStm data stream, and the value is saved in EgcBean.ints,type is ecgChangeInts.
 
-  ```dart
-  _blePlugin.stopECGMeasure;
-  ```
+```dart
+_blePlugin.startECGMeasure;
+```
 
-4. **Detect new ECG measurement methods**
+## 29.3 Stop measuring ECG
+
+```
+_blePlugin.stopECGMeasure;
+```
+
+## 29.4 Detect new ECG measurement methods
 
 In the new measurement mode, the watch can save the last unsent measurement result; the old version does not.
 
-  ```
-  boolean newMeasurementVersion =await _blePlugin.isNewECGMeasurementVersion;
-  ```
+```dart
+bool newMeasurementVersion =await _blePlugin.isNewECGMeasurementVersion;
+```
 
-5. **Get the last ECG data**
+## 29.5 Gets the last ECG data
 
-Query the ECG data saved by the watch, monitor the data stream through lazyEcgEveStm, and save the value in EgcBean.ints
+Gets the ECG data saved by the watch, monitor the data stream through ecgEveStm , and save the value in EgcBean.ints,type is ecgChangeInts.
 
-  ```dart
-  _blePlugin.queryLastMeasureECGData;
-  ```
+```dart
+_blePlugin.queryLastMeasureECGData;
+```
 
-6. **Send heart rate during ECG measurement**
+## 29.6 Sets heart rate during ECG measurement
 
 Using the measured data, the instantaneous heart rate is calculated through the ECG algorithm library and sent to the watch.
 
-  ```
-  _blePlugin.sendECGHeartRate(int heartRate);
-  ```
+```
+_blePlugin.sendECGHeartRate(int heartRate);
+```
 
+# 30 Menstrual Cycle
 
-### **2.31 Physiological cycle**
+## 30.1 Sets the menstrual cycle reminder
 
-1. **Set the physiological cycle reminder**
-
-  ```
-  _blePlugin.sendMenstrualCycle(CrpPhysiologcalPeriodInfo info);
-  ```
+```
+_blePlugin.sendMenstrualCycle(MenstrualCycleBean info);
+```
 
 Parameter Description :
 
-CrpPhysiologcalPeriodInfo：
+MenstrualCycleBean：
 
-| value | value type | value description |
-  | --- | --- | --- |
-| physiologcalPeriod | int | Physiological cycle (unit: day)1，play |
-| menstrualPeriod | int | Menstrual period (unit: day) |
-| startDate | DateTime | menstrual cycle start time |
-| menstrualReminder | bool | Menstrual start reminder time (the day before the menstrual cycle reminder) |
-| ovulationReminder | bool | Ovulation reminder (a reminder the day before ovulation) |
-| ovulationDayReminder | bool | Ovulation Day Reminder (Reminder the day before ovulation) |
-| ovulationEndReminder | bool | Reminder when ovulation is over (a reminder the day before the end of ovulation) |
-| reminderHour | int | Reminder time (hours, 24 hours) |
-| reminderMinute | int | Reminder time (minutes) |
+| value                | value type | value description                                            |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| physiologcalPeriod   | int        | Menstrual cycle (unit: day)1                                 |
+| menstrualPeriod      | int        | Menstrual period (unit: day)                                 |
+| startDate            | String     | menstrual cycle start time                                   |
+| menstrualReminder    | bool       | Menstrual start reminder time (the day before the menstrual cycle reminder) |
+| ovulationReminder    | bool       | Ovulation reminder (a reminder the day before ovulation)     |
+| ovulationDayReminder | bool       | Ovulation Day Reminder (Reminder the day before ovulation)   |
+| ovulationEndReminder | bool       | Reminder when ovulation is over (a reminder the day before the end of ovulation) |
+| reminderHour         | int        | Reminder time (hours, 24 hours)                              |
+| reminderMinute       | int        | Reminder time (minutes)                                      |
 
-2. **Query physiological cycle reminder**
+## 30.2 Gets the menstrual cycle reminder
 
-  ```dart
-  CRPPhysiologcalPeriodInfo physiologcalPeriodInfo=await _blePlugin.queryMenstrualCycle;
-  ```
+```dart
+MenstrualCycleBean info = await _blePlugin.queryMenstrualCycle;
+```
 
-Callback Description :
+# 31 Find phone
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| physiologcalPeriodInfo | CRPPhysiologcalPeriodInfo | Get Menstrual Cycle Reminders for Girls |
-
-
-### **2.34 Find phone**
-
-1. **Start find phone**
+## 31.1 Start find phone
 
 When receiving a callback to find the bracelet phone, the app vibrates and plays a ringtone reminder.
 
-  ```dart
-  _blePlugin.startFindPhone;
-  ```
+```dart
+_blePlugin.startFindPhone;
+```
 
-2. **End finding phone**
+## 31.2 End finding phone
 
-When the user retrieves the phone, the vibrate and ringtone reminder ends, returning to the watch with this command
+When the user retrieves the phone, the vibrate and ringtone reminder ends, returning to the watch with this command.
 
-  ```dart
-  _blePlugin.stopFindPhone;
-  ```
+```dart
+_blePlugin.stopFindPhone;
+```
 
-3. **Set Find phone listening**
+# 32 Music player<Only android support>
 
-  ```dart
-  _blePlugin.findPhoneEveStm.listen(
-          (FindPhoneBean event) {
-              ......
-          }
-    ),
-  ```
-
-FindPhoneBean:
-
-| type |
-  | --- |
-| int |
-| type |
-
-
-### **2.35 Music player**
-
-1. **Set player state**
+## 32.1 Sets player state
 
 Set music player state.
 
-  ```dart
-  _blePlugin.setPlayerState(int crpMusicPlayerStateType);
-  ```
+```dart
+_blePlugin.setPlayerState(PlayerStateType);
+```
 
 Parameter Description :
 
-CRPMusicPlayerStateType：
+PlayerStateType：
 
-| value | value type | value description |
-  | --- | --- | --- |
-| MUSIC_PLAYER_PAUSE | byte | 0，pause |
-| MUSIC_PLAYER_PLAY | byte | 1，play |
+| type             | value | value description |
+| ---------------- | ----- | ----------------- |
+| musicPlayerPause | int   | pause             |
+| musicPlayerPlay  | int   | play              |
 
-2. **Set song name**
+## 32.2 Sets song name
 
-  ```
-  _blePlugin.sendSongTitle(String title);
-  ```
+```
+_blePlugin.sendSongTitle(String title);
+```
 
-Parameter Description :
+## 32.3 Sets lyrics
 
-| value | value type | value description |
-  | --- | --- | --- |
-| title | String | Song name |
+```
+_blePlugin.sendLyrics(String lyrics);
+```
 
-3. **Set lyrics**
+## 32.4 Close Music Control
 
-  ```dart
-  _blePlugin.sendLyrics(String lyrics);
-  ```
+```
+_blePlugin.closePlayerControl;
+```
 
-Parameter Description :
+## 32.5 Sets max volume
 
-| value | value type | value description |
-  | --- | --- | --- |
-| lyrics | String | Song lyrics |
+```
+_blePlugin.sendMaxVolume(int volume);
+```
 
-4. **Close Music Control**
+## 32.6 Sets Current volume
 
-  ```dart
-  _blePlugin.closePlayerControl;
-  ```
+```
+_blePlugin.sendCurrentVolume(int volume);
+```
 
-5. **Set max volume**
+# 33 Drink water reminder
 
-  ```dart
-  _blePlugin.sendCurrentVolume(int volume);
-  ```
+## 33.1 Enable drinking reminder
 
-Parameter Description :
+Sets the information of drinking water reminder.
 
-| value | value type | value description |
-  | --- | --- | --- |
-| volume | int | Max volume |
-
-6. **Set Current volumed**
-
-  ```
-  _blePlugin.sendMaxVolume(int volume);
-  ```
+```
+_blePlugin.enableDrinkWaterReminder(DrinkWaterPeriodBean info);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| volume | int | Current volume |
+DrinkWaterPeriodBean:
 
+| value       | value type | value description           |
+| ----------- | ---------- | --------------------------- |
+| enable      | bool       | Drink water reminder status |
+| startHour   | int        | start time hours            |
+| startMinute | int        | start time in minutes       |
+| count       | int        | Number of reminders         |
+| period      | int        | reminder interval           |
+| currentCups | int        | the current water intake    |
 
-### **2.36 Drink water reminder**
+## 33.2 Disable water reminder
 
-1. **Enable drinking reminder**
+```
+_blePlugin.disableDrinkWaterReminder;
+```
 
-Set the information of drinking water reminder.
+## **33.3 Gets drinking **reminder
 
-  ```
-  _blePlugin.enableDrinkWaterReminder(CrpDrinkWaterPeriodInfo drinkWaterPeriodInfo);
-  ```
+```dart
+DrinkWaterPeriodBean info = await _blePlugin.queryDrinkWaterReminderPeriod;
+```
 
-Parameter Description :
+# 34 Heart rate alarm
 
-CrpDrinkWaterPeriodInfo:
+## 34.1 Sets the heart rate alarm value
 
-| value | value type | value description |
-  | --- | --- | --- |
-| enable | bool | Drink water reminder status |
-| startHour | int | start time hours |
-| startMinute | int | start time in minutes |
-| count | int | Number of reminders |
-| period | int | reminder interval |
-| currentCups | int |     |
-
-2. **Disable water reminder**
-
-  ```dart
-  _blePlugin.disableDrinkWaterReminder;
-  ```
-
-3. **Query drinking reminder**
-
-  ```dart
-  CrpDrinkWaterPeriodInfo drinkWaterPeriodInfo =await _blePlugin.queryDrinkWaterReminderPeriod;
-  ```
-
-Callback Description:
-
-CrpDrinkWaterPeriodInfo:
-
-| Callback value | Callback value type | Callback value description |
-  | --- | --- | --- |
-| enable | bool | Whether to open |
-| startHour | int | hours |
-| startMinute | intminutes | minutes |
-| count | int | reminders |
-| period | int | reminder interval |
-| currentCups | int | the current water intake |
-
-
-### **2.37 Heart rate alarm**
-
-1. **Sets the heart rate alarm value**
-
-  ```dart
-  _blePlugin.setMaxHeartRate(int heartRate,bool enable);
-  ```
+```dart
+_blePlugin.setMaxHeartRate(MaxHeartRateBean info);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| heartRate | int | heart rate |
-| enable | bool | enable |
+MaxHeartRateBean:
 
-2. **Gets the heart rate alarm value**
+| value     | value type | value description                        |
+| --------- | ---------- | ---------------------------------------- |
+| heartRate | int        | Heart rate alarm value                   |
+| enable    | bool       | Status of the wristband heart rate alarm |
 
-Query the status of the wristband heart rate alarm and the value of the heart rate alarm.
+## 34.2 Gets the heart rate alarm value
 
-  ```
-  Map<String, dynamic> maxHeartRate=await _blePlugin.queryMaxHeartRate;
-  ```
+Gets the status of the wristband heart rate alarm and the value of the heart rate alarm.
 
-Callback Description:
+```dart
+MaxHeartRateBean info = await _blePlugin.queryMaxHeartRate;
+```
 
-| Callback value | Callback value type | Callback value description |
-  | --- | --- | --- |
-| maxHeartRate | Map<String, dynamic> | heartRate:Status of the wristband heart rate alarm;enable:Heart rate alarm value |
+# 35 Movement Training<Only android support>
 
+## 35.1 Sets Monitor training state listener
 
-### **2.38 Movement Training**
+Modify the training state on the bracelet, and obtain the current measurement state by monitoring the data stream trainingStateEveStm.
 
-1. **Start training**
+```dart
+_blePlugin.trainingStateEveStm.listen(
+  (int event) {
+   // Do something with new state
+  })；
+```
 
-  ```
-  _blePlugin.startMovement(int type);
-  ```
+## 35.2 Start training
 
-Parameter Description :
-
-Type is the same as "Heart Rate". Type is the same\
-
-2. **Sets training state**
-
-  ```
-  _blePlugin.setMovementState(CRPMovementHeartRateStateType);
-  ```
+```
+_blePlugin.startTraining(int type);
+```
 
 Parameter Description :
 
-CRPMovementHeartRateStateType：
+Type is the same as "Heart Rate". Type is the same.
 
-| value | value type | value description |
-  | --- | --- | --- |
-| MOVEMENT_PAUSE | byte | -2，pause state |
-| MOVEMENT_CONTINUE | byte | -3，continue state |
-| MOVEMENT_COMPLETE | byte | -1，end state |
+## 35.3 Sets training state
 
-3. **Monitor training state**
+```
+_blePlugin.setTrainingState(TrainingHeartRateStateType);
+```
 
-Modify the training state on the bracelet, and obtain the current measurement state by monitoring the data stream connTainStateEveStm.
+Parameter Description :
 
-  ```dart
-  _blePlugin.connTainStateEveStm.listen(
-    (event) {
-     // Do something with new state
-    })；
-  ```
+TrainingHeartRateStateType：
 
-Callback Description (event):
+| type             | value | value description |
+| ---------------- | ----- | ----------------- |
+| trainingPause    | int   | pause state       |
+| trainingContinue | int   | continue state    |
+| trainingComplete | int   | end state         |
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| event | int | Mobile Training Measurement Status |
+# 36 Protocol version<Only android support>
 
-
-### **2.39 Protocol version**
-
-**Gets the protocol version**
+Gets the protocol version.The current protocol version can be divided into V1 and V2.
 
 ```dart
 String version=await _blePlugin.getProtocolVersion;
 ```
 
-Callback Description:
+# 37 Body temperature
 
-| callback value | callback value type | callback value description |
-| --- | --- | --- |
-| version | String | The current protocol version can be divided into V1 and V2. |
+## 37.1 Sets listener of temperature measurement results
 
-### **2.40 Body temperature**
+Sets the monitoring of body temperature measurement results to return the corresponding data of body temperature.
 
-1. **Sets listener of temperature measurement results**
+```dart
+_blePlugin.tempChangeEveStm.listen(
+        (TempChangeBean event) {
+          setState(() {
+            /// Do something with new state,for example:
+            switch (event.type) {
+              case TempChangeType.continueState:
+                _enable = event.enable!;
+                break;
+              case TempChangeType.measureTemp:
+                _temp = event.temp!;
+                break;
+              case TempChangeType.measureState:
+                _state = event.state!;
+                break;
+              case TempChangeType.continueTemp:
+                _tempInfo = event.tempInfo;
+                _tempTimeType = _tempInfo!.tempTimeType!;
+                _startTime = _tempInfo!.startTime!;
+                _tempList = _tempInfo!.tempList!;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+```
 
-Set the monitoring of body temperature measurement results to return the corresponding data of body temperature.
-
-  ```dart
-  _blePlugin.tempChangeEveStm.listen(
-    (TempChangeBean event) {
-      // Do something with new state
-    });
-  ```
-
-Callback Description(event):
+Callback Description（event）:
 
 TempChangeBean：
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| enable | bool | whether to continue measuring<br />true:enable false:disable |
-| temp | double | real-time body temperature |
-| state | bool | temperature measurement status true:measuring false:end of measurement |
-| tempInfo | TempInfo | Body temperature information |
+| callback value | callback value type | callback value description                                   |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to TempChangeType |
+| enable         | bool                | whether to continue measuring<br />true:enable  false:disable |
+| temp           | double              | real-time body temperature                                   |
+| state          | bool                | temperature measurement status true:measuring  false:end of measurement |
+| tempInfo       | TempInfo            | Body temperature information                                 |
 
-2. **Start measuring once temperature**
+TempChangeType：
+
+| type          | value | value description                                            |
+| ------------- | ----- | ------------------------------------------------------------ |
+| continueState | 1     | Continue to measure body temperature                         |
+| measureTemp   | 2     | Start measuring the temperature obtained by taking the temperature |
+| measureState  | 3     | measure body temperature                                     |
+| continueTemp  | 4     | The temperature value obtained by continuing to measure the body temperature |
+
+TempInfo
+
+| callback value  | callback value type | callback value description                              |
+| --------------- | ------------------- | ------------------------------------------------------- |
+| type            | TempTimeType        | Body temperature timing measurement status.             |
+| startTime       | long                | Temperature measurement start time                      |
+| tempList        | List<Float>         | Temperature record sheet                                |
+| measureInterval | int                 | Measurement interval (unit: minute, default 30 minutes) |
+
+TempTimeType:
+
+| type      | value type | value       |
+| --------- | ---------- | ----------- |
+| today     | String     | "TODAY"     |
+| yesterday | String     | "YESTERDAY" |
+
+## 37.2 Start measuring once temperature
 
 Start taking temperature.
 
-The real-time body temperature is obtained through the data stream tempChangeEveStm, and the result is stored in TempChangeBean.temp; the measurement state is obtained through TempChangeEveStm, and the result is stored in TempChangeBean.state.
+When starting a temperature measurement. The query result will be obtained through the tempChangeEveStm monitoring stream, the return type is TempChangeBean, and the real-time body temperature and measurement status are TempChangeBean.temp and TempChangeBean.state,type ismeasureTemp and type is measureState Respectively.
 
-  ```dart
-  String temp = await _blePlugin.startMeasureTemp;
-  ```
+```dart
+_blePlugin.startMeasureTemp;
+```
 
-3. **Stop measuring once temperature**
+## 37.3 Stop measuring once temperature
 
-  ```dart
-  _blePlugin.stopMeasureTemp;
-  ```
+```
+_blePlugin.stopMeasureTemp;
+```
 
-4. **Enable timing temperature measurement**
+## 37.4 Enable timing temperature measurement
 
 When the chronograph measurement is turned on, the watch automatically measures the temperature every half an hour.
 
-  ```dart
-  _blePlugin.enableTimingMeasureTemp;
-  ```
+```dart
+_blePlugin.enableTimingMeasureTemp;
+```
 
-5. **Disable timing temperature measurement**
+## 37.5 Disable timing temperature measurement
 
-  ```dart
-  _blePlugin.disableTimingMeasureTemp;
-  ```
+```
+_blePlugin.disableTimingMeasureTemp;
+```
 
-6. **Gets the timing of temperature measurement status**
+## 37.6 Gets the timing of temperature measurement status
 
-  ```dart
-   String timingTempState=await _blePlugin.queryTimingMeasureTempState;
-  ```
+Get the temperature measurement status. The query result will be obtained through the tempChangeEveStm monitoring stream, the type is measureState, and the measurement state is TempChangeBean.state.
 
-Callback Description:
+```dart
+String timingTempState = await _blePlugin.queryTimingMeasureTempState;
+```
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| timingTempState | String | Body temperature timing measurement status. |
+## 37.7 Gets the result of timing temperature measurement
 
-7. **Gets the result of timing temperature measurement**
+The measurement state is obtained through tempChangeEveStm, and the result is stored in TempChangeBean.continueTemp.
 
-he measurement state is obtained through connTempChangeEveStm, and the result is stored in ConnTempChange.continueTemp.
+```dart
+_blePlugin.queryTimingMeasureTemp(TempTimeType);
+```
 
-  ```dart
-  _blePlugin.queryTimingMeasureTemp(String CRPTempTimeType);
-  ```
+# 38 Display time
 
-CRPTempTimeType:
+## 38.1 Sets display time
 
-| **TODAY** | **YESTERDAY** |
-  | --- | --- |
-| today | yesterday |
+time is the screen-on time, Bright screen event 5-30s, increment by 5.
 
-CRPTempInfo
-
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| type | CRPTempTimeType | Body temperature timing measurement status. |
-| startTime | long | Temperature measurement start time |
-| tempList | List<Float> | Temperature record sheet |
-| measureInterval | int | Measurement interval (unit: minute, default 30 minutes) |
-
-8. **Turn on continuous temperature measurement**
-
-  ```dart
-  _blePlugin.enableContinueTemp
-  ```
-
-9. **Turn off continuous blood pressure measurement**
-
-  ```dart
-  _blePlugin.disableContinueTemp
-  ```
-
-10. **Query the status of continuous blood pressure measurement**
-
-Through CRPTempChangeListener. OnContinueState () callback.
-
-  ```dart
-  _blePlugin.queryContinueTempState
-  ```
-
-11. **Turn off continuous blood pressure measurement**
-
-Through CRPTempChangeListener. OnContinueTemp () callback.
-
-  ```dart
-  _blePlugin.queryLast24HourTemp
-  ```
-
-
-### 2.41 Display time
-
-1. **Sets display time**
-
-  ```
-  _blePlugin.sendDisplayTime(int time);
-  ```
+```
+_blePlugin.sendDisplayTime(DisplayTimeType);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| time | int | time is the screen-on time, unit: second, cannot exceed 255. |
+DisplayTimeType:
 
-2. **Gets display time**
+| value             | value type | value description |
+| ----------------- | ---------- | ----------------- |
+| displayFive       | int        | 5s                |
+| displayTen        | int        | 10s               |
+| displayFifteen    | int        | 15s               |
+| displayTwenty     | int        | 20s               |
+| displayTwentyFive | int        | 25s               |
+| displayThirty     | int        | 30s               |
 
-  ```dart
-  int displayTime=_blePlugin.queryDisplayTime();
-  ```
+## 38.2 Gets display time
 
+```dart
+int displayTime = await _blePlugin.queryDisplayTime;
+```
 
-### **2.42 Hand washing reminder**
+# 39 Hand washing reminder
 
-1. **Enable hand washing reminder**
+## 39.1 Enable hand washing reminder
 
-  ```dart
-   _blePlugin.enableHandWashingReminder(HandWashingPeriodBean info);
-  ```
+```dart
+ _blePlugin.enableHandWashingReminder(HandWashingPeriodBean info);
+```
 
 Parameter Description :
 
 HandWashingPeriodBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| enable | bool | Whether to open |
-| startHour | int | Start time hours |
-| startMinute | int | Start time in minutes |
-| count | int | count |
-| period | int | period |
+| value       | value type | value description     |
+| ----------- | ---------- | --------------------- |
+| enable      | bool       | Whether to open       |
+| startHour   | int        | Start time hours      |
+| startMinute | int        | Start time in minutes |
+| count       | int        | count                 |
+| period      | int        | period                |
 
-2. **Disable hand washing reminder**
+## 39.2 Disable hand washing reminder
 
-  ```
-  _blePlugin.disableHandWashingReminder();
-  ```
+```dart
+_blePlugin.disableHandWashingReminder;
+```
 
-3. **Gets hand washing reminder**
+## 39.3 Gets hand washing reminder
 
-  ```dart
-  HandWashingPeriodBean info= _blePlugin.queryHandWashingReminderPeriod();
-  ```
+```dart
+HandWashingPeriodBean info= await _blePlugin.queryHandWashingReminderPeriod;
+```
 
-
-### 2.43 Sets local city
+# 40 Sets local city
 
 ```dart
 _blePlugin.sendLocalCity(String city);
 ```
 
-### **2.44 Temperature system**
+# 41 Temperature system<Only android support>
 
-1. **Sets temperature system**
+## 41.1 Sets temperature system
 
 Switch temperature system.
 
-  ```dart
-  _blePlugin.sendTempUnit(TempUnit);
-  ```
+```dart
+_blePlugin.sendTempUnit(TempUnit);
+```
 
 Parameter Description :
 
 TempUnit:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| CELSIUS | int | 0   |
-| FAHRENHEIT | int | 1   |
+| value      | value type | value description |
+| ---------- | ---------- | ----------------- |
+| celsius    | int        | 0                 |
+| fahrenheit | int        | 1                 |
 
-2. **Query temperature system**
+## 41.2 Gets temperature system
 
-Query the temperature system. The query result will be obtained through the weatherChangeEveStmlistening stream and saved in the tempUnitChange field.
+Get temperature system data. The query result will be obtained through the weatherChangeEveStm listening stream, the return type is tempUnitChange, and the temperature system data is WeatherChangeBean.tempUnit,type is tempUnitChange .
 
-  ```dart
-  _blePlugin.queryTempUnit();
-  ```
+```dart
+_blePlugin.queryTempUnit;
+```
 
+# 42 Brightness<Only android support>
 
-### **2.45 Brightness**
+## 42.1 Sets brightness
 
-1. ** Sets brightness**
+```dart
+_blePlugin.sendBrightness(int brightness);
+```
 
-  ```dart
-  _blePlugin.sendBrightness(int brightness);
-  ```
+## 42.2 Gets brightness
 
-Parameter Description :
-
-| value | value type | value description |
-  | --- | --- | --- |
-| brightness | int | Sets brightness |
-
-2. **Gets brightness**
-
-  ```dart
-  BrightnessBean bean=await _blePlugin.queryBrightness();
-  ```
-
+```dart
+BrightnessBean bean = await _blePlugin.queryBrightness;
+```
 
 Callback Description:
 
+BrightnessBean:
+
 | allback value | callback value type | callback value description |
-| --- | --- | --- |
-| current | int | current brightness |
-| max | int | maximum brightness |
+| ------------- | ------------------- | -------------------------- |
+| current       | int                 | current brightness         |
+| max           | int                 | maximum brightness         |
 
-### **2.46 Classic Bluetooth address**
+# 43 Classic Bluetooth address
 
-```dart
- String btAddres=await _blePlugin.queryBtAddress();
+```
+String btAddres = await _blePlugin.queryBtAddress;
 ```
 
-### **2.47 Contacts**
+# 44 Contacts
 
-1. **Sets contacts listener**
+## 44.1 Sets contacts listener
 
-Set up a contact listener, and the result is returned via the data stream contactEveStm and stored in "event".
+Set the contact listener, and the result is returned through the data stream contactEveStm, which is returned as a ContactListenBean object.
 
-  ```dart
-  _blePlugin.contactEveStm.listen(
-    (ContactListenBean event) {
-       // Do something with new state
-    });
-  ```
+```dart
+_blePlugin.contactEveStm.listen(
+        (ContactListenBean event) {
+            /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case ContactListenType.savedSuccess:
+                _savedSuccess = event.savedSuccess!;
+                break;
+              case ContactListenType.savedFail:
+                _savedFail = event.savedFail!;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+```
 
-Callback Description(event):
+Callback Description（event）:
 
 ContactListenBean:
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| event | ContactListenBean | savedSuccess(int): The return value of the success of saving the contact; <br />savedFail(int): The return value of the failure to save the contact |
+| callback value | callback value type | callback value description                                   |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to ContactListenType. |
+| savedSuccess   | int                 | The return value of the success of saving the contact;       |
+| savedFail      | int                 | The return value of the failure to save the contact          |
 
-2. **Check support contacts**
+ContactListenType：
 
-  ```dart
-  ContactConfigBean info=_blePlugin.checkSupportQuickContact();
-  ```
+| type         | value | value description         |
+| ------------ | ----- | ------------------------- |
+| savedSuccess | 1     | Set contacts successfully |
+| savedFail    | 2     | Failed to set contacts    |
+
+## 44.2 Sets contacts with avatar listener
+
+Sets the contact avatar listener, and the result is returned through the data stream contactAvatarEveStm, which is returned as a FileTransBean object.
+
+```dart
+_blePlugin.contactAvatarEveStm.listen(
+        (FileTransBean event) {
+            /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case TransType.transStart:
+                break;
+              case TransType.transChanged:
+                _progress = event.progress!;
+                break;
+              case TransType.transCompleted:
+                break;
+              case TransType.error:
+                _error = event.error!;
+                break;
+              default:
+                break;
+            }
+          });
+        });
+```
+
+Callback Description（event）:
+
+FileTransBean:
+
+| callback value | callback value type | callback value description                                   |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to TransType. |
+| progress       | int                 | set progress                                                 |
+| error          | int                 | error code                                                   |
+
+TransType：
+
+| type           | value | value description                   |
+| -------------- | ----- | ----------------------------------- |
+| transStart     | 1     | Set a contact avatar to get started |
+| transChanged   | 2     | Set contact avatar progress changes |
+| transCompleted | 3     | Set contact avatar successfully     |
+| error          | 4     | Error setting contact avatar        |
+
+## 44.3 Check support contacts
+
+```dart
+ContactConfigBean info = await _blePlugin.checkSupportQuickContact;
+```
 
 Callback Description:
 
 ContactConfigBean：
 
-| value | value type | value description |
-  | --- | --- | --- |
-| supported | bool | 是否支持联系人 |
-| count | int |     |
-| width | int |     |
-| height | int |     |
+| value     | value type | value description                          |
+| --------- | ---------- | ------------------------------------------ |
+| supported | bool       | Whether symbols are supported, such as ”+“ |
+| count     | int        | Maximum number of contacts                 |
+| width     | int        | The width of the contact avatar            |
+| height    | int        | The height of contact avatar               |
 
-3. **Gets current contacts count**
+## 44.4 Gets current contacts count
 
-  ```dart
-  int contactCount=_blePlugin.queryContactCount();
-  ```
+```
+int contactCount = _blePlugin.queryContactCount;
+```
 
-4. **Sets contact information**
+## 44.5 Sets contact information
 
-Set the contact, the result is obtained through contactEveStm.
+Sets the contact, the result is obtained through contactEveStm.
 
-  ```
-  _blePlugin.sendContact(ContactBean info);
-  ```
+```
+_blePlugin.sendContact(ContactBean info);
+```
 
 Parameter Description :
 
 ContactBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| id  | int | The contact id |
-| width | int | The contact avatar width |
-| height | int | The contact avatar height |
-| address | int | The contact address |
-| name | String | The contact name |
-| number | String | The contact phone number |
-| avatar | Uint8List? | The contact avatar |
+| value   | value type | value description         |
+| ------- | ---------- | ------------------------- |
+| id      | int        | The contact id            |
+| width   | int        | The contact avatar width  |
+| height  | int        | The contact avatar height |
+| address | int        | The contact address       |
+| name    | String     | The contact name          |
+| number  | String     | The contact phone number  |
+| avatar  | Uint8List? | The contact avatar        |
 
 Precautions:
 
 - The Uint8List? type is a picture type, interacts with the backend, and converts it to a bitmap type at the backend.
-- The contact you set must have an avatar.
-- id has size limit.id的大小可以通过_blePlugin.checkSupportQuickContact返回值中的count获取。
-5. **Delete contacts information**
+- Contacts sent to the watch face, must have an avatar.
+- id has size limit. The maximum value of id can be viewed through count in the return value of _blePlugin.checkSupportQuickContact, and cannot be greater than or equal to the queried value.
+
+## 44.6 Sets contact avatar information
+
+Sets the contact avatar  , the result is obtained through contactAvatarEveStm.
+
+```
+_blePlugin.sendContactAvatar(ContactBean info);
+```
+
+## 44.7 Delete contacts information
 
 Delete contact information based on contact id.
 
-  ```dart
-  _blePlugin.deleteContact(int id);
-  ```
+```dart
+_blePlugin.deleteContact(int id);
+```
 
-6. **Example Query whether a number supports special symbols**
+## 44.8 Delete contacts avatar  information
 
-Whether the +*# symbol is supported in the phone number.
+Delete contact avatar   information based on contact id.
 
-  ```dart
-  bool isSupport = _blePlugin.queryContactNumberSymbol
-  ```
+```dart
+_blePlugin.deleteContactAvatar(int id);
+```
 
-7. **Clearing Contacts**
+## 44.9 clear contacts information
 
-  ```dart
-  _blePlugin.clearContact
-  ```
+```dart
+_blePlugin.clearContact();
+```
 
+# 45 Battery Saving
 
-### **2.48 Battery Saving**
+## 45.1 Sets battery saving **listener**
 
-1. **Sets battery saing listener**
+Set the battery storage listener, the result is returned through the data stream, and the Batter saving state saved in "event".
 
-Set the battery storage listener, the result is returned through the data stream, and saved in "event".
+```dart
+_blePlugin.batterySavingEveStm.listen(
+         (bool event) {
+         // Do something with new state
+        });
+```
 
-  ```dart
-  _blePlugin.batterySavingEveStm.listen(
-          (event) {
-           // Do something with new state
-          });
-  ```
+## 45.2 Sets battery saving state
 
-Callback Description（event）：
+```
+_blePlugin.sendBatterySaving(bool enable);
+```
 
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| event | bool | Batter saving state |
+## 45.3 Gets battery saving state
 
-2. **Sets battery saving state**
+The result of Batter saving state will be obtained through the batterySavingEveStm monitoring stream.
 
-  ```dart
-  _blePlugin.sendBatterySaving(bool enable);
-  ```
+```dart
+ _blePlugin.queryBatterySaving;
+```
 
-3. **Gets battery saving state**
+# 46 Pill Reminder
 
-The query result will be obtained through the batterySavingEveStm monitoring stream and saved in the event field.
+## 46.1 Gets support pill reminder
 
-  ```dart
-   _blePlugin.queryBatterySaving();
-  ```
-
-
-### **2.49 Pill Reminder**
-
-1. **Gets support pill reminder**
-
-  ```
-  _blePlugin.queryPillReminder();
-  ```
-
-2. **Sets pill reminder**
-
-  ```dart
-  _blePlugin.sendPillReminder(PillReminderBean info);
-  ```
+```dart
+PillReminderCallback info = await _blePlugin.queryPillReminder;
+```
 
 Parameter Description :
 
 PillReminderBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| id  | int | The pill id |
-| dateOffset | int | Start taking medicine in a few |
-| name | String | The pill name |
-| repeat | int | The take medicine every few days |
+| value        | value type             | value description  |
+| ------------ | ---------------------- | ------------------ |
+| supportCount | int                    | number of supports |
+| list         | List<PillReminderBean> | Pill reminder list |
+
+PillReminderBean:
+
+| value            | value type                              | value description                         |
+| ---------------- | --------------------------------------- | ----------------------------------------- |
+| id               | int                                     | The pill id                               |
+| dateOffset       | int                                     | Start taking medicine in a few            |
+| name             | String                                  | The pill name                             |
+| repeat           | int                                     | The take medicine every few  days         |
 | reminderTimeList | List<PillReminderBean.ReminderTimeBean> | The time point and dosage of the medicine |
 
-CRPPillReminderInfo.ReminderTimeBean:
+PillReminderInfo.ReminderTimeBean:
 
-| value | value type | value description |
-  | --- | --- | --- |
-| time | int | Medication time(For example, 100 is 01:40 am) |
-| count | int | The dose |
+| value | value type | value description                             |
+| ----- | ---------- | --------------------------------------------- |
+| time  | int        | Medication time(For example, 100 is 01:40 am) |
+| count | int        | The dose                                      |
 
-3. **Delete pill reminder**
+## **46.2 Sets pill **reminder
+
+```dart
+_blePlugin.sendPillReminder(PillReminderBean info);
+```
+
+## 46.3 Delete pill reminder
 
 Delete reminder message based on pill reminder id
 
-  ```dart
-  _blePlugin.deletePillReminder(int id);
-  ```
+```dart
+_blePlugin.deletePillReminder(int id);
+```
 
-4. **Clear pill reminder**
+## 46.4 Clear pill reminder
 
-  ```dart
-  _blePlugin.clearPillReminder();
-  ```
+```dart
+_blePlugin.clearPillReminder;
+```
 
+# 47 Tap to wake
 
-### **2.50 Tap to wake**
-
-1. **Gets tap to wake state**
+## 47.1 Gets tap to wake state
 
 Gets whether it is in the wake-up state. If the result is true, it means that it is in the awake state, otherwise, it is not awake.
 
-  ```dart
-  bool wakeState=await _blePlugin.queryWakeState();
-  ```
+```dart
+bool wakeState = await _blePlugin.queryWakeState;
+```
 
-2. **Sets tap to wake state**
+## 47.2 Sets tap to wake state
 
-Sets wake state.
+```
+ _blePlugin.sendWakeState(bool enable);
+```
 
-  ```
-   _blePlugin.sendWakeState(bool enable);
-  ```
+# 48 Training<Only android support>
 
+## 48.1 Sets training listener
 
-### 2.51 **Training**
+Set up a training listener, and the result is returned through the data stream and saved in the "event" as a TrainBean object.
 
-1. **Sets training listener**
-
-Set up a training listener, the results are returned through the data stream, and saved in "event".
-
-  ```dart
-  _blePlugin.trainingEveStm.listen(
-          (TrainBean event) {
-              // Do something with new state
+```dart
+_blePlugin.trainingEveStm.listen(
+        (TrainBean event) {
+            /// Do something with new state,for example:
+          setState(() {
+            switch (event.type) {
+              case TrainType.historyTrainingChange:
+                _historyTrainList = event.historyTrainList!;
+                break;
+              case TrainType.trainingChange:
+                _trainingInfo = event.trainingInfo;
+                _typeInfo = _trainingInfo!.type!;
+                _startTimeInfo = _trainingInfo!.startTime!;
+                _endTime = _trainingInfo!.endTime!;
+                _validTime = _trainingInfo!.validTime!;
+                _steps = _trainingInfo!.steps!;
+                _distance = _trainingInfo!.distance!;
+                _calories = _trainingInfo!.calories!;
+                _hrList = _trainingInfo!.hrList!;
+                break;
+              default:
+                break;
+            }
           });
-  ```
+        });
+```
 
 Callback Description（event）：
 
 TrainBean
 
+| callback value   | callback value type    | callback value description                                   |
+| ---------------- | ---------------------- | ------------------------------------------------------------ |
+| type             | int                    | Get the corresponding return value according to type, where type is the value corresponding to TrainType. |
+| historyTrainList | List<HistoryTrainList> | Historical training information.                             |
+| trainingInfo     | TrainingInfo           | Training information.                                        |
+
+TrainType:
+
+| type                  | value | value description     |
+| --------------------- | ----- | --------------------- |
+| historyTrainingChange | 1     | Gets History Training |
+| trainingChange        | 2     | Gets Training Detail  |
+
+HistoryTrainList:
+
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| historyTrainList | List<CRPHistoryTrainingInfo> | Historical training information |
-| trainingInfo | CRPTrainingInfo | Training information |
+| -------------- | ------------------- | -------------------------- |
+| startTime      | long                | Training start time        |
+| type           | int                 | The training type          |
 
-CRPHistoryTrainingInfo
-
-| callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| startTime | long | Training start time |
-| type | int | The training type |
-
-CRPTrainingInfo
+TrainingInfo:
 
 | callback value | callback value type | callback value description |
-  | --- | --- | --- |
-| type | int | The training type |
-| startTime | long | Training start time |
-| endTime | long | Training end time |
-| validTime | int | Training duration |
-| steps | int | Steps |
-| distance | int | Distance |
-| calories | int | Calories |
-| hrList | List<Integer> |     |
+| -------------- | ------------------- | -------------------------- |
+| type           | int                 | The training type          |
+| startTime      | long                | Training start time        |
+| endTime        | long                | Training end time          |
+| validTime      | int                 | Training duration          |
+| steps          | int                 | Steps                      |
+| distance       | int                 | Distance                   |
+| calories       | int                 | Calories                   |
+| hrList         | List<int>           | heart rate list            |
 
-2. **Gets History Training**
+## 48.2 Gets History Training
 
-Gets the training records stored in the watch. The query result will be obtained through trainingEveStm listening stream and saved in the historyTrainList field.
+Get historical training details. The query result will be obtained through the trainingEveStm monitoring stream, the return type is historyTrainingChange, and the training detailed data is TrainBean.historyTrainList.
 
-  ```dart
-  _blePlugin.queryHistoryTraining();
-  ```
+```dart
+_blePlugin.queryHistoryTraining;
+```
 
-3. **Gets Training Detail**
+## 48.3 Gets Training Detail
 
-Gets detailed data for a training. The query result will be obtained through the connTrainingEveStm listening stream and saved in the trainingInfo field
+Get detailed data for training. The query result will be obtained through the trainingEveStm monitoring stream, the return type is trainingChange, and the training detailed data is TrainBean.trainingInfo
 
-  ```dart
-  _blePlugin.queryTraining(int id);
-  ```
+```dart
+_blePlugin.queryTraining(int id);
+```
 
 Parameter Description :
 
-| value | value type | value description |
-  | --- | --- | --- |
-| id  | int | id is the id of a training |
+| value | value type | value description          |
+| ----- | ---------- | -------------------------- |
+| id    | int        | id is the id of a training |
 
+# 49 Calibrate the GSensor
 
-### 2.52 **Calibrate the GSensor**
-
-````
 If the screen is not sensitive or inaccurate, the watch can be corrected by calibrating the GSensor. During the calibration process, the watch is placed horizontally on the desktop.
 
 ```dart
-_blePlugin.sendGsensorCalibration()
+_blePlugin.sendGsensorCalibration;
 ```
-````
 
-### 2.53 **SOS**
+# 50 Sos
 
-````
-Set up SOS monitoring, some watches support.
+Set up a sos listener, and the result is returned through the data stream and saved in the "event" as a sosChangeEveStem object.
 
 ```dart
-_blePlugin.sosChangeEveStm.listen(
-        (dynamic event) {
-          ......
-        },
-  ),
+_blePlugin.sosChangeEveStem.listen(
+		(dynamic event) {
+				/// Do something with new state,for example:
+		}
+)
 ```
-````
 
-### 2.54 **SOS**
+# 51 Pairing
 
-````
 Some watches require the user to confirm the pairing on the watch after successful connection.
-
-```dart
-_blePlugin.createBond(int id)
-```
-````
-
-### 2.55 **Pairing**
-
-````
-部分⼿表在连接成功后需⽤户在⼿表上确定配对。
 
 ```dart
 int key = _blePlugin.createBond(byte[])
 ```
-````
 
-### 2.56 **HRV**
+# 52 HRV
 
-1. **Set HRV listening**
+## 52.1 Sets HRV listener
 
-  ```dart
-  _blePlugin.newHrvEveStm.listen(
-         (HrvHandlerBean event) {
-          ......
-      },
-    ),
-  ```
+Set up a HRV listener, and the result is returned through the data stream and saved in the "event" as a newHrvEveStm object.
 
-2. **Whether to support HRV**
+```dart
+_blePlugin.newHrvEveStm.listen(
+       (HrvHandlerBean event) {
+        ......
+    },
+  ),
+```
 
-Data is returned by listening
+Callback Description（event）：
 
-  ```dart
-  _blePlugin.querySupportNewHrv
-  ```
+HrvHandlerBean:
 
-3. **Start measuring HRV**
+| callback value | callback value type      | callback value description                                   |
+| -------------- | ------------------------ | ------------------------------------------------------------ |
+| type           | int                      | Get the corresponding return value according to type, where type is the value corresponding to HRVType. |
+| isSupport      | bool                     | Whether the watch supports                                   |
+| value          | int                      | HRV value of the watch                                       |
+| list           | List<HistoryHrvInfoBean> | The HRV history of the watch                                 |
 
-  ```dart
-  _blePlugin.startMeasureNewHrv
-  ```
+HRVType:
 
-4. **Stop measuring HRV**
+| type    | vlaue | value description                           |
+| ------- | ----- | ------------------------------------------- |
+| support | 1     | Whether the watch supports a callback       |
+| hrv     | 2     | Reset the HRV value of the watch            |
+| history | 3     | The HRV history of the watch is called back |
 
-  ```dart
-  _blePlugin.stopMeasureNewHrv
-  ```
+HistoryHrvInfoBean：
 
-5. **Example Query HRV history records**
+| value | value type | value description |
+| ----- | ---------- | ----------------- |
+| date  | String     | Time data         |
+| hrv   | int        | HRV value         |
 
-Data is returned by listening
+## 52.2 Whether to support HRV
 
-  ```dart
-  _blePlugin.queryHistoryNewHrv
-  ```
+Data is returned by listening.
 
+```dart
+_blePlugin.querySupportNewHrv;
+```
 
-### 2.57 **Pressure**
+## 52.3 Start measuring HRV
 
-1. **Set up pressure monitor**
+```dart
+_blePlugin.startMeasureNewHrv;
+```
 
-  ```dart
-  _blePlugin.stressEveStm.listen(
-      (StressHandlerBean event) {
-          ......
-      }
-  )
-  ```
+## 52.4 Stop measuring HRV
 
+```dart
+_blePlugin.stopMeasureNewHrv;
+```
+
+## 52.5 Example Query HRV history records
+
+Data is returned by listening.
+
+```dart
+_blePlugin.queryHistoryNewHrv
+```
+
+# 53 Stress
+
+## 53.1 Set up Stress listener
+
+Set up a sos listener, and the result is returned through the data stream and saved in the "event" as a sosChangeEveStem object.
+
+```dart
+_blePlugin.stressEveStm.listen(
+            (StressHandlerBean event) {
+            /// Do something with new state,for example:
+              if (!mounted) return;
+          setState(() {
+            switch (event.type) {
+              case StressHandlerType.support:
+                _isSupport = event.isSupport;
+                break;
+              case StressHandlerType.change:
+                _value = event.value;
+                break;
+              case StressHandlerType.historyChange:
+                _list = event.list;
+                break;
+              case StressHandlerType.timingStateChange:
+                _state = event.state;
+                break;
+              case StressHandlerType.timingChange:
+                _timingStressInfo = event.timingStressInfo;
+                break;
+            }
+          });
+        },
+      ),
+```
+
+Callback Description（event）：
 
 StressHandlerBean:
 
-| type | isSupport | value | list | state | timingStressInfo |
-| --- | --- | --- | --- | --- | --- |
-| int | bool | int | List<HistoryStressInfoBean> | bool | TimingStressInfoBean |
-| Cell 1 | Cell 2 | Cell 3 | Cell 4 | Cell 5 | Cell 6 |
-| Cell 1 | Cell 2 | Cell 3 | Cell 4 | Cell 5 | Cell 6 |
+| callback value   | callback value type         | callback value description                                   |
+| ---------------- | --------------------------- | ------------------------------------------------------------ |
+| type             | int                         | Get the corresponding return value according to type, where type is the value corresponding to StressHandlerType. |
+| isSupport        | bool                        | Whether the watch supports a callback                        |
+| value            | int                         | Gets the watch stress value callback                         |
+| list             | List<HistoryStressInfoBean> | Gets the watch historical stress value callback              |
+| state            | bool                        | Gets the watch stress status callback                        |
+| timingStressInfo | TimingStressInfoBean        | Gets a callback for the watch time stress information        |
 
-2. **Whether pressure measurement is supported**
+StressHandlerType:
 
-If there is a reply, pressure measurement is supported; if there is no reply, pressure measurement is not supported. Through CRPStressListener. OnSupportStress () callback.
+| type              | value | value description                     |
+| ----------------- | ----- | ------------------------------------- |
+| support           | 1     | Whether the watch supports a callback |
+| change            | 2     | Stress change callback                |
+| historyChange     | 3     | The historical callback               |
+| timingStateChange | 4     | A callback that timing state changes  |
+| timingChange      | 5     | A callback to a change in time        |
 
-  ```dart
-  _blePlugin.querySupportStress
-  ```
+HistoryStressInfoBean：
 
-3. **Starting pressure measurement**
+| value  | value type | value description |
+| ------ | ---------- | ----------------- |
+| date   | int        | Time data         |
+| stress | int        | Stress data       |
 
-After completion of measurement, through CRPStressListener. OnStressChange () callback.
+TimingStressInfoBean:
 
-  ```dart
-  _blePlugin.startMeasureStress
-  ```
+| value  | value type     | value description |
+| ------ | -------------- | ----------------- |
+| date   | StressDateBean | Stress time data  |
+| stress | List<int>      | Stress data list  |
 
-4. **Stop pressure measurement**
+StressDateBean：
 
-  ```dart
-  _blePlugin.stopMeasureStress
-  ```
+| value | value type | value description |
+| ----- | ---------- | ----------------- |
+| value | int        | Time data         |
 
-5. **Example Query historical pressure records**
+## 53.2 Whether stress measurement is supported
 
-Watch can keep records of recent 10 times measurement, through CRPStressListener. OnHistoryStressChange () callback.
+If there is a reply, pressure measurement is supported; if there is no reply, pressure measurement is not supported. The data is returned via the StressHandlerBean listener.
 
-  ```dart
-  _blePlugin.queryHistoryStress
-  ```
+```dart
+_blePlugin.querySupportStress;
+```
 
-6. **Turn on timing pressure measurement**
+## 53.3 Initial stress measurement
 
-The measurement interval is fixed at half an hour. ```dart
-_blePlugin.enableTimingStress
+After the measurement. The data is returned via the StressHandlerBean listener.
 
-7. **Turn off timing pressure measurement**
+```dart
+_blePlugin.startMeasureStress;
+```
 
-The measurement interval is fixed at half an hour. ```dart
-_blePlugin.disableTimingStress
+## 53.4 Stop stress measurement
 
-8. **Example Query the timing pressure measurement status**
+```dart
+_blePlugin.stopMeasureStress;
+```
 
-Through CRPStressListener. OnTimingStressStateChange () callback. ```dart
-_blePlugin.queryTimingStressState
+## 53.5 Example Query the stress history
 
-9. **Query periodic pressure measurement records**
+The watch can keep the last 10 measurements. The data is returned via the StressHandlerBean listener.
 
-Watch can keep measurement records of the past two days, through CRPStressListener. OnTimingStressChange () callback.
+```dart
+_blePlugin.queryHistoryStress;
+```
 
-  ```dart
-  _blePlugin.queryTimingStress(StressDate.today)
-  ```
+## 53.6 Turn on timing stress measurement
+
+The measurement interval is fixed at half an hour.  The data is returned via the StressHandlerBean listener.
+
+```dart
+_blePlugin.enableTimingStress;
+```
+
+## 53.7 Turn off timing stress measurement
+
+```dart
+_blePlugin.disableTimingStress;
+```
+
+## 53.8 Example Query the timing stress measurement status
+
+The data is returned via the StressHandlerBean listener.
+
+```dart
+_blePlugin.queryTimingStressState;
+```
+
+## 53.9 Query timing stress measurement records
+
+The watch can keep the last two days of measurement records. The data is returned via the StressHandlerBean listener.
+
+```
+blePlugin.queryTimingStress(StressDate.today)
+```
+
+Parameter Description :
 
 StressDate:
 
-| today | yesterday |
-  | --- | --- |
-| "TODAY" | "YESTERDAY" |
+| type      | value     | value description                          |
+| --------- | --------- | ------------------------------------------ |
+| today     | TODAY     | Today's timing stress measurement record   |
+| yesterday | YESTERDAY | Time stress measurement recorded yesterday |
 
+# 54 Electronic business card
 
-### 2.57 **Electronic business card**
+## 54.1 Query the number of supported e-cards
 
-1. **Query the number of supported e-cards**
+If there is a reply, the watch supports electronic business cards. If there is no reply, the watch does not support electronic business cards. The return type for ElectronicCardCountInfoBean.
 
-If there is a reply, the watch supports electronic business cards. If there is no reply, the watch does not support electronic business cards. Through CRPElectronicCardCountCallback. OnElectronicCardCount () callback.
+```dart
+ElectronicCardCountInfoBean electronicCardCountInfo = await _blePlugin.queryElectronicCardCount;
+```
 
-  ```dart
-  ElectronicCardCountInfoBean electronicCardCountInfo = _blePlugin.queryElectronicCardCount
-  ```
+Parameter Description :
 
 ElectronicCardCountInfoBean:
 
+| value         | value type | value description                           |
+| ------------- | ---------- | ------------------------------------------- |
+| count         | int        | Supports a maximum number of business cards |
+| urlBytesLimit | int        | Maximum number of url bytes (utf-8 format)  |
+| savedIdList   | List<int>  | A list of saved e-business card ids         |
 
-| count | urlBytesLimit | savedIdList |
-| --- | --- | --- |
-| int | int | List<int> |
-| Supports a maximum number of business cards | Maximum number of url bytes (utf-8 format) | A list of saved e-business card ids |
+## 54.2 Sets up electronic business cards
 
-2. **Set up an electronic business card**
-
-  ```dart
-  _blePlugin.sendElectronicCard(ElectronicCardInfoBean(
-       id: 2,
-       title: "百度",
-       url: "https://www.baidu.com/",
-  ))
-  ```
-
-
-ElectronicCardInfoBean:
-
-```
-|   id    |  title   | url  |
-|:----------|:----------|:----------|
-|  int    |  String    |  String    |
-| Electronic business card ID (not more than the maximum number supported)  | Electronic Business Card Title | Electronic business card link (watch uses this link to produce corresponding QR code) |
+```dart
+_blePlugin.sendElectronicCard(ElectronicCardInfoBean(
+      id: 2,
+      title: "百度",
+      url: "https://www.baidu.com/",
+));
 ```
 
-3. **Delete your e-card**
+Parameter Description :
 
-  ```dart
-  _blePlugin.deleteElectronicCard(id)
-  ```
+ElectronicCardInfoBean：
 
-4. **Query electronic business card details**
+| value | value type | value description                                            |
+| ----- | ---------- | ------------------------------------------------------------ |
+| id    | int        | Electronic business card ID (not more than the maximum number supported) |
+| title | String     | Electronic business card title                               |
+| url   | String     | Electronic business card link (watch uses this link to produce corresponding QR code) |
 
-Through CRPElectronicCardCallback. OnElectronicCard () callback.
+## 54.3 Delete e-card
 
-  ```dart
-  ElectronicCardInfoBean electronicCardInfo = _blePlugin.queryElectronicCard(id)
-  ```
+```dart
+_blePlugin.deleteElectronicCard(id);
+```
 
-5. **Electronic business card sorting**
+## 54.4 Query electronic business card details
+
+```dart
+ElectronicCardInfoBean electronicCardInfo = await _blePlugin.queryElectronicCard(2);
+```
+
+## 54.5 Electronic business card sorting
 
 Reorder electronic business cards through idList.
 
-  ```dart
-  _blePlugin.sendElectronicCardList(List idList)
-  ```
+```
+blePlugin.sendElectronicCardList([2]);
+```
 
+# 55 Reminder of Schedule
 
-### 2.58 **Reminder of Schedule**
+## 55.1 Set up a schedule reminder listener
 
-1. **Set up a schedule reminder monitor**
+Set up a schedule reminder listener, and the result is returned through the data stream and saved in the "event" as a calendarEventEveStem object.
 
-  ```dart
-  blePlugin.calendarEventEveStem.listen(
-     (CalendarEventBean event) {
-          ......
-     },
-  ),
-  ```
+```dart
+_blePlugin.calendarEventEveStem.listen(
+   (CalendarEventBean event) {
+       /// Do something with new state,for example:
+     if (!mounted) return;
+          setState(() {
+            switch(event.type) {
+              case CalendarEventType.support:
+                _maxNumber = event.maxNumber;
+                _list = event.list;
+                break;
+              case CalendarEventType.details:
+                _calendarEventInfo = event.calendarEventInfo;
+                break;
+              case CalendarEventType.stateAndTime:
+                _state = event.state;
+                _time = event.time;
+                break;
+            }
+          });
+   },
+),
+```
 
-2. **Query whether schedule reminders are supported**
+Callback Description（event）：
 
-Through CRPCalendarEventListener. OnSupportEvent () callback support maximum quantity and saved remind remind events.
+CalendarEventBean:
 
-  ```dart
-  _blePlugin.querySupportCalendarEvent
-  ```
+| callback value    | callback value type              | callback value description                                   |
+| ----------------- | -------------------------------- | ------------------------------------------------------------ |
+| type              | int                              | Get the corresponding return value according to type, where type is the value corresponding to CalendarEventType. |
+| maxNumber         | int                              | Supported callback data, indicating the maximum number of reminders |
+| list              | List<SavedCalendarEventInfoBean> | Data of whether callbacks are supported, indicating saved reminder events |
+| state             | bool                             | Gets schedule reminder status and time callback data, indicating the enabled status |
+| time              | int                              | Gets data about the status of the schedule reminder and the time callback, representing the reminder time |
+| calendarEventInfo | CalendarEventInfoBean            | Gets the callback for the details of the schedule alert event |
 
-3. **Set Schedule Reminders**
+CalendarEventType:
 
-  ```dart
-  _blePlugin.sendCalendarEvent(CalendarEventInfoBean(
-        id: 1,
-        title: "生日",
-        startHour: 2,
-        startMinute: 30,
-        endHour: 4,
-        endMinute: 30,
-        time: 40,
-     ))
-  ```
+| type         | vlaue | value description                                            |
+| ------------ | ----- | ------------------------------------------------------------ |
+| support      | 1     | Whether the watch supports a callback                        |
+| details      | 2     | Gets the callback for the watch schedule reminder            |
+| stateAndTime | 3     | Gets a callback for the schedule alert enabled status and time |
 
-CalendarEventInfoBean:
+SavedCalendarEventInfoBean：
 
+| vlaue | vlaue type | value description                       |
+| ----- | ---------- | --------------------------------------- |
+| id    | int        | Event ID                                |
+| time  | List<int>  | Reminder time (timestamp, unit: second) |
 
-| id  | title | startHour | startMinute | endHour | endMinute | time |
-| --- | --- | --- | --- | --- | --- | --- |
-| int | String | int | int | int | int | int |
-| Event ID | Event Title | Start time hour | Start time minutes | End time hour | End time Minutes | Reminder time (timestamp, unit: second) |
+CalendarEventInfoBean：
 
-4. **Delete Schedule Reminders**
+| value       | value type | value description                       |
+| ----------- | ---------- | --------------------------------------- |
+| id          | int        | Event ID                                |
+| title       | String     | Event title                             |
+| startHour   | int        | Start time hour                         |
+| startMinute | int        | Start time minute                       |
+| endHour     | int        | End time hour                           |
+| endMinute   | int        | End time minutes                        |
+| time        | int        | Reminder time (timestamp, unit: second) |
 
-  ```dart
-  _blePlugin.deleteCalendarEvent(int id)
-  ```
+## 55.2 Query whether schedule reminders are supported
 
-5. **Example Query schedule notification events**
+Gets the maximum number of reminders and saved reminder events.
 
-Through CRPCalendarEventListener. OnEvent () callback.
+```dart
+_blePlugin.querySupportCalendarEvent;
+```
 
-  ```dart
-  _blePlugin.queryCalendarEvent(int id)
-  ```
+## 55.3 Set Schedule Reminders
 
-6. **Set the status and time of schedule reminder**
+```dart
+_blePlugin.sendCalendarEvent(CalendarEventInfoBean(
+      id: 1,
+      title: "生日",
+      startHour: 2,
+      startMinute: 30,
+      endHour: 4,
+      endMinute: 30,
+      time: 40,
+   ));
+```
 
-  ```dart
-  _blePlugin.sendCalendarEventReminderTime(CalendarEventReminderTimeBean(
-      enable: false,
-      minutes： 30
-  ))
-  ```
+## 55.4 Delete Schedule Reminders
 
-CalendarEventReminderTimeBean：
+The parameter is the id of the schedule alert event.
 
-| enable | minutes |
-  | --- | --- |
-| boolean | int |
-| On state | Reminder time(Unit: minute. The value cannot be negative) |
+```dart
+_blePlugin.deleteCalendarEvent(1);
+```
 
+## 55.5 Example Query schedule notification events
 
-7. **Example Query the schedule reminding status and reminding time**
+The parameter is the id of the schedule alert event.
 
-Through CRPCalendarEventListener. OnEventReminderTime () callback.
+```dart
+_blePlugin.queryCalendarEvent(1)
+```
 
-  ```dart
-  _blePlugin.queryCalendarEventReminderTime
-  ```
+## 55.6 Set the status and time of schedule reminder
 
-8. **Clear your calendar Reminders**
+minutes The unit is minutes. The value cannot be negative.
 
-Through CRPCalendarEventListener. OnEventReminderTime () callback.
+```dart
+_blePlugin.sendCalendarEventReminderTime(CalendarEventReminderTimeBean(
+    enable: false,
+    minutes： 30
+));
+```
 
-  ```dart
-  _blePlugin.clearCalendarEvent
-  ```
+## 55.7 Example Query the schedule reminding status and reminding time
+
+```dart
+_blePlugin.queryCalendarEventReminderTime;
+```
+
+## 55.8 Clear your calendar Reminders
+
+```dart
+_blePlugin.clearCalendarEvent;
+```
+
+# 56 Vibration intensity
+
+## 56.1 Sets vibration intensity
+
+Adjust the vibration intensity of the watch motor. Vibration intensity is divided into low, medium and strong three grades.
+
+```dart
+_blePlugin.sendVibrationStrength(VibrationStrengthType.low);
+```
+
+Parameter Description :
+
+VibrationStrengthType:
+
+| type   | value | value description                 |
+| ------ | ----- | --------------------------------- |
+| low    | 1     | The vibration intensity is low    |
+| medium | 2     | The vibration intensity is medium |
+| strong | 3     | The vibration intensity is strong |
+
+## 56.2 Query vibration intensity
+
+If there is a reply, the function is supported. If there is no reply, the watch does not support this function.
+
+```dart
+VibrationStrength value = await _blePlugin.queryVibrationStrength;
+```
+
+Parameter Description :
+
+VibrationStrength:
+
+| value | value type | value description         |
+| ----- | ---------- | ------------------------- |
+| value | int        | Vibration intensity value |
