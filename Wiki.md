@@ -483,47 +483,7 @@ Parameter Description :
 
 # 8 Weather
 
-## **8.1 Sets weather listener**
-
-The watch can save real-time weather for 2 hours, and the weather information will be cleared after 2 hours. When the watch does not have today's weather information, the watch will reset the weather when it switches to the weather interface.
-
-Sets the weather to monitor weatherChangeEveStm, return the update result of the weather status through the data stream, and return it as a WeatherChangeBean object.
-
-```dart
- _blePlugin.weatherChangeEveStm.listen(
-        (WeatherChangeBean event) {
-          /// Do something with new state,for example:
-          setState(() {
-            switch (event.type) {
-              case WeatherChangeType.updateWeather:
-                break;
-              case WeatherChangeType.tempUnitChange:
-                _weather = event.tempUnit!;
-                break;
-              default:
-                break;
-            }
-          });
-        });
-```
-
-Callback Description（event） :
-
-WeatherChangeBean:
-
-| callback value | callback value type | callback value description                                   |
-| :------------- | :------------------ | :----------------------------------------------------------- |
-| type           | int                 | Weather change return value type, the type is WeatherChangeType |
-| tempUnit       | int                 | Temperature unit                                             |
-
-WeatherChangeType:
-
-| value          | value type | value description                                            |
-| :------------- | :--------- | :----------------------------------------------------------- |
-| updateWeather  | 1          | Represents the data returned by the weather change monitor   |
-| tempUnitChange | 2          | Represents the data returned by the temperature change monitor |
-
-## 8.2 Sets today's weather
+## 8.1 Sets today's weather
 
 Set the watch's weather for today.
 
@@ -557,7 +517,7 @@ WeatherId：
 | sandstorm | 6     |     sandstorm     |
 |   haze    | 7     |       haze        |
 
-## 8.3 Sets weather in the next 7 days
+## 8.2 Sets weather in the next 7 days
 
 Sets the weather for the next 7 days to the watch.
 
@@ -598,27 +558,34 @@ Callback Description（event）:
 
 StepsChangeBean：
 
-| callback value | callback value type | callback value description |
-| :------------- | :------------------ | :------------------------- |
-| stepInfo       | StepsChange         | steps information          |
-| timeType       | int                 | days,from StepsTimeType    |
+| callback value   | callback value type | callback value description |
+| :--------------- | :------------------ | :------------------------- |
+| type             | int                 | days,from StepsChangeType  |
+| stepsInfo        | StepInfoBean        | steps information          |
+| historyStepsInfo | HistoryStepInfoBean | history Steps Info         |
 
-StepsChange:
+StepsChangeType:
 
-| value    | value type | value description                                            |
-| :------- | :--------- | :----------------------------------------------------------- |
-| steps    | int        | steps                                                        |
-| distance | int        | Distance (in meters)                                         |
-| calories | int        | Calories (units of kilocalories)                             |
-| time     | int        | Activity duration, (the default value is 0, which means the watch does not support) |
+| type              | value | value description                      |
+| :---------------- | :---- | :------------------------------------- |
+| stepChange        | 1     | Gets the callback for the step change. |
+| historyStepChange | 2     | Gets the step history callback.        |
 
-StepsTimeType:
+StepInfoBean:
 
-| value                   | value type | value description          |
-| :---------------------- | :--------- | :------------------------- |
-| todaySteps              | 1          | today steps                |
-| yesterdaySteps          | 2          | yesterday steps            |
-| dayBeforeYesterdaySteps | 3          | day before yesterday steps |
+| value    | value type | value description |
+| :------- | :--------- | :---------------- |
+| steps    | int        | Step data         |
+| distance | int        | Distance data     |
+| calories | int        | Calories data     |
+| time     | int        | Duration          |
+
+HistoryStepInfoBean:
+
+| value      | value type   | value description |
+| ---------- | ------------ | ----------------- |
+| historyDay | String       | Historical date   |
+| stepsInfo  | StepInfoBean | steps information |
 
 ## 9.2 Gets today's steps
 
@@ -635,21 +602,24 @@ The watch can save the number of activity steps in the past three days, and can 
 Gets the activity steps data in a certain day. The query result will be obtained through the stepsChangeEveStm listening stream, and the type is yesterdaySteps or dayBeforeYesterdaySteps.
 
 ```dart
-_blePlugin.queryHistorySteps(HistoryTimeType);
+_blePlugin.queryHistorySteps(StepsDetailDateType);
 ```
 
 Parameter Description :
 
-HistoryTimeType:
+StepsDetailDateType:
 
 Use yesterdaySteps and dayBeforeYesterdaySteps parameters.
 
-| value                   | value type | value description |
-| :---------------------- | :--------- | :---------------- |
-| yesterdaySteps          | int        | 1                 |
-| dayBeforeYesterdaySteps | int        | 2                 |
-| yesterdaySleep          | int        | 3                 |
-| dayBeforeYesterdaySleep | int        | 4                 |
+| value                 | value type | value description |
+| :-------------------- | :--------- | :---------------- |
+| today                 | int        | 0                 |
+| yesterday             | int        | 1                 |
+| theDayBeforeYesterday | int        | 2                 |
+| threeDaysAgo          | int        | 3                 |
+| fourDaysAgo           | int        | 4                 |
+| fiveDaysAgo           | int        | 5                 |
+| sixDaysAgo            | int        | 6                 |
 
 ## 9.4 Sets steps Detail listener
 
@@ -724,15 +694,6 @@ Gets classification statistics for the past two days. The query result will be o
 _blePlugin.queryStepsDetail(StepsDetailDateType);
 ```
 
-Parameter Description :
-
-StepsDetailDateType:
-
-| type                   | value | value description        |
-| :--------------------- | :---- | :----------------------- |
-| todayStepsCategory     | 0     | today steps category     |
-| yesterdayStepsCategory | 2     | yesterday steps category |
-
 # 10 Sleep
 
 ## 10.1 Sets sleep listener
@@ -804,21 +765,19 @@ HistorySleepBean：
 
 | value     | value type | value description                                            |
 | :-------- | :--------- | :----------------------------------------------------------- |
-| timeType  | int        | days,from HistoryTimeType                                    |
+| timeType  | int        | days,from SleepHistoryTimeType                               |
 | sleepInfo | SleepInfo  | Specifies the user's historical sleep information for the date type |
 
 Parameter Description :
 
-HistoryTimeType:
+SleepHistoryTimeType:
 
 Use yesterdaySleep and dayBeforeYesterdaySleep parameters.
 
-| value                   | value type | value description |
-| :---------------------- | :--------- | :---------------- |
-| yesterdaySteps          | int        | 1                 |
-| dayBeforeYesterdaySteps | int        | 2                 |
-| yesterdaySleep          | int        | 3                 |
-| dayBeforeYesterdaySleep | int        | 4                 |
+| value                 | value type | value description |
+| :-------------------- | :--------- | :---------------- |
+| yesterday             | int        | 1                 |
+| theDayBeforeYesterday | int        | 2                 |
 
 ## 10.2 Gets today's sleep
 
@@ -881,8 +840,8 @@ Parameter Description :
 
 | value          | value type | value description |
 | :------------- | :--------- | :---------------- |
-| metricSystem   | byte       | 0                 |
-| imperialSystem | byte       | 1                 |
+| metricSystem   | int        | 0                 |
+| imperialSystem | int        | 1                 |
 
 ## 11.2 Gets the unit system
 
@@ -913,7 +872,7 @@ bool quickViewState = await _blePlugin.queryQuickView;
 The watch supports setting the effective time period for turning the wrist and turning on the screen, and it is only valid when turning the wrist and turning on the screen within the set time period.
 
 ```dart
-_blePlugin.sendQuickViewTime(PeriodTimeBean info);
+_blePlugin.sendQuickViewTime(PeriodTimeBean);
 ```
 
 Parameter Description :
@@ -968,7 +927,64 @@ Gets the target number of steps set in the watch.
 int goalSteps = await _blePlugin.queryGoalSteps;
 ```
 
+## 13.3 Sets daily goals
+
+```dart
+_blePlugin.sendDailyGoals(DailyGoalsInfoBean);
+```
+
+Parameter Description :
+
+DailyGoalsInfoBean:
+
+| value        | value type | value description |
+| ------------ | ---------- | ----------------- |
+| steps        | int        | Steps data        |
+| calories     | int        | Calories data     |
+| trainingTime | int        | Duration          |
+| distance     | int        | Distance data     |
+
+## 13.4 Gets daily goals
+
+```dart
+DailyGoalsInfoBean dailyGoalsInfo = blePlugin.queryDailyGoals;
+```
+
+## 13.5 Sets training day goals
+
+```dart
+_blePlugin.sendTrainingDayGoals(DailyGoalsInfoBean);
+```
+
+## 13.6 Gets training day goals
+
+```dart
+DailyGoalsInfoBean dailGoalsInfo = _blePlugin.queryTrainingDayGoals
+```
+
+## 13.7 Sets training days
+
+```dart
+_blePlugin.sendTrainingDays(TrainingDayInfoBean);
+```
+
+Parameter Description :
+
+TrainingDayInfoBean:
+
+| value        | value type | value description        |
+| ------------ | ---------- | ------------------------ |
+| enable       | bool       | Support training or not. |
+| trainingDays | List<int>  | Date of training         |
+
+## 13.8 Gets training days
+
+```dart
+TrainingDayInfoBean trainingDay = _blePlugin.queryTrainingDay;
+```
+
 # 14 Watchface
+
 ## 14.1 Sets watchface index
 
 The watch supports a variety of different watchfaces, which can be switched freely.
@@ -979,20 +995,23 @@ Send watchface type,Parameters provided by WatchFaceType.
 _blePlugin.sendDisplayWatchFace(WatchFaceType);
 ```
 
+Parameter Description :
+
 WatchFaceType:
 
-| value           | value type | value description |
-| --------------- | ---------- | ----------------- |
-| firstWatchFace  | int        | 0x01              |
-| secondWatchFace | int        | 0x02              |
-| thirdWatchFace  | int        | 0x03              |
+| value                 | value type | value description |
+| --------------------- | ---------- | ----------------- |
+| firstWatchFace        | int        | 1                 |
+| secondWatchFace       | int        | 2                 |
+| thirdWatchFace        | int        | 3                 |
+| newCustomizeWatchFace | int        | 4                 |
 
 ## 14.2 Gets the watchface
 
 Gets the watchface being displayed.
 
 ```dart
-int watchFace = await _blePlugin.queryDisplayWatchFace;
+int displayWatchFace = await _blePlugin.queryDisplayWatchFace;
 ```
 
 ## 14.3 Gets the watchface layout
@@ -1033,7 +1052,7 @@ WatchFaceLayoutType:
 ## 14.4 Sets the watchface layout
 
 ```dart
-_blePlugin.sendWatchFaceLayout(WatchFaceLayoutBean info);
+_blePlugin.sendWatchFaceLayout(WatchFaceLayoutBean);
 ```
 
 ## **14.5 Sets watchface background Listener**Training
@@ -1088,7 +1107,7 @@ TransType：
 The dial of the 1.3-inch color screen supports the replacement of the background image with a picture size of 240 * 240 px. Compressed indicates whether the picture needs to be compressed (the watch with the master control of 52840 does not support compression and is fixed to false); timeout indicates the timeout period, in seconds. The progress is called back by _blePlugin.fileTransEveStm.listen.
 
 ```dart
-_blePlugin.sendWatchFaceBackground(WatchFaceBackgroundBean info);
+_blePlugin.sendWatchFaceBackground(WatchFaceBackgroundBean);
 ```
 
 
@@ -1106,7 +1125,23 @@ WatchFaceBackgroundBean:
 | width          | int                 | width of bitmap                         |
 | height         | int                 | height of bitmap                        |
 
-## 14.7 Gets support watchface type
+## 14.7 Abort watchface background
+
+Stop sending the watchface background.
+
+```dart
+_blePlugin.abortWatchFaceBackground;
+```
+
+## 14.8 Gets available storage
+
+Check your watch's available storage space to see if you can download a new watch face.
+
+```dart
+int size = _blePlugin.queryAvailableStorage;
+```
+
+## 14.9 Gets support watchface type
 
 When the watch switches dials, it needs to query the type supported by the dial.
 
@@ -1118,11 +1153,12 @@ callback description：
 
 SupportWatchFaceBean:
 
-| displayWatchFace                    | supportWatchFaceList |
-| ----------------------------------- | -------------------- |
-| The currently displayed dial number | Types of watch faces |
+| callback value       | callback value type | callback value description         |
+| -------------------- | ------------------- | ---------------------------------- |
+| displayWatchFace     | int                 | The watch face currently displayed |
+| supportWatchFaceList | List<int>           | List of supported watch faces      |
 
-## 14.8 Gets the watchface store
+## 14.10 Gets the watchface store
 
 According to the watchface type supported by the watch, obtain a list of watchfaces that the watch can be replaced. 
 
@@ -1147,7 +1183,7 @@ watchFaceSupportList:parameters are obtained by the _blePlugin.querySupportWatch
 
 firmwareVersion:Get the firmware version number through _blePlugin.queryFirmwareVersion.
 
-## 14.9 Gets the watchface information of the watchface ID
+## 14.11 Gets the watchface information of the watchface ID
 
 ```dart
 WatchFaceIdBean info = await _blePlugin.queryWatchFaceOfID(id);
@@ -1179,7 +1215,7 @@ WatchFace:
 | preview | String     | Watchface  Image preview link |
 | file    | String     | Watchface file download link  |
 
-## 14.10 Sets watchface file listener
+## 14.12 Sets watchface file listener
 
 ```dart
       _blePlugin.wfFileTransEveStm.listen(
@@ -1225,7 +1261,7 @@ TransType：
 | transCompleted | 3     | Indicates that the data returned after the dial file transfer is completed |
 | error          | 4     | Indicates a dial file transfer error listening for returned data |
 
-## 14.11 Sets a watchface file
+## 14.13 Sets a watchface file
 
 Send the watchface file of the new watchface to the watch, during which the watch will restart. 
 
@@ -1255,7 +1291,7 @@ CustomizeWatchFaceBean:
 The watch supports three alarm clocks, and the alarm clock information can be set according to the alarm clock serial number. Single alarm clock supports setting date.
 
 ```dart
-_blePlugin.sendAlarm(AlarmClockBean info);
+_blePlugin.sendAlarm(AlarmClockBean);
 ```
 
 Parameter Description :
@@ -1290,6 +1326,24 @@ Gets all alarm clock information saved by the watch.
 List<AlarmClockBean> listInfo = await _blePlugin.queryAllAlarm;
 ```
 
+## 15.3 Sets alarm(new)
+
+```dart
+_blePlugin.sendNewAlarm(AlarmClockBean);
+```
+
+## 15.4 Deleted alarm(new)
+
+```dart
+_blePlugin.deleteNewAlarm(AlarmClockBean.id);
+```
+
+## 15.5 Gets all alarm(new)
+
+```dart
+List<AlarmClockBean> list = _blePlugin.queryAllNewAlarm;
+```
+
 # 16 Language
 
 ## 16.1 Sets the watch language
@@ -1304,37 +1358,45 @@ Parameter Description :
 
 DeviceLanguageType:
 
-| value                  | value type | value description   |
-| ---------------------- | ---------- | ------------------- |
-| languageEnglish        | int        | English             |
-| languageChinese        | int        | Chinese Simplified  |
-| languageJapanese       | int        | Japanese            |
-| languageKorean         | int        | Korean              |
-| languageGerman         | int        | German              |
-| languageFrensh         | int        | French              |
-| languageSpanish        | int        | Spanish             |
-| languageArabic         | int        | Arabic              |
-| languageRussian        | int        | Russian             |
-| languageTraditional    | int        | traditional Chinese |
-| languageUkrainian      | int        | Ukrainian           |
-| languageItalian        | int        | Italian             |
-| languagePortuguese     | int        | Portuguese          |
-| languageDutch          | int        | Dutch               |
-| languagePolish         | int        | Polish              |
-| languageSwedish        | int        | Swedish             |
-| languageFinnish        | int        | Finnish             |
-| languageDanish         | int        | Danish              |
-| languageNorwegian      | int        | Norwegian           |
-| languageHungarian      | int        | Hungarian           |
-| languageCzech          | int        | Czech               |
-| languageBulgarian      | int        | Bulgarian           |
-| languageRomanian       | int        | Romanian            |
-| languageSlovakLanguage | int        | Slovak Language     |
-| languageLatvian        | int        | Latvian             |
+| type                   | value | value type | value description   |
+| ---------------------- | ----- | ---------- | ------------------- |
+| languageEnglish        | 0     | int        | English             |
+| languageChinese        | 1     | int        | Chinese Simplified  |
+| languageJapanese       | 2     | int        | Japanese            |
+| languageKorean         | 3     | int        | Korean              |
+| languageGerman         | 4     | int        | German              |
+| languageFrensh         | 5     | int        | French              |
+| languageSpanish        | 6     | int        | Spanish             |
+| languageArabic         | 7     | int        | Arabic              |
+| languageRussian        | 8     | int        | Russian             |
+| languageTraditional    | 9     | int        | traditional Chinese |
+| languageUkrainian      | 10    | int        | Ukrainian           |
+| languageItalian        | 11    | int        | Italian             |
+| languagePortuguese     | 12    | int        | Portuguese          |
+| languageDutch          | 13    | int        | Dutch               |
+| languagePolish         | 14    | int        | Polish              |
+| languageSwedish        | 15    | int        | Swedish             |
+| languageFinnish        | 16    | int        | Finnish             |
+| languageDanish         | 17    | int        | Danish              |
+| languageNorwegian      | 18    | int        | Norwegian           |
+| languageHungarian      | 19    | int        | Hungarian           |
+| languageCzech          | 20    | int        | Czech               |
+| languageBulgarian      | 21    | int        | Bulgarian           |
+| languageRomanian       | 22    | int        | Romanian            |
+| languageSlovakLanguage | 23    | int        | Slovak Language     |
+| languageLatvian        | 24    | int        | Latvian             |
 
 Precautions: Italian and Portuguese only support watch firmware 1.7.1 and above.
 
-## 16.2 Gets the watch language
+## 16.2 Gets device version
+
+Gets the version of the watch in use.
+
+```dart
+int type = _blePlugin.queryDeviceVersion;
+```
+
+## 16.3 Gets the watch language
 
 Gets the language that the watch is using and the list of languages supported by the watch. 
 
@@ -1351,12 +1413,34 @@ Callback Description:
 
 # 17 Notification
 
-## 17.1 Sets message
+## 17.1 Sets other message state<Only android support>
 
-Send various types of message content to the watch.
+Enable or disable other notifications.
 
+```dart
+_blePlugin.sendOtherMessageState(bool);
 ```
-_blePlugin.sendMessage(MessageBean info);
+
+## 17.2 Gets other message state<Only android support>
+
+```dart
+bool state = _blePlugin.queryOtherMessageState;
+```
+
+## 17.3 Gets message list
+
+Gets the message types supported by the watch.
+
+```dart
+List<int> messageType = _blePlugin.queryMessageList;
+```
+
+## 17.4 Sets message
+
+To send various types of message content to the watch, obtain the firmware version of the watch first.
+
+```dart
+_blePlugin.sendMessage(MessageBean);
 ```
 
 Parameter Description :
@@ -1373,31 +1457,63 @@ MessageBean:
 
 BleMessageType:
 
-| **value**        | value type | value description              |
-| ---------------- | ---------- | ------------------------------ |
-| messagePhone     | int        | phone                          |
-| messageSms       | int        | SMS                            |
-| messageWechat    | int        | WeChat (Chinese Edition)       |
-| messageQQ        | int        | QQ                             |
-| messageFacebook  | int        | FACEBOOK                       |
-| messageTwitter   | int        | TWITTER                        |
-| messageWhatsapp  | int        | WHATSAPP                       |
-| messageWechatIn  | int        | WeChat (International Edition) |
-| messageInstagrem | int        | INSTAGREM                      |
-| messageSkype     | int        | SKYPE                          |
-| messageKakaotalk | int        | KAKAOTALK                      |
-| messageLine      | int        | LINE                           |
-| messageOther     | int        | Other                          |
+| **value**        | value type | value description |
+| ---------------- | ---------- | ----------------- |
+| call             | int        | 0                 |
+| sms              | int        | 1                 |
+| wechat           | int        | 2                 |
+| qq               | int        | 3                 |
+| facebook         | int        | 130               |
+| twitter          | int        | 131               |
+| instagram        | int        | 6                 |
+| skype            | int        | 7                 |
+| whatsApp         | int        | 4                 |
+| line             | int        | 9                 |
+| kaKao            | int        | 8                 |
+| email            | int        | 11                |
+| messenger        | int        | 12                |
+| zalo             | int        | 13                |
+| telegram         | int        | 14                |
+| viber            | int        | 15                |
+| nateOn           | int        | 16                |
+| gmail            | int        | 17                |
+| calendar         | int        | 18                |
+| dailyHunt        | int        | 19                |
+| outlook          | int        | 20                |
+| yahoo            | int        | 21                |
+| inshorts         | int        | 22                |
+| phonepe          | int        | 23                |
+| gpay             | int        | 24                |
+| paytm            | int        | 25                |
+| swiggy           | int        | 26                |
+| zomato           | int        | 27                |
+| uber             | int        | 28                |
+| ola              | int        | 29                |
+| reflexApp        | int        | 30                |
+| snapchat         | int        | 31                |
+| ytMusic          | int        | 32                |
+| youTube          | int        | 33                |
+| linkEdin         | int        | 34                |
+| amazon           | int        | 35                |
+| flipkart         | int        | 36                |
+| netFlix          | int        | 37                |
+| hotstar          | int        | 38                |
+| amazonPrime      | int        | 39                |
+| googleChat       | int        | 40                |
+| wynk             | int        | 41                |
+| googleDrive      | int        | 42                |
+| dunzo            | int        | 43                |
+| gaana            | int        | 44                |
+| missCall         | int        | 45                |
+| whatsAppBusiness | int        | 46                |
+| tiktok           | int        | 47                |
+| lyft             | int        | 48                |
+| mail             | int        | 49                |
+| googleMaps       | int        | 50                |
+| slack            | int        | 51                |
+| other            | int        | 128               |
 
-## 17.2 End call<Only android support>
-
-When the watch receives a push of a phone type message, the watch will vibrate for a fixed time. Call this interface to stop the watch from vibrating when the watch answers the call or hangs up the call.
-
-```dart
-_blePlugin.endCall;
-```
-
-## 17.3 Sets up other push notifications<Only ios support>
+## 17.5 Sets push notifications(old)<Only ios support>
 
 Enable or disable other push notifications
 
@@ -1409,29 +1525,96 @@ Parameter Description :
 
 NotificationType:
 
-| **value** | value type | value description |
-| --------- | ---------- | ----------------- |
-| phone     | int        | 0                 |
-| messages  | int        | 1                 |
-| wechat    | int        | 2                 |
-| qq        | int        | 3                 |
-| facebook  | int        | 4                 |
-| twitter   | int        | 5                 |
-| instagram | int        | 6                 |
-| skype     | int        | 7                 |
-| whatsApp  | int        | 8                 |
-| line      | int        | 9                 |
-| kakaoTalk | int        | 10                |
-| gmail     | int        | 11                |
-| messenger | int        | 12                |
-| zalo      | int        | 13                |
-| telegram  | int        | 14                |
-| viber     | int        | 15                |
+| **value**        | value type | value description |
+| ---------------- | ---------- | ----------------- |
+| call             | int        | 0                 |
+| sms              | int        | 1                 |
+| wechat           | int        | 2                 |
+| qq               | int        | 3                 |
+| facebook         | int        | 4                 |
+| twitter          | int        | 5                 |
+| instagram        | int        | 6                 |
+| skype            | int        | 7                 |
+| whatsApp         | int        | 8                 |
+| line             | int        | 9                 |
+| kakao            | int        | 10                |
+| gmail            | int        | 11                |
+| messenger        | int        | 12                |
+| zalo             | int        | 13                |
+| telegram         | int        | 14                |
+| viber            | int        | 15                |
+| nateOn           | int        | 16                |
+| gmail            | int        | 17                |
+| calenda          | int        | 18                |
+| dailyHunt        | int        | 19                |
+| outlook          | int        | 20                |
+| yahoo            | int        | 21                |
+| inshorts         | int        | 22                |
+| phonepe          | int        | 23                |
+| gpay             | int        | 24                |
+| paytm            | int        | 25                |
+| swiggy           | int        | 26                |
+| zomato           | int        | 27                |
+| uber             | int        | 28                |
+| ola              | int        | 29                |
+| reflexApp        | int        | 30                |
+| snapchat         | int        | 31                |
+| ytMusic          | int        | 32                |
+| youTube          | int        | 33                |
+| linkEdin         | int        | 34                |
+| amazon           | int        | 35                |
+| flipkart         | int        | 36                |
+| netFlix          | int        | 37                |
+| hotstar          | int        | 38                |
+| amazonPrime      | int        | 39                |
+| googleChat       | int        | 40                |
+| wynk             | int        | 41                |
+| googleDrive      | int        | 42                |
+| dunzo            | int        | 43                |
+| gaana            | int        | 44                |
+| missCall         | int        | 45                |
+| whatsAppBusiness | int        | 46                |
+| other            | int        | 128               |
 
-## 17.4 Gets other push notifications<Only ios support>
+## 17.6 Gets push notifications(old)<Only ios support>
 
 ```dart
 List<int> NotificationType = await _blePlugin.getNotification;
+```
+
+## 17.7 Sets push notifications(new)<Only ios support>
+
+You need to get the supported message types first and create an array of the same length from the array of message types. The positions in the array are important, and each position represents a different message type. If you want to set a message, you simply set the corresponding number in the array to 0 or 1,0 for off and 1 for on.
+
+```dart
+List<int> list = List.filled(messageType.length, 0, growable: false);
+list[2] = 1;
+list[3] = 1;
+_blePlugin.setNotification(list);
+```
+
+## 17.8 Gets push notifications(old)<Only ios support>
+
+Returns an array of supported types, where 0 means off and 1 means on.
+
+```dart
+List list = _blePlugin.getNotification;
+```
+
+## 17.9 End call<Only android support>
+
+When the watch receives a push of a phone type message, the watch will vibrate for a fixed time. Call this interface to stop the watch from vibrating when the watch answers the call or hangs up the call.
+
+```dart
+_blePlugin.endCall;
+```
+
+## 17.10 Sets call contact name<Only android support>
+
+Only send the name of the outgoing contact. The incoming contact still uses sendMessage.
+
+```dart
+_blePlugin.sendCallContactName("name");
 ```
 
 # 18 Sedentary reminder
@@ -1512,7 +1695,7 @@ _blePlugin.heartRateEveStm.listen(
                 _measureComplete = event.measureComplete!;
                 break;
               case HeartRateType.hourMeasureResult:
-                _hour24MeasureResult = event.hour24MeasureResult!;
+                _hour24MeasureResultList.add(event.hour24MeasureResult!);
                 break;
               case HeartRateType.measureResult:
                 _trainingList = event.trainingList!;

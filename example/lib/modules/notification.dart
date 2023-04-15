@@ -97,14 +97,252 @@ class _NotificationPage extends State<NotificationPage> {
                         });
                       }),
                   ElevatedButton(
-                      child: const Text('sendMessage(MessageInfo())'),
+                      child: const Text('sendMessage(facebook)'),
                       onPressed: () {
                         Timer(const Duration(seconds: 10), () {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
                                 message: 'message',
-                                type: BleMessageType.qq,
+                                type: BleMessageType.facebook,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(twitter)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.twitter,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(whatsApp)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.whatsApp,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(messenger)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.messenger,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(telegram)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.telegram,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(gmail)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.gmail,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(uber)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.uber,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(snapchat)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.snapchat,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(linkEdin)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.linkEdin,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(amazon)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.amazon,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(tiktok)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.tiktok,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(lyft)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.lyft,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(mail)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.mail,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(googleMaps)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.googleMaps,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(slack)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                message: 'message',
+                                type: BleMessageType.slack,
                                 versionCode: _firmwareVersion,
                                 isHs: true,
                                 isSmallScreen: true,

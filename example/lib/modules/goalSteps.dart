@@ -29,7 +29,10 @@ class _GoalStepPage extends State<GoalStepsPage> {
               Text("goalSteps: $_goalSteps"),
               Text("dailyGoalsInfo: $_dailGoalsInfo"),
               Text("trainingDay: $_trainingDay"),
-              ElevatedButton(child: const Text('sendGoalSteps(5000)'), onPressed: () => widget.blePlugin.sendGoalSteps(5000)),
+              ElevatedButton(
+                child: const Text('sendGoalSteps(5000)'),
+                onPressed: () => widget.blePlugin.sendGoalSteps(5000),
+              ),
               ElevatedButton(
                   child: const Text('queryGoalStep()'),
                   onPressed: () async {
@@ -40,7 +43,9 @@ class _GoalStepPage extends State<GoalStepsPage> {
                   }),
               ElevatedButton(
                 child: const Text('sendDailyGoals()'),
-                onPressed: () => widget.blePlugin.sendDailyGoals(DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10)),
+                onPressed: () => widget.blePlugin.sendDailyGoals(
+                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10),
+                ),
               ),
               ElevatedButton(
                   child: const Text('queryDailyGoals()'),
@@ -52,7 +57,9 @@ class _GoalStepPage extends State<GoalStepsPage> {
                   }),
               ElevatedButton(
                 child: const Text('sendTrainingDayGoals()'),
-                onPressed: () => widget.blePlugin.sendTrainingDayGoals(DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10)),
+                onPressed: () => widget.blePlugin.sendTrainingDayGoals(
+                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10),
+                ),
               ),
               ElevatedButton(
                   child: const Text('queryTrainingDayGoals()'),

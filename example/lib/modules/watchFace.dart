@@ -134,12 +134,16 @@ class _WatchFacePage extends State<WatchFacePage> {
               Text("file: $_file"),
               Text("size: $_size"),
               ElevatedButton(
-                  child: const Text('sendDisplayWatchFace(1)'), onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.firstWatchFace)),
+                child: const Text('sendDisplayWatchFace(1)'),
+                onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.firstWatchFace),
+              ),
               ElevatedButton(
                   child: const Text('sendDisplayWatchFace(2)'),
                   onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.secondWatchFace)),
               ElevatedButton(
-                  child: const Text('sendDisplayWatchFace(3)'), onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.thirdWatchFace)),
+                child: const Text('sendDisplayWatchFace(3)'),
+                onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.thirdWatchFace),
+              ),
               ElevatedButton(
                   child: const Text('sendDisplayWatchFace(4)'),
                   onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.newCustomizeWatchFace)),
@@ -171,14 +175,20 @@ class _WatchFacePage extends State<WatchFacePage> {
               ElevatedButton(
                   child: const Text('sendWatchFaceLayout(watchFaceLayoutInfo(2)'),
                   onPressed: () => {
-                        if (_watchFaceLayoutInfo != null) {widget.blePlugin.sendWatchFaceLayout(_watchFaceLayoutInfo!)}
+                        if (_watchFaceLayoutInfo != null)
+                          {
+                            widget.blePlugin.sendWatchFaceLayout(_watchFaceLayoutInfo!),
+                          }
                       }),
               ElevatedButton(
                   child: const Text('sendWatchFaceBackground()'),
                   onPressed: () => {
                         if (_watchFaceLayoutInfo != null) {sendWatchFaceBackground()}
                       }),
-              ElevatedButton(child: const Text("abortWatchFaceBackground()"), onPressed: () => widget.blePlugin.abortWatchFaceBackground),
+              ElevatedButton(
+                child: const Text("abortWatchFaceBackground()"),
+                onPressed: () => widget.blePlugin.abortWatchFaceBackground,
+              ),
               ElevatedButton(
                   child: const Text("queryAvailableStorage()"),
                   onPressed: () async {
@@ -227,21 +237,39 @@ class _WatchFacePage extends State<WatchFacePage> {
                           _supportWatchFaceList = _supportWatchFaceInfo!.supportWatchFaceList;
                         });
                       }),
-                  ElevatedButton(child: const Text("2. queryFirmwareVersion()"), onPressed: queryFirmwareVersion),
+                  ElevatedButton(
+                    child: const Text("2. queryFirmwareVersion()"),
+                    onPressed: queryFirmwareVersion,
+                  ),
                   ElevatedButton(
                       child: const Text('3. queryWatchFaceStore()'),
                       onPressed: () async {
                         if (_firmwareVersion != "" && _supportWatchFaceInfo != null) {
-                          List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStore(WatchFaceStoreBean(
-                              watchFaceSupportList: _supportWatchFaceList, firmwareVersion: _firmwareVersion, pageCount: 9, pageIndex: 1));
+                          List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStore(
+                            WatchFaceStoreBean(
+                              watchFaceSupportList: _supportWatchFaceList,
+                              firmwareVersion: _firmwareVersion,
+                              pageCount: 9,
+                              pageIndex: 1,
+                            ),
+                          );
                           setState(() {
                             _watchFacelist = watchFacelist;
                           });
                         }
                       }),
-                  ElevatedButton(child: const Text('4. sendWatchFace(_watchFacelist)'), onPressed: () => sendWatchFace(_watchFacelist[1])),
-                  ElevatedButton(child: const Text("abortWatchFace()"), onPressed: () => widget.blePlugin.abortWatchFace),
-                  ElevatedButton(child: const Text("deleteWatchFace()"), onPressed: () => widget.blePlugin.deleteWatchFace(_id)),
+                  ElevatedButton(
+                    child: const Text('4. sendWatchFace(_watchFacelist)'),
+                    onPressed: () => sendWatchFace(_watchFacelist[1]),
+                  ),
+                  ElevatedButton(
+                    child: const Text("abortWatchFace()"),
+                    onPressed: () => widget.blePlugin.abortWatchFace,
+                  ),
+                  ElevatedButton(
+                    child: const Text("deleteWatchFace()"),
+                    onPressed: () => widget.blePlugin.deleteWatchFace(_id),
+                  ),
                 ],
               ),
               Column(
@@ -256,13 +284,22 @@ class _WatchFacePage extends State<WatchFacePage> {
                           _supportWatchFaceList = _supportWatchFaceInfo!.supportWatchFaceList;
                         });
                       }),
-                  ElevatedButton(child: const Text("2. queryFirmwareVersion()"), onPressed: queryFirmwareVersion),
+                  ElevatedButton(
+                    child: const Text("2. queryFirmwareVersion()"),
+                    onPressed: queryFirmwareVersion,
+                  ),
                   ElevatedButton(
                       child: const Text('3. queryWatchFaceStore()'),
                       onPressed: () async {
                         if (_firmwareVersion != "" && _supportWatchFaceInfo != null) {
-                          List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStore(WatchFaceStoreBean(
-                              watchFaceSupportList: _supportWatchFaceList, firmwareVersion: _firmwareVersion, pageCount: 9, pageIndex: 1));
+                          List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStore(
+                            WatchFaceStoreBean(
+                              watchFaceSupportList: _supportWatchFaceList,
+                              firmwareVersion: _firmwareVersion,
+                              pageCount: 9,
+                              pageIndex: 1,
+                            ),
+                          );
                           setState(() {
                             _watchFacelist = watchFacelist;
                           });
@@ -281,9 +318,6 @@ class _WatchFacePage extends State<WatchFacePage> {
               ),
             ]))));
   }
-
-  // 1. 获取手表支持的类型
-  // 2.
 
   sendWatchFaceBackground() async {
     String filePath = "assets/images/text.png";

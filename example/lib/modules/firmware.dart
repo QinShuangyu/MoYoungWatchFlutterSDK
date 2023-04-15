@@ -92,7 +92,7 @@ class _FirmwarePage extends State<FirmwarePage> {
                       onPressed: queryFirmwareVersion),
                   ElevatedButton(
                       child: Text(_newFirmwareInfo),
-                      onPressed: ()=>checkFirmwareVersion(_firmwareVersion,OTAType.normalUpgradeType)),
+                      onPressed: () => checkFirmwareVersion(_firmwareVersion,OTAType.normalUpgradeType)),
                   ElevatedButton(
                       child: const Text('queryHsOtaAddress()'),
                       onPressed: () async {

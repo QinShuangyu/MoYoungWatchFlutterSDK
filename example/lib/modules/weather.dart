@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
@@ -33,7 +31,7 @@ class _WeatherPage extends State<WeatherPage> {
                       child: const Text('sendTodayWeather()'),
                       onPressed: () => widget.blePlugin.sendTodayWeather(
                           TodayWeatherBean(
-                              city: "长沙",
+                              city: "changsha",
                               lunar: "晴",
                               festival: "儿童节",
                               pm25: 111,
