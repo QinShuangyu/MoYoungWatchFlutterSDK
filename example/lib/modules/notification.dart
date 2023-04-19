@@ -82,6 +82,11 @@ class _NotificationPage extends State<NotificationPage> {
                         });
                       }),
                   ElevatedButton(
+                      child: const Text("queryCustomizeVersion"),
+                      onPressed: () async {
+                        await widget.blePlugin.queryCustomizeVersion;
+                      }),
+                  ElevatedButton(
                       child: const Text("queryFirmwareVersion"),
                       onPressed: () async {
                         String firmwareVersion = await widget.blePlugin.queryFirmwareVersion;
@@ -103,6 +108,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'facebook',
                                 message: 'message',
                                 type: BleMessageType.facebook,
                                 versionCode: _firmwareVersion,
@@ -120,6 +126,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'twitter',
                                 message: 'message',
                                 type: BleMessageType.twitter,
                                 versionCode: _firmwareVersion,
@@ -137,8 +144,27 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'whatsApp',
                                 message: 'message',
                                 type: BleMessageType.whatsApp,
+                                versionCode: _firmwareVersion,
+                                isHs: true,
+                                isSmallScreen: true,
+                              ),
+                            );
+                          }
+                        });
+                      }),
+                  ElevatedButton(
+                      child: const Text('sendMessage(kaKao)'),
+                      onPressed: () {
+                        Timer(const Duration(seconds: 10), () {
+                          if (_firmwareVersion != -1) {
+                            widget.blePlugin.sendMessage(
+                              MessageBean(
+                                title: 'kaKao',
+                                message: 'message',
+                                type: BleMessageType.kaKao,
                                 versionCode: _firmwareVersion,
                                 isHs: true,
                                 isSmallScreen: true,
@@ -154,6 +180,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'messenger',
                                 message: 'message',
                                 type: BleMessageType.messenger,
                                 versionCode: _firmwareVersion,
@@ -171,6 +198,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'telegram',
                                 message: 'message',
                                 type: BleMessageType.telegram,
                                 versionCode: _firmwareVersion,
@@ -188,6 +216,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'gmail',
                                 message: 'message',
                                 type: BleMessageType.gmail,
                                 versionCode: _firmwareVersion,
@@ -205,6 +234,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'uber',
                                 message: 'message',
                                 type: BleMessageType.uber,
                                 versionCode: _firmwareVersion,
@@ -222,6 +252,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'snapchat',
                                 message: 'message',
                                 type: BleMessageType.snapchat,
                                 versionCode: _firmwareVersion,
@@ -239,6 +270,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'linkEdin',
                                 message: 'message',
                                 type: BleMessageType.linkEdin,
                                 versionCode: _firmwareVersion,
@@ -256,6 +288,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'amazon',
                                 message: 'message',
                                 type: BleMessageType.amazon,
                                 versionCode: _firmwareVersion,
@@ -273,6 +306,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'tiktok',
                                 message: 'message',
                                 type: BleMessageType.tiktok,
                                 versionCode: _firmwareVersion,
@@ -290,6 +324,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'lyft',
                                 message: 'message',
                                 type: BleMessageType.lyft,
                                 versionCode: _firmwareVersion,
@@ -307,6 +342,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'mail',
                                 message: 'message',
                                 type: BleMessageType.mail,
                                 versionCode: _firmwareVersion,
@@ -324,6 +360,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'googleMaps',
                                 message: 'message',
                                 type: BleMessageType.googleMaps,
                                 versionCode: _firmwareVersion,
@@ -341,6 +378,7 @@ class _NotificationPage extends State<NotificationPage> {
                           if (_firmwareVersion != -1) {
                             widget.blePlugin.sendMessage(
                               MessageBean(
+                                title: 'slack',
                                 message: 'message',
                                 type: BleMessageType.slack,
                                 versionCode: _firmwareVersion,

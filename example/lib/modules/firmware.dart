@@ -91,6 +91,11 @@ class _FirmwarePage extends State<FirmwarePage> {
                       child: Text(_firmwareVersion),
                       onPressed: queryFirmwareVersion),
                   ElevatedButton(
+                      child: const Text("queryCustomizeVersion"),
+                      onPressed: () async {
+                        await widget.blePlugin.queryCustomizeVersion;
+                      }),
+                  ElevatedButton(
                       child: Text(_newFirmwareInfo),
                       onPressed: () => checkFirmwareVersion(_firmwareVersion,OTAType.normalUpgradeType)),
                   ElevatedButton(

@@ -226,6 +226,14 @@ Gets the current firmware version of the watch.
 String firmwareVersion = await _blePlugin.queryFirmwareVersion;
 ```
 
+## 5.3 Gets customize version
+
+Gets the firmware version of the custom watch.
+
+```dart
+String customizeVersion = await _blePlugin.queryCustomizeVersion;
+```
+
 ## 5.3 Check firmware
 
 Gets the latest version information.
@@ -1449,6 +1457,7 @@ MessageBean:
 
 | **value**     | value type | value description                                          |
 | ------------- | ---------- | ---------------------------------------------------------- |
+| title         | String     | Message title                                              |
 | message       | String     | Message content                                            |
 | type          | int        | Messagetype(BleMessageType)                                |
 | versionCode   | int        | Firmware version (for example: MOY-AA2-1.7.6,which is 176) |
