@@ -382,7 +382,7 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_foundation\"",
+					"\"path_provider_ios\"",
 					"-framework",
 					"\"permission_handler\"",
 				);
@@ -539,7 +539,7 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_foundation\"",
+					"\"path_provider_ios\"",
 					"-framework",
 					"\"permission_handler\"",
 				);
@@ -588,7 +588,7 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_foundation\"",
+					"\"path_provider_ios\"",
 					"-framework",
 					"\"permission_handler\"",
 				);

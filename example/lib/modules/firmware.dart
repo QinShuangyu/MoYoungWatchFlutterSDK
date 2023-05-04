@@ -29,6 +29,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   String _hsOtaAddress="";
   int _deviceOtaStatus = -1;
   int _otaType = -1;
+  String _customizeVersion = "";
 
   @override
   void initState() {
@@ -86,6 +87,7 @@ class _FirmwarePage extends State<FirmwarePage> {
                   Text("deviceOtaStatus: $_deviceOtaStatus"),
                   Text("hsOtaAddress: $_hsOtaAddress"),
                   Text("OtaType: $_otaType"),
+                  Text("customizeVersion: $_customizeVersion"),
 
                   ElevatedButton(
                       child: Text(_firmwareVersion),
@@ -93,7 +95,10 @@ class _FirmwarePage extends State<FirmwarePage> {
                   ElevatedButton(
                       child: const Text("queryCustomizeVersion"),
                       onPressed: () async {
-                        await widget.blePlugin.queryCustomizeVersion;
+                        String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
+                        setState(() {
+                          _customizeVersion = customizeVersion;
+                        });
                       }),
                   ElevatedButton(
                       child: Text(_newFirmwareInfo),
