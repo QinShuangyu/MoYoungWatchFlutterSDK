@@ -56,6 +56,7 @@ import 'modules/calendarEvent.dart';
 // import 'modules/demo.dart';
 import 'modules/electronicCard.dart';
 import 'modules/pairing.dart';
+import 'modules/phoneNotification.dart';
 
 class DevicePage extends StatefulWidget {
   final BleScanBean device;
@@ -212,18 +213,18 @@ class _DevicePage extends State<DevicePage> {
                     fontSize: 20,
                     height: 2.0,
                   )),
-              // ElevatedButton(
-              //     onPressed: () {
-              //       if (_isConn) {
-              //         Navigator.push(context,
-              //             MaterialPageRoute(builder: (context) {
-              //               return Demo(
-              //                 blePlugin: _blePlugin, device: widget.device,
-              //               );
-              //             }));
-              //       }
-              //     },
-              //     child: const Text("Demo")),
+              ElevatedButton(
+                  onPressed: () {
+                    if (_isConn) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                            return PhoneNotification(
+                              blePlugin: _blePlugin
+                            );
+                          }));
+                    }
+                  },
+                  child: const Text("PhoneNotification")),
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
