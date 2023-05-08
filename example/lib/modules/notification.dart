@@ -63,9 +63,16 @@ class _NotificationPage extends State<NotificationPage> {
               Text("newMessageType: $_newMessageType"),
               Text("customizeVersion: $_customizeVersion"),
               ElevatedButton(
+                child: const Text('android:enableIncomingNumber(true)'),
+                onPressed: () => widget.blePlugin.enableIncomingNumber(true),
+              ),
+              ElevatedButton(
+                child: const Text('android:enableIncomingNumber(false)'),
+                onPressed: () => widget.blePlugin.enableIncomingNumber(false),
+              ),
+              ElevatedButton(
                 child: const Text('android:sendOtherMessageState'),
-                onPressed: () =>
-                    widget.blePlugin.sendOtherMessageState(!_state),
+                onPressed: () => widget.blePlugin.sendOtherMessageState(!_state),
               ),
               ElevatedButton(
                   child: const Text("android:queryOtherMessageState"),
@@ -78,8 +85,7 @@ class _NotificationPage extends State<NotificationPage> {
               ElevatedButton(
                   child: const Text('queryMessageList'),
                   onPressed: () async {
-                    List<int> messageType =
-                        await widget.blePlugin.queryMessageList;
+                    List<int> messageType = await widget.blePlugin.queryMessageList;
                     setState(() {
                       _messageType = messageType;
                     });
@@ -87,8 +93,7 @@ class _NotificationPage extends State<NotificationPage> {
               ElevatedButton(
                   child: const Text("queryCustomizeVersion"),
                   onPressed: () async {
-                    String customizeVersion =
-                        await widget.blePlugin.queryCustomizeVersion;
+                    String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
                     setState(() {
                       _customizeVersion = customizeVersion;
                     });
@@ -96,8 +101,7 @@ class _NotificationPage extends State<NotificationPage> {
               ElevatedButton(
                   child: const Text("queryFirmwareVersion"),
                   onPressed: () async {
-                    String firmwareVersion =
-                        await widget.blePlugin.queryFirmwareVersion;
+                    String firmwareVersion = await widget.blePlugin.queryFirmwareVersion;
                     int index = firmwareVersion.lastIndexOf('-');
                     String subString = firmwareVersion.substring(index);
                     String version = '';
@@ -410,17 +414,12 @@ class _NotificationPage extends State<NotificationPage> {
                   const Text("iOS old version of the news push."),
                   ElevatedButton(
                     child: const Text('1. ios:setNotification()'),
-                    onPressed: () => widget.blePlugin.setNotification([
-                      NotificationType.facebook,
-                      NotificationType.gmail,
-                      NotificationType.kakao
-                    ]),
+                    onPressed: () => widget.blePlugin.setNotification([NotificationType.facebook, NotificationType.gmail, NotificationType.kakao]),
                   ),
                   ElevatedButton(
                       child: const Text('2. ios:getNotification'),
                       onPressed: () async {
-                        NotificationBean notificationBean =
-                            await widget.blePlugin.getNotification;
+                        NotificationBean notificationBean = await widget.blePlugin.getNotification;
 
                         if (!notificationBean.isNew!) {
                           setState(() {
@@ -436,8 +435,7 @@ class _NotificationPage extends State<NotificationPage> {
                   ElevatedButton(
                       child: const Text('1. queryMessageList'),
                       onPressed: () async {
-                        List<int> messageType =
-                            await widget.blePlugin.queryMessageList;
+                        List<int> messageType = await widget.blePlugin.queryMessageList;
                         setState(() {
                           _messageType = messageType;
                         });
@@ -446,8 +444,7 @@ class _NotificationPage extends State<NotificationPage> {
                     child: const Text('2. ios:setNotification()'),
                     onPressed: () {
                       if (_messageType.isNotEmpty) {
-                        List<int> list = List.filled(_messageType.length, 0,
-                            growable: false);
+                        List<int> list = List.filled(_messageType.length, 0, growable: false);
                         list[2] = 1;
                         list[3] = 1;
                         widget.blePlugin.setNotification(list);
@@ -457,8 +454,7 @@ class _NotificationPage extends State<NotificationPage> {
                   ElevatedButton(
                       child: const Text('3. ios:getNotification'),
                       onPressed: () async {
-                        NotificationBean notificationBean =
-                            await widget.blePlugin.getNotification;
+                        NotificationBean notificationBean = await widget.blePlugin.getNotification;
                         _newMessageType.clear();
                         if (notificationBean.isNew!) {
                           setState(() {

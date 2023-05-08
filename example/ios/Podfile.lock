@@ -2,7 +2,7 @@ PODS:
   - Flutter (1.0.0)
   - flutter_contacts (0.0.1):
     - Flutter
-  - moyoung_ble_plugin (1.0.44):
+  - moyoung_ble_plugin (1.0.47):
     - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
@@ -31,7 +31,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
-  moyoung_ble_plugin: 7c1aba6a1364061be1c2bddc30ac08f0257e2349
+  moyoung_ble_plugin: d2eaed04afb240bcbb0ff486652d0e6fa7138922
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
 

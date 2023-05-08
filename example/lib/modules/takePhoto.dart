@@ -34,17 +34,10 @@ class _TakePhotoPage extends State<TakePhotoPage> {
       widget.blePlugin.cameraEveStm.listen(
             (CameraBean event) {
               if (!mounted) return;
+              // print("cameraEveStm: ${cameraBeanToJson(event)}");
           setState(() {
-            switch (event.type) {
-              case CameraType.takePhotoState:
-                _camera = event.takePhoto!;
-                break;
-              case CameraType.delayTakingState:
-                _delayTime = event.delayTime!;
-                break;
-              default:
-                break;
-            }
+            _camera = event.takePhoto!;
+            _delayTime = event.delayTime!;
           });
         },
       ),
@@ -78,7 +71,7 @@ class _TakePhotoPage extends State<TakePhotoPage> {
                   child: const Text('enterCameraView'),
                   onPressed: () => widget.blePlugin.enterCameraView),
               ElevatedButton(
-                  child: const Text('sendDelayTaking'),
+                  child: const Text('sendDelayTaking(3)'),
                   onPressed: () => widget.blePlugin.sendDelayTaking(3)),
               // ElevatedButton(
               //     child: const Text('queryDelayTaking'),
