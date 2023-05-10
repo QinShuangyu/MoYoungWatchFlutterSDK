@@ -382,9 +382,9 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_ios\"",
+					"\"path_provider_foundation\"",
 					"-framework",
-					"\"permission_handler\"",
+					"\"permission_handler_apple\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.moyoung.moyoungBlePluginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -539,9 +539,9 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_ios\"",
+					"\"path_provider_foundation\"",
 					"-framework",
-					"\"permission_handler\"",
+					"\"permission_handler_apple\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.moyoung.moyoungBlePluginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -588,9 +588,9 @@
 					"-framework",
 					"\"moyoung_ble_plugin\"",
 					"-framework",
-					"\"path_provider_ios\"",
+					"\"path_provider_foundation\"",
 					"-framework",
-					"\"permission_handler\"",
+					"\"permission_handler_apple\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.moyoung.moyoungBlePluginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";

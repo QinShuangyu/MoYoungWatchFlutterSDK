@@ -34,7 +34,6 @@ class _TakePhotoPage extends State<TakePhotoPage> {
       widget.blePlugin.cameraEveStm.listen(
             (CameraBean event) {
               if (!mounted) return;
-              // print("cameraEveStm: ${cameraBeanToJson(event)}");
           setState(() {
             _camera = event.takePhoto!;
             _delayTime = event.delayTime!;

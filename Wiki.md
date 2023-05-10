@@ -59,27 +59,45 @@ Add event stream listener.
 
 ```
 _blePlugin.connStateEveStm.listen(
-  (int event) {
+  (ConnectStateBean event) {
    // Do something with new state
   }),
 ```
+
+Parameter Description :
+
+ConnectStateBean :
+
+| vlaue        | value type | value description                         |
+| ------------ | ---------- | ----------------------------------------- |
+| autoConnect  | bool       | Indicates whether reconnection is enabled |
+| connectState | int        | Returns the value in ConnectionState      |
 
 ConnectionState:
 
 | vlaue              | value type | value description |
 | :----------------- | :--------- | :---------------- |
-| stateDisconnected  | int        | disconnected      |
-| stateConnecting    | int        | connecting        |
-| stateConnected     | int        | connected         |
-| stateDisconnecting | int        | disconnecting     |
+| stateDisconnected  | int        | disconnected(0)   |
+| stateConnecting    | int        | connecting(1)     |
+| stateConnected     | int        | connected(2)      |
+| stateDisconnecting | int        | disconnecting(3)  |
 
 ## 3.2 Connect
 
-Make a Bluetooth connection to the device by passing in the device's Mac address.
+Connect to Bluetooth by passing the ConnectBean parameter.
 
+```dart
+_blePlugin.connect(ConnectBean connectBean);
 ```
-_blePlugin.connect(String address);
-```
+
+Parameter Description :
+
+ConnectDeviceBean :
+
+| value       | value type | value description                    |
+| ----------- | ---------- | ------------------------------------ |
+| autoConnect | bool       | Sets whether reconnection is enabled |
+| address     | String     | The address of the device            |
 
 ## 3.3 IsConnected
 
@@ -117,10 +135,11 @@ Parameter Description :
 
 ConnectDeviceBean :
 
-| value      | value type | value description    |
-| :--------- | :--------- | :------------------- |
-| mac        | String     | device address       |
-| peripheral | dynamic    | peripheral equipment |
+| value       | value type | value description                    |
+| :---------- | :--------- | :----------------------------------- |
+| mac         | String     | device address                       |
+| peripheral  | dynamic    | peripheral equipment                 |
+| autoConnect | bool       | Sets whether reconnection is enabled |
 
 # 4 Time
 
@@ -1587,9 +1606,18 @@ NotificationType:
 
 ## 17.6 Gets push notifications(old)<Only ios support>
 
+Returns an object of type NotificationBean.
+
 ```dart
-List<int> NotificationType = await _blePlugin.getNotification;
+NotificationBean notificationBean = await _blePlugin.getNotification;
 ```
+
+Callback NotificationBean:
+
+| callback value | callback value type | callback  value description                                  |
+| -------------- | ------------------- | ------------------------------------------------------------ |
+| isNew          | bool                | Determine if the data is new to the device                   |
+| list           | List<int>           | Older devices return a list of supported message types, and newer devices return a list of 0's and 1's |
 
 ## 17.7 Sets push notifications(new)<Only ios support>
 
@@ -1604,10 +1632,10 @@ _blePlugin.setNotification(list);
 
 ## 17.8 Gets push notifications(old)<Only ios support>
 
-Returns an array of supported types, where 0 means off and 1 means on.
+Returns an object of type NotificationBean.
 
 ```dart
-List list = _blePlugin.getNotification;
+NotificationBean notificationBean = _blePlugin.getNotification;
 ```
 
 ## 17.9 End call<Only android support>
@@ -1625,6 +1653,22 @@ Only send the name of the outgoing contact. The incoming contact still uses send
 ```dart
 _blePlugin.sendCallContactName("name");
 ```
+
+## 17.11 Call notification<Only android support>
+
+Call notifications are turned off by default, so you can turn them on or off using this method.
+
+true is used to enable incoming call notifications and false is used to disable incoming call notifications.
+
+```dart
+_blePlugin.enableIncomingNumber(true);
+```
+
+> Note:
+>
+> 1. You need to manually add phone permissions
+> 2. Xiaomi mobile phone to obtain the incoming call number needs to obtain the Xiaomi custom permissions (read phone information)
+> 3. Applications cannot listen to incoming calls after they are killed
 
 # 18 Sedentary reminder
 
@@ -2206,16 +2250,8 @@ _blePlugin.cameraEveStm.listen(
     // Do something with new state
     if (!mounted) return;
           setState(() {
-            switch (event.type) {
-              case CameraType.takePhotoState:
-                _camera = event.takePhoto!;
-                break;
-              case CameraType.delayTakingState:
-                _delayTime = event.delayTime!;
-                break;
-              default:
-                break;
-            }
+            _camera = event.takePhoto!;
+            _delayTime = event.delayTime!;
           });
   });
 ```
@@ -2224,18 +2260,10 @@ Callback Description（event）:
 
 CameraBean:
 
-| callback value | callback value type | callback value description                                   |
-| -------------- | ------------------- | ------------------------------------------------------------ |
-| type           | int                 | Get the corresponding return value according to type, where type is the value corresponding to CameraType |
-| takePhoto      | String              | Start taking pictures                                        |
-| delayTime      | int                 | The time of a time-lapse photograph                          |
-
-CameraType：
-
-| type             | value | value description                      |
-| ---------------- | ----- | -------------------------------------- |
-| takePhotoState   | 1     | Start taking a picture of the callback |
-| delayTakingState | 2     | A callback for a time-lapse photo      |
+| callback value | callback value type | callback value description          |
+| -------------- | ------------------- | ----------------------------------- |
+| takePhoto      | String              | Start taking pictures               |
+| delayTime      | int                 | The time of a time-lapse photograph |
 
 ## 23.2 Enable camera view
 
