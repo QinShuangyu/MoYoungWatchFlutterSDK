@@ -22,9 +22,10 @@ class _NotificationPage extends State<NotificationPage> {
   String _number = "";
   int _firmwareVersion = -1;
   List<int> _messageType = [];
-  List<int> _newMessageType = [];
+  final List<int> _newMessageType = [];
   bool started = true;
   String _customizeVersion = "";
+  bool _enableIncomingNumber = false;
 
   ReceivePort port = ReceivePort();
   bool hasPort = false;
@@ -55,6 +56,7 @@ class _NotificationPage extends State<NotificationPage> {
             ),
             body: Center(
                 child: ListView(children: [
+              Text("enableIncomingNumber: $_enableIncomingNumber"),
               Text("list: $_list"),
               Text("state: $_state"),
               Text("number: $_number"),
@@ -64,11 +66,21 @@ class _NotificationPage extends State<NotificationPage> {
               Text("customizeVersion: $_customizeVersion"),
               ElevatedButton(
                 child: const Text('android:enableIncomingNumber(true)'),
-                onPressed: () => widget.blePlugin.enableIncomingNumber(true),
+                onPressed: () async {
+                  bool enableIncomingNumber = await widget.blePlugin.enableIncomingNumber(true);
+                  setState(() {
+                    _enableIncomingNumber = enableIncomingNumber;
+                  });
+                },
               ),
               ElevatedButton(
                 child: const Text('android:enableIncomingNumber(false)'),
-                onPressed: () => widget.blePlugin.enableIncomingNumber(false),
+                onPressed: () async {
+                  bool enableIncomingNumber = await widget.blePlugin.enableIncomingNumber(false);
+                  setState(() {
+                    _enableIncomingNumber = enableIncomingNumber;
+                  });
+                },
               ),
               ElevatedButton(
                 child: const Text('android:sendOtherMessageState'),
