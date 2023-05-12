@@ -30,6 +30,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   int _deviceOtaStatus = -1;
   int _otaType = -1;
   String _customizeVersion = "";
+  String _uuid = "";
 
   @override
   void initState() {
@@ -88,6 +89,7 @@ class _FirmwarePage extends State<FirmwarePage> {
                   Text("hsOtaAddress: $_hsOtaAddress"),
                   Text("OtaType: $_otaType"),
                   Text("customizeVersion: $_customizeVersion"),
+                  Text("uuid: $_uuid"),
 
                   ElevatedButton(
                       child: Text(_firmwareVersion),
@@ -147,6 +149,12 @@ class _FirmwarePage extends State<FirmwarePage> {
                           _otaType = otaType;
                         });
                       }),
+                  ElevatedButton(onPressed: () async {
+                    String uuid = await widget.blePlugin.queryUUID;
+                    setState(() {
+                      _uuid = uuid;
+                    });
+                  }, child: const Text('iOS：queryUUID')),
                 ]
             )
         ),

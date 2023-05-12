@@ -29,7 +29,7 @@ dependencies:
 #  flutter_notification_listener: ^1.3.2
 #  flutter_foreground_task: ^4.1.0
 
-#  moyoung_ble_plugin: ^1.0.51
+#  moyoung_ble_plugin: ^1.0.52
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z
