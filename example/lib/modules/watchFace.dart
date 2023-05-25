@@ -173,7 +173,7 @@ class _WatchFacePage extends State<WatchFacePage> {
                     });
                   }),
               ElevatedButton(
-                  child: const Text('sendWatchFaceLayout(watchFaceLayoutInfo(2)'),
+                  child: const Text('sendWatchFaceLayout(watchFaceLayoutInfo)'),
                   onPressed: () => {
                         if (_watchFaceLayoutInfo != null)
                           {
@@ -320,13 +320,17 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   sendWatchFaceBackground() async {
-    String filePath = "assets/images/text.png";
-    ByteData bytes = await rootBundle.load(filePath);
-    Uint8List logoUint8List = bytes.buffer.asUint8List();
+    String bitmapPath = "assets/images/img.png";
+    ByteData bitmapBytes = await rootBundle.load(bitmapPath);
+    Uint8List bitmapUint8List = bitmapBytes.buffer.asUint8List();
+
+    String thumbBitmapPath = "assets/images/img_1.png";
+    ByteData thumbBitmapBytes = await rootBundle.load(thumbBitmapPath);
+    Uint8List thumbBitmapUint8List = thumbBitmapBytes.buffer.asUint8List();
 
     WatchFaceBackgroundBean bgBean = WatchFaceBackgroundBean(
-      bitmap: logoUint8List,
-      thumbBitmap: logoUint8List,
+      bitmap: bitmapUint8List,
+      thumbBitmap: thumbBitmapUint8List,
       type: _watchFaceLayoutInfo!.compressionType,
       width: _watchFaceLayoutInfo!.width,
       height: _watchFaceLayoutInfo!.height,
@@ -347,7 +351,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   sendWatchFace(WatchFaceBean watchFaceBean) async {
-    //Download the file and save
+    // Download the file and save
     int index = watchFaceBean.file!.lastIndexOf('/');
     String name = watchFaceBean.file!.substring(index, watchFaceBean.file!.length);
     String pathFile = "";

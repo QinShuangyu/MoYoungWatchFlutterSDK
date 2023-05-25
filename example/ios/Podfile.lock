@@ -2,7 +2,7 @@ PODS:
   - Flutter (1.0.0)
   - flutter_contacts (0.0.1):
     - Flutter
-  - moyoung_ble_plugin (1.0.52):
+  - moyoung_ble_plugin (1.0.56):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
