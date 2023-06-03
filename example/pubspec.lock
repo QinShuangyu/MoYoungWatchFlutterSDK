@@ -9,6 +9,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.10.0"
+  bluetooth_enable_fork:
+    dependency: "direct main"
+    description:
+      name: bluetooth_enable_fork
+      sha256: d53d588600356bcba6168e011a40b26d482f6b00dd08ce986cbaa6bb1e6d5068
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.6"
   boolean_selector:
     dependency: transitive
     description:
@@ -161,7 +169,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.56"
+    version: "1.0.59"
   path:
     dependency: transitive
     description:

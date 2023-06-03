@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
@@ -30,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   String _scanBtnTxt = "startScan(10*1000)";
   String _cancelScanResult = "cancelScan()";
   String _contactInfo = 'skip 2 contacts';
+  bool enableBluetooth = false;
   final List<BleScanBean> _deviceList = [];
 
 
@@ -76,6 +78,7 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                   child: Text(_permissionTxt),
                   onPressed: requestPermissions),
+              ElevatedButton(onPressed: checkBluetoothEnable, child: Text("checkBluetoothPermission: $enableBluetooth")),
               ElevatedButton(
                   child: Text(_scanBtnTxt),
                   onPressed: startScan),
@@ -115,6 +118,23 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void checkBluetoothEnable() async {
+    if (!mounted) return;
+    bool _enableBluetooth = await _blePlugin.checkBluetoothEnable;
+    if (!_enableBluetooth) {
+      BluetoothEnable.enableBluetooth.then((value) {
+        if (value == "true") {
+          setState(() {
+            enableBluetooth = true;
+          });
+        }
+      });
+    }
+    setState(() {
+      enableBluetooth = _enableBluetooth;
+    });
   }
 
   void requestPermissions() {

@@ -26,10 +26,9 @@ dependencies:
 #  phone_state: ^1.0.2
     # HTTP network request library
   dio: ^4.0.6
-#  flutter_notification_listener: ^1.3.2
-#  flutter_foreground_task: ^4.1.0
+  bluetooth_enable_fork: ^0.1.6
 
-#  moyoung_ble_plugin: ^1.0.56
+#  moyoung_ble_plugin: ^1.0.59
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z

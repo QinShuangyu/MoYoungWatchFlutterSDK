@@ -44,7 +44,7 @@ class _GoalStepPage extends State<GoalStepsPage> {
               ElevatedButton(
                 child: const Text('sendDailyGoals()'),
                 onPressed: () => widget.blePlugin.sendDailyGoals(
-                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10),
+                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 1000),
                 ),
               ),
               ElevatedButton(
