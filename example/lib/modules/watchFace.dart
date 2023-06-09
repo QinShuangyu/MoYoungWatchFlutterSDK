@@ -23,7 +23,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   String _backgroundPictureMd5 = '';
   String _compressionType = '';
   int _height = -1;
-  int _textColor = -1;
+  Color _textColor = Colors.white;
   int _thumHeight = -1;
   int _thumWidth = -1;
   int _timeBottomContent = -1;
@@ -177,6 +177,7 @@ class _WatchFacePage extends State<WatchFacePage> {
                   onPressed: () => {
                         if (_watchFaceLayoutInfo != null)
                           {
+                            _watchFaceLayoutInfo!.textColor = const Color(0xFFFF0000),
                             widget.blePlugin.sendWatchFaceLayout(_watchFaceLayoutInfo!),
                           }
                       }),
@@ -320,11 +321,11 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   sendWatchFaceBackground() async {
-    String bitmapPath = "assets/images/img.png";
+    String bitmapPath = "assets/images/img_2.png";
     ByteData bitmapBytes = await rootBundle.load(bitmapPath);
     Uint8List bitmapUint8List = bitmapBytes.buffer.asUint8List();
 
-    String thumbBitmapPath = "assets/images/img_1.png";
+    String thumbBitmapPath = "assets/images/img_2.png";
     ByteData thumbBitmapBytes = await rootBundle.load(thumbBitmapPath);
     Uint8List thumbBitmapUint8List = thumbBitmapBytes.buffer.asUint8List();
 

@@ -28,7 +28,7 @@ dependencies:
   dio: ^4.0.6
   bluetooth_enable_fork: ^0.1.6
 
-#  moyoung_ble_plugin: ^1.0.59
+#  moyoung_ble_plugin: ^1.0.63
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z
@@ -40,6 +40,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_foreground_task: ^5.0.0
 
 dev_dependencies:
   flutter_test:

@@ -67,7 +67,8 @@ class _NotificationPage extends State<NotificationPage> {
               ElevatedButton(
                 child: const Text('android:enableIncomingNumber(true)'),
                 onPressed: () async {
-                  bool enableIncomingNumber = await widget.blePlugin.enableIncomingNumber(true);
+                  MoYoungBle _blePlugin = MoYoungBle();
+                  bool enableIncomingNumber = await _blePlugin.enableIncomingNumber(true);
                   setState(() {
                     _enableIncomingNumber = enableIncomingNumber;
                   });

@@ -54,7 +54,7 @@ import 'modules/GPS.dart';
 import 'modules/HRV.dart';
 import 'modules/calendarEvent.dart';
 
-// import 'modules/demo.dart';
+import 'modules/demo.dart';
 import 'modules/electronicCard.dart';
 import 'modules/pairing.dart';
 
@@ -96,21 +96,21 @@ class _DevicePage extends State<DevicePage> {
       _blePlugin.connStateEveStm.listen(
         (ConnectStateBean event) {
           setState(() {
-              setState(() {
-                _connetionState = event.connectState;
-                _autoConnect = event.autoConnect;
-                if (_connetionState == 2) {
-                  _isConn = true;
-                } else {
-                  _isConn = false;
-                }
+            setState(() {
+              _connetionState = event.connectState;
+              _autoConnect = event.autoConnect;
+              if (_connetionState == 2) {
+                _isConn = true;
+              } else {
+                _isConn = false;
+              }
 
-                if (event.connectState == 2) {
-                  addStepsListen();
-                } else if (event.connectState == 0) {
-                  // delayConnect();
-                }
-              });
+              if (event.connectState == 2) {
+                addStepsListen();
+              } else if (event.connectState == 0) {
+                // delayConnect();
+              }
+            });
           });
         },
       ),
@@ -214,29 +214,23 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text('connectDevice(false)'),
                   onPressed: () {
-                    _blePlugin.connectDevice(ConnectDeviceBean(
-                      address: device.address,
-                      peripheral: "edsd",
-                      autoConnect: false
-                    ));
+                    _blePlugin.connectDevice(ConnectDeviceBean(address: device.address, peripheral: "edsd", autoConnect: false));
                   }),
               const Text("Module functions are as follows:",
                   style: TextStyle(
                     fontSize: 20,
                     height: 2.0,
                   )),
-              // ElevatedButton(
-              //     onPressed: () {
-              //       if (_isConn) {
-              //         Navigator.push(context,
-              //             MaterialPageRoute(builder: (context) {
-              //               return Demo(
-              //                 blePlugin: _blePlugin
-              //               );
-              //             }));
-              //       }
-              //     },
-              //     child: const Text("Demo")),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return Demo(
+                        blePlugin: _blePlugin,
+                        device: device,
+                      );
+                    }));
+                  },
+                  child: const Text("Demo")),
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
@@ -427,7 +421,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("20-HeartRate")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return BloodPressurePage(
                           blePlugin: _blePlugin,
