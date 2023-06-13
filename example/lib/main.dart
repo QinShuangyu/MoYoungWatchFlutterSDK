@@ -4,10 +4,13 @@ import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
+import 'Global.dart';
 import 'modules/contact_list_page.dart';
 import 'device.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'modules/demo.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -25,8 +28,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-  final MoYoungBle _blePlugin = MoYoungBle();
-
+  // final MoYoungBle _blePlugin = MoYoungBle();
+  final MoYoungBle _blePlugin = Global.blePlugin;
   String _permissionTxt = "requestPermissions()";
   String _scanBtnTxt = "startScan(10*1000)";
   String _cancelScanResult = "cancelScan()";
@@ -75,6 +78,16 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: <Widget>[
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return Demo(
+                        // blePlugin: _blePlugin,
+                        // device: device,
+                      );
+                    }));
+                  },
+                  child: const Text("Demo")),
               ElevatedButton(
                   child: Text(_permissionTxt),
                   onPressed: requestPermissions),

@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin_example/Global.dart';
 
 Future<void> requestForegroundServicePermissionsAndroid() async {
   if (!Platform.isAndroid) {
@@ -41,7 +42,11 @@ class ForegroundTaskHandler extends TaskHandler {
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     print('ForegroundTaskHandler: onEvent');
-
+    MoYoungBle _blePlugin = Global.blePlugin;
+    print(await _blePlugin.isConnected('DC:71:DD:50:00:8A'));
+    _blePlugin.queryDeviceBattery;
+    bool enableIncomingNumber = await _blePlugin.enableIncomingNumber(true);
+    print(enableIncomingNumber);
   }
 
   @override
@@ -50,14 +55,30 @@ class ForegroundTaskHandler extends TaskHandler {
     print('pid: $pid');
 
 
-    MoYoungBle _blePlugin = MoYoungBle();
-    // bool isConnected = await _blePlugin.isConnected('DC:71:DD:50:00:8A');
-    int time = await _blePlugin.queryTimeSystem;
-    print("onStart: $time");
-    // if (!isConnected) {
-    //   _blePlugin.connect(ConnectBean(autoConnect: true, address: 'DC:71:DD:50:00:8A'));
-    // }
-    // _blePlugin.connect(ConnectBean(autoConnect: true, address: 'DC:71:DD:50:00:8A'));
+
+    MoYoungBle _blePlugin = Global.blePlugin;
+    bool isConnected = await _blePlugin.isConnected('DC:71:DD:50:00:8A');
+    // bool isConnected = await _blePlugin.isConnected('F7:3F:2D:0B:F4:F0');
+    // int time = await _blePlugin.queryTimeSystem;
+    // print("onStart: $time");
+    if (!isConnected) {
+      // _blePlugin.connect(ConnectBean(autoConnect: true, address: 'F7:3F:2D:0B:F4:F0'));
+      _blePlugin.connect(ConnectBean(autoConnect: false, address: 'DC:71:DD:50:00:8A'));
+    }
+    _blePlugin.deviceBatteryEveStm.listen(
+          (DeviceBatteryBean event) {
+          switch (event.type) {
+            case DeviceBatteryType.deviceBattery:
+              print("deviceBattery: ${event.deviceBattery!}");
+              break;
+            case DeviceBatteryType.subscribe:
+              print(event.subscribe!);
+              break;
+            default:
+              break;
+          }
+      },
+    );
     // print('ForegroundTaskHandler: $isConnected');
   }
 

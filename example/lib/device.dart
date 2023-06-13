@@ -50,6 +50,7 @@ import 'package:moyoung_ble_plugin_example/modules/menstrualCycle.dart';
 import 'package:moyoung_ble_plugin_example/modules/notDisturb.dart';
 import 'package:moyoung_ble_plugin_example/modules/notification.dart';
 
+import 'Global.dart';
 import 'modules/GPS.dart';
 import 'modules/HRV.dart';
 import 'modules/calendarEvent.dart';
@@ -76,7 +77,7 @@ class _DevicePage extends State<DevicePage> {
   late BleScanBean device = widget.device;
 
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-  final MoYoungBle _blePlugin = MoYoungBle();
+  final MoYoungBle _blePlugin = Global.blePlugin;
 
   int _connetionState = -1;
   bool _autoConnect = false;
@@ -225,15 +226,15 @@ class _DevicePage extends State<DevicePage> {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return Demo(
-                        blePlugin: _blePlugin,
-                        device: device,
+                        // blePlugin: _blePlugin,
+                        // device: device,
                       );
                     }));
                   },
                   child: const Text("Demo")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return TimePage(
                           blePlugin: _blePlugin,
@@ -244,7 +245,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("4-Time")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return FirmwarePage(
                           blePlugin: _blePlugin,
@@ -256,7 +257,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("5-Firmware")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return BatteryPage(
                           blePlugin: _blePlugin,
@@ -267,7 +268,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("6-Battery")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return UserInfoPage(
                           blePlugin: _blePlugin,
@@ -289,7 +290,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("8-Weather")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return StepsPage(
                           blePlugin: _blePlugin,
@@ -300,7 +301,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("9-Steps")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return SleepPage(
                           blePlugin: _blePlugin,
@@ -377,7 +378,7 @@ class _DevicePage extends State<DevicePage> {
                   child: const Text("16-Language")),
               ElevatedButton(
                   onPressed: () {
-                    if (_isConn) {
+                    if (true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return NotificationPage(
                           blePlugin: _blePlugin,
