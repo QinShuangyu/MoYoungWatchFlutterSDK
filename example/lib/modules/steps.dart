@@ -110,7 +110,7 @@ class _StepsPage extends State<StepsPage> {
                   /// 获取最近两天步数半小时分类统计
                   ElevatedButton(
                       child: const Text('queryStepsDetail(theDayBeforeYesterday)'),
-                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.yesterday)),
+                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.today)),
                   /// 获取全天步数、距离和卡路里半小时统计
                   ElevatedButton(
                       child: const Text('queryActionDetails()'),

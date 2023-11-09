@@ -8,8 +8,7 @@ class FirmwarePage extends StatefulWidget {
 
   final BleScanBean device;
 
-  const FirmwarePage({Key? key, required this.blePlugin, required this.device})
-      : super(key: key);
+  const FirmwarePage({Key? key, required this.blePlugin, required this.device}) : super(key: key);
 
   @override
   State<FirmwarePage> createState() {
@@ -26,11 +25,12 @@ class _FirmwarePage extends State<FirmwarePage> {
   int _error = -1;
   String _errorContent = "";
   int _upgradeProgress = -1;
-  String _hsOtaAddress="";
+  String _hsOtaAddress = "";
   int _deviceOtaStatus = -1;
   int _otaType = -1;
   String _customizeVersion = "";
   String _uuid = "";
+  String upgradeFilePath = "";
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _FirmwarePage extends State<FirmwarePage> {
         (OTABean event) {
           if (!mounted) return;
           setState(() {
-            switch(event.type){
+            switch (event.type) {
               case OTAProgressType.downloadStart:
                 break;
               case OTAProgressType.downloadComplete:
@@ -80,84 +80,89 @@ class _FirmwarePage extends State<FirmwarePage> {
           title: const Text("Firmware"),
         ),
         body: Center(
-            child: ListView(
-                children: <Widget>[
-                  Text("upgradeProgress: $_upgradeProgress"),
-                  Text("error: $_error"),
-                  Text("errorContent: $_errorContent"),
-                  Text("deviceOtaStatus: $_deviceOtaStatus"),
-                  Text("hsOtaAddress: $_hsOtaAddress"),
-                  Text("OtaType: $_otaType"),
-                  Text("customizeVersion: $_customizeVersion"),
-                  Text("uuid: $_uuid"),
-
-                  ElevatedButton(
-                      child: Text(_firmwareVersion),
-                      onPressed: queryFirmwareVersion),
-                  ElevatedButton(
-                      child: const Text("queryCustomizeVersion"),
-                      onPressed: () async {
-                        String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
-                        setState(() {
-                          _customizeVersion = customizeVersion;
-                        });
-                      }),
-                  ElevatedButton(
-                      child: Text(_newFirmwareInfo),
-                      onPressed: () => checkFirmwareVersion(_firmwareVersion,OTAType.normalUpgradeType)),
-                  ElevatedButton(
-                      child: const Text('queryHsOtaAddress()'),
-                      onPressed: () async {
-                        String hsOtaAddress = await widget.blePlugin.queryHsOtaAddress;
-                        setState(() {
-                          _hsOtaAddress = hsOtaAddress;
-                        });
-                      }),
-                  ElevatedButton(
-                      child: const Text('startOTA(hsOtaAddress)'),
-                      onPressed: () =>  startOTA(
-                          checkFirmwareVersionBeanFromJson(_newFirmwareInfo).isLatestVersion!?-1:checkFirmwareVersionBeanFromJson(_newFirmwareInfo)
-                              .firmwareVersionInfo!
-                              .mcu!,
-                          _hsOtaAddress)),
-                  ElevatedButton(
-                      child: const Text('startOTA(address)'),
-                      onPressed: () => startOTA(
-                          checkFirmwareVersionBeanFromJson(_newFirmwareInfo).isLatestVersion!?-1:checkFirmwareVersionBeanFromJson(_newFirmwareInfo)
-                              .firmwareVersionInfo!
-                              .mcu!,
-                          widget.device.address)),
-                  ElevatedButton(
-                      child: const Text('abortOTA(oTAType)'),
-                      onPressed: () => widget.blePlugin.abortOTA(_oTAType!)),
-                  ElevatedButton(
-                      child: const Text('queryDeviceOtaStatus()'),
-                      onPressed: () async {
-                        int deviceOtaStatus = await widget.blePlugin.queryDeviceOtaStatus;
-                        setState(() {
-                          _deviceOtaStatus = deviceOtaStatus;
-                        });
-                      }),
-                  ElevatedButton(
-                      child: const Text('enableHsOta()'),
-                      onPressed: () => widget.blePlugin.enableHsOta),
-                  ElevatedButton(
-                      child: const Text('queryOtaType()'),
-                      onPressed: () async {
-                        int otaType = await widget.blePlugin.queryOtaType;
-                        setState(() {
-                          _otaType = otaType;
-                        });
-                      }),
-                  ElevatedButton(onPressed: () async {
-                    String uuid = await widget.blePlugin.queryUUID;
-                    setState(() {
-                      _uuid = uuid;
-                    });
-                  }, child: const Text('iOS：queryUUID')),
-                ]
-            )
-        ),
+            child: ListView(children: <Widget>[
+          Text("upgradeProgress: $_upgradeProgress"),
+          Text("error: $_error"),
+          Text("errorContent: $_errorContent"),
+          Text("deviceOtaStatus: $_deviceOtaStatus"),
+          Text("hsOtaAddress: $_hsOtaAddress"),
+          Text("OtaType: $_otaType"),
+          Text("customizeVersion: $_customizeVersion"),
+          Text("uuid: $_uuid"),
+          ElevatedButton(child: Text(_firmwareVersion), onPressed: queryFirmwareVersion),
+          ElevatedButton(
+              child: const Text("queryCustomizeVersion"),
+              onPressed: () async {
+                String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
+                setState(() {
+                  _customizeVersion = customizeVersion;
+                });
+              }),
+          ElevatedButton(child: Text(_newFirmwareInfo), onPressed: () => checkFirmwareVersion(_firmwareVersion, OTAType.normalUpgradeType)),
+          ElevatedButton(
+              child: const Text('queryHsOtaAddress()'),
+              onPressed: () async {
+                String hsOtaAddress = await widget.blePlugin.queryHsOtaAddress;
+                setState(() {
+                  _hsOtaAddress = hsOtaAddress;
+                });
+              }),
+          ElevatedButton(
+              child: const Text('startOTA(hsOtaAddress)'),
+              onPressed: () => startOTA(
+                  checkFirmwareVersionBeanFromJson(_newFirmwareInfo).isLatestVersion!
+                      ? -1
+                      : checkFirmwareVersionBeanFromJson(_newFirmwareInfo).firmwareVersionInfo!.mcu!,
+                  _hsOtaAddress)),
+          ElevatedButton(
+              child: const Text('startOTA(address)'),
+              onPressed: () => startOTA(
+                  checkFirmwareVersionBeanFromJson(_newFirmwareInfo).isLatestVersion!
+                      ? -1
+                      : checkFirmwareVersionBeanFromJson(_newFirmwareInfo).firmwareVersionInfo!.mcu!,
+                  widget.device.address)),
+          ElevatedButton(child: const Text('abortOTA(oTAType)'), onPressed: () => widget.blePlugin.abortOTA(_oTAType!)),
+          ElevatedButton(
+              child: const Text('queryDeviceOtaStatus()'),
+              onPressed: () async {
+                int deviceOtaStatus = await widget.blePlugin.queryDeviceOtaStatus;
+                setState(() {
+                  _deviceOtaStatus = deviceOtaStatus;
+                });
+              }),
+          ElevatedButton(child: const Text('enableHsOta()'), onPressed: () => widget.blePlugin.enableHsOta),
+          ElevatedButton(
+              child: const Text('queryOtaType()'),
+              onPressed: () async {
+                int otaType = await widget.blePlugin.queryOtaType;
+                setState(() {
+                  _otaType = otaType;
+                });
+              }),
+          ElevatedButton(
+              onPressed: () async {
+                String uuid = await widget.blePlugin.queryUUID;
+                setState(() {
+                  _uuid = uuid;
+                });
+              },
+              child: const Text('iOS：queryUUID')),
+          ElevatedButton(
+              onPressed: () async {
+                widget.blePlugin.sifliStartOTA(upgradeFilePath);
+              },
+              child: const Text('sifliStartOTA')),
+          ElevatedButton(
+              onPressed: () async {
+                widget.blePlugin.jieliStartOTA(upgradeFilePath);
+              },
+              child: const Text('jieliStartOTA')),
+          ElevatedButton(
+              onPressed: () async {
+                widget.blePlugin.jieliAbortOTA;
+              },
+              child: const Text('jieliAbortOTA')),
+        ])),
       ),
     );
   }
@@ -173,11 +178,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   }
 
   Future<void> checkFirmwareVersion(String version, int oTAType) async {
-    CheckFirmwareVersionBean versionInfo =
-        await widget.blePlugin.checkFirmwareVersion(FirmwareVersion(
-          version: version,
-          otaType: oTAType
-        ));
+    CheckFirmwareVersionBean versionInfo = await widget.blePlugin.checkFirmwareVersion(FirmwareVersion(version: version, otaType: oTAType));
     if (!mounted) {
       return;
     }
@@ -192,26 +193,22 @@ class _FirmwarePage extends State<FirmwarePage> {
       case 8:
       case 9:
         _oTAType = OTAMcuType.startHsOta;
-        await widget.blePlugin
-            .startOTA(OtaBean(address: address, type: OTAMcuType.startHsOta));
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startHsOta));
         break;
       case 7:
       case 11:
       case 71:
       case 72:
         _oTAType = OTAMcuType.startRtkOta;
-        await widget.blePlugin
-            .startOTA(OtaBean(address: address, type: OTAMcuType.startRtkOta));
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startRtkOta));
         break;
       case 10:
         _oTAType = OTAMcuType.startOta;
-        await widget.blePlugin
-            .startOTA(OtaBean(address: address, type: OTAMcuType.startOta));
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startOta));
         break;
       default:
         _oTAType = OTAMcuType.startDefaultOta;
-        await widget.blePlugin
-            .startOTA(OtaBean(address: address, type: OTAMcuType.startDefaultOta));
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startDefaultOta));
         break;
     }
   }

@@ -412,7 +412,34 @@ _blePlugin.enableHsOta;
 int type = await _blePlugin.queryOtaType;
 ```
 
+## 5.10 Sifli Start OTA
+
+Sifli watch starts firmware upgrade, parameter is the path of upgrade file.
+
+Sifli watches cannot stop firmware upgrades.
+
+```dart
+_widget.blePlugin.sifliStartOTA(upgradeFilePath)
+```
+
+## 5.11 Jieli Start OTA
+
+Jieli watch starts firmware upgrade, parameter is the path of upgrade file.
+
+```dart
+_widget.blePlugin.jieliStartOTA(upgradeFilePath)
+```
+
+## 5.12 Jieli Abort OTA
+
+Jieli watch stops firmware upgrade, parameter is the path of the upgrade file.
+
+```dart
+_widget.blePlugin.jieliAbortOTA
+```
+
 # 6 Battery
+
 ## 6.1 Sets Device Battery listener
 
 Sets the watch battery monitoring stream deviceBatteryEveStm to return data about the watch battery.
@@ -1173,17 +1200,47 @@ int size = _blePlugin.queryAvailableStorage;
 When the watch switches dials, it needs to query the type supported by the dial.
 
 ```dart
-SupportWatchFaceBean info = await _blePlugin.querySupportWatchFace;
+SupportWatchFaceBean _supportWatchFaceBean = await widget.blePlugin.querySupportWatchFace;
+    _watchFaceType = _supportWatchFaceBean!.type;
+    setState(() {
+      if (_watchFaceType == SupportWatchFaceType.ordinary) {
+        _displayWatchFace = _supportWatchFaceBean!.supportWatchFaceInfo!.displayWatchFace!;
+        _supportWatchFaceList = _supportWatchFaceBean!.supportWatchFaceInfo!.supportWatchFaceList!;
+      } else if (_watchFaceType == SupportWatchFaceType.sifli) {
+        _supportWatchFaceList = _supportWatchFaceBean!.sifliSupportWatchFaceInfo!.typeList!;
+      } else if (_watchFaceType == SupportWatchFaceType.jieli) {
+        _displayWatchFace = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.displayWatchFace!;
+        _supportWatchFaceList = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!;
+        _watchFaceSize = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!;
+      }
+    });
 ```
 
 callback description：
 
 SupportWatchFaceBean:
 
-| callback value       | callback value type | callback value description         |
-| -------------------- | ------------------- | ---------------------------------- |
-| displayWatchFace     | int                 | The watch face currently displayed |
-| supportWatchFaceList | List<int>           | List of supported watch faces      |
+| callback value            | callback value type       | callback value description                  |
+| ------------------------- | ------------------------- | ------------------------------------------- |
+| type                      | String                    | SupportWatchFaceType                        |
+| supportWatchFaceInfo      | SupportWatchFaceInfo      | Ordinary watch supports dial information    |
+| sifliSupportWatchFaceInfo | SifliSupportWatchFaceInfo | Sifli watch supports watch face information |
+| jieliSupportWatchFaceInfo | JieliSupportWatchFaceInfo | Jieli watch supports watch face information |
+
+SupportWatchFaceType:
+
+| type     | value      | value description |
+| -------- | ---------- | ----------------- |
+| ordinary | "ORDINARY" | Ordinary watch    |
+| sifli    | "SIFLI"    | Sifli watch       |
+| jieli    | "JIELI"    | Jieli watch       |
+
+SupportWatchFaceInfo:
+
+| value                | value type | value description                  |
+| -------------------- | ---------- | ---------------------------------- |
+| displayWatchFace     | int        | The watch face currently displayed |
+| supportWatchFaceList | List<int>  | List of supported watch faces      |
 
 ## 14.10 Gets the watchface store
 
@@ -1312,7 +1369,150 @@ CustomizeWatchFaceBean:
 | index | int        | file id                                         |
 | file  | String     | The address where the watch face file is stored |
 
+## 14.14 Query Jieli WatchFace Info
+
+Query Jieli watch face information.
+
+```dart
+JieliWatchFaceBean jieliWatchFace = _widget.blePlugin.queryJieliWatchFaceInfo;
+```
+
+JieliWatchFaceBean:
+
+| callback value | callback value type | callback value description |
+| -------------- | ------------------- | -------------------------- |
+| apiVersion     | int                 | Special for Jieli watches. |
+| feature        | int                 | Special for Jieli watches. |
+
+## 14.15 Query Available Storage
+
+```dart
+int _watchFaceSize = _widget.blePlugin.queryAvailableStorage;
+```
+
+## 14.16 Query WatchFace Store Tag List
+
+```dart
+WatchFaceStoreTagListResult result = _widget.blePlugin.queryWatchFaceStoreTagList(
+        WatchFaceStoreTagListBean(
+            storeType: storeType,
+            typeList: _supportWatchFaceList,
+            firmwareVersion: _firmwareVersion,
+            perPageCount: 9,
+            pageIndex: 1,
+            maxSize: _watchFaceSize,
+            apiVersion: _apiVersion,
+            feature: _feature),
+      );
+int _tagId = result.list![0].tagId!;
+```
+
+**Precautions:**
+
+**typeList**: parameters are obtained by the _blePlugin.querySupportWatchFace.
+
+**firmwareVersion**: Get the firmware version number through _blePlugin.queryFirmwareVersion.
+
+**maxSize**: Jieli watches are obtained through the querySupportWatchFace interface. Sifli and normal watches are obtained through the queryAvailableStorage interface.
+
+## 14.17 Query WatchFace Store List
+
+The new version of the Get Watch market, it is recommended to use the new version of the watch market to get the watch face, which supports normal, Sifli and Jieli watches.
+
+```dart
+List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStoreList(
+        WatchFaceStoreListBean(
+            watchFaceStoreTagList: WatchFaceStoreTagListBean(
+                storeType: storeType,
+                typeList: _supportWatchFaceList,
+                firmwareVersion: _firmwareVersion,
+                perPageCount: 9,
+                pageIndex: 1,
+                maxSize: _watchFaceSize,
+                apiVersion: _apiVersion,
+                feature: _feature),
+            tagId: _tagId),
+      );
+```
+
+WatchFaceBean:
+
+| value   | value type | value description             |
+| ------- | ---------- | ----------------------------- |
+| id      | int        | file id                       |
+| preview | String     | Watchface  Image preview link |
+| file    | String     | Watchface file download link  |
+
+**Precautions:**
+
+**typeList**: parameters are obtained by the _blePlugin.querySupportWatchFace.
+
+**firmwareVersion**: Get the firmware version number through _blePlugin.queryFirmwareVersion.
+
+**maxSize**: Jieli watches are obtained through the querySupportWatchFace interface. Sifli and normal watches are obtained through the queryAvailableStorage interface.
+
+**tagId**: Get through queryWatchFaceStoreTagList interface.
+
+## 14.18 Query WatchFace Detail
+
+New version of get watch face details.
+
+```dart
+WatchFaceDetailResultBean watchFaceDetailResult = _widget.blePlugin.queryWatchFaceDetail(
+        WatchFaceStoreTypeBean(
+            storeType: storeType,
+            id: _watchFacelist[0].id!,
+            typeList: _supportWatchFaceList,
+            firmwareVersion: _firmwareVersion,
+            apiVersion: _apiVersion,
+            feature: _feature,
+            maxSize: _watchFaceSize),
+      );
+```
+
+WatchFaceDetailResultBean:
+
+| callback value       | callback value type  | callback value description |
+| -------------------- | -------------------- | -------------------------- |
+| watchFaceBean        | WatchFaceBean        | WatchFace information      |
+| watchFaceDetailsInfo | WatchFaceDetailsBean | WatchFace details          |
+| error                | String               | Error messages             |
+
+watchFaceBean:
+
+| value   | value type | value description             |
+| ------- | ---------- | ----------------------------- |
+| id      | int        | file id                       |
+| preview | String     | Watchface  Image preview link |
+| file    | String     | Watchface file download link  |
+
+watchFaceDetailsInfo:
+
+| value                  | value type                   | value description |
+| ---------------------- | ---------------------------- | ----------------- |
+| id                     | int                          |                   |
+| name                   | String                       |                   |
+| download               | int                          |                   |
+| size                   | int                          |                   |
+| file                   | String                       |                   |
+| preview                | String                       |                   |
+| remarkCn               | String                       |                   |
+| remarkEn               | String                       |                   |
+| recommendWatchFaceList | List<RecommendWatchFaceBean> |                   |
+
+RecommendWatchFaceBean:
+
+| value   | value type | value description |
+| ------- | ---------- | ----------------- |
+| id      | int        |                   |
+| name    | String     |                   |
+| size    | int        |                   |
+| preview | String     |                   |
+
+
+
 # 15 Alarm
+
 ## 15.1 Sets alarm
 
 The watch supports three alarm clocks, and the alarm clock information can be set according to the alarm clock serial number. Single alarm clock supports setting date.
@@ -1485,61 +1685,63 @@ MessageBean:
 
 BleMessageType:
 
-| **value**        | value type | value description |
-| ---------------- | ---------- | ----------------- |
-| call             | int        | 0                 |
-| sms              | int        | 1                 |
-| wechat           | int        | 2                 |
-| qq               | int        | 3                 |
-| facebook         | int        | 130               |
-| twitter          | int        | 131               |
-| instagram        | int        | 6                 |
-| skype            | int        | 7                 |
-| whatsApp         | int        | 4                 |
-| line             | int        | 9                 |
-| kaKao            | int        | 8                 |
-| email            | int        | 11                |
-| messenger        | int        | 12                |
-| zalo             | int        | 13                |
-| telegram         | int        | 14                |
-| viber            | int        | 15                |
-| nateOn           | int        | 16                |
-| gmail            | int        | 17                |
-| calendar         | int        | 18                |
-| dailyHunt        | int        | 19                |
-| outlook          | int        | 20                |
-| yahoo            | int        | 21                |
-| inshorts         | int        | 22                |
-| phonepe          | int        | 23                |
-| gpay             | int        | 24                |
-| paytm            | int        | 25                |
-| swiggy           | int        | 26                |
-| zomato           | int        | 27                |
-| uber             | int        | 28                |
-| ola              | int        | 29                |
-| reflexApp        | int        | 30                |
-| snapchat         | int        | 31                |
-| ytMusic          | int        | 32                |
-| youTube          | int        | 33                |
-| linkEdin         | int        | 34                |
-| amazon           | int        | 35                |
-| flipkart         | int        | 36                |
-| netFlix          | int        | 37                |
-| hotstar          | int        | 38                |
-| amazonPrime      | int        | 39                |
-| googleChat       | int        | 40                |
-| wynk             | int        | 41                |
-| googleDrive      | int        | 42                |
-| dunzo            | int        | 43                |
-| gaana            | int        | 44                |
-| missCall         | int        | 45                |
-| whatsAppBusiness | int        | 46                |
-| tiktok           | int        | 47                |
-| lyft             | int        | 48                |
-| mail             | int        | 49                |
-| googleMaps       | int        | 50                |
-| slack            | int        | 51                |
-| other            | int        | 128               |
+| **value**           | value type | value description |
+| ------------------- | ---------- | ----------------- |
+| call                | int        | 0                 |
+| sms                 | int        | 1                 |
+| wechat              | int        | 2                 |
+| qq                  | int        | 3                 |
+| facebook            | int        | 130               |
+| twitter             | int        | 131               |
+| instagram           | int        | 6                 |
+| skype               | int        | 7                 |
+| whatsApp            | int        | 4                 |
+| line                | int        | 9                 |
+| kaKao               | int        | 8                 |
+| email               | int        | 11                |
+| messenger           | int        | 12                |
+| zalo                | int        | 13                |
+| telegram            | int        | 14                |
+| viber               | int        | 15                |
+| nateOn              | int        | 16                |
+| gmail               | int        | 17                |
+| calendar            | int        | 18                |
+| dailyHunt           | int        | 19                |
+| outlook             | int        | 20                |
+| yahoo               | int        | 21                |
+| inshorts            | int        | 22                |
+| phonepe             | int        | 23                |
+| gpay                | int        | 24                |
+| paytm               | int        | 25                |
+| swiggy              | int        | 26                |
+| zomato              | int        | 27                |
+| uber                | int        | 28                |
+| ola                 | int        | 29                |
+| reflexApp           | int        | 30                |
+| snapchat            | int        | 31                |
+| ytMusic             | int        | 32                |
+| youTube             | int        | 33                |
+| linkEdin            | int        | 34                |
+| amazon              | int        | 35                |
+| flipkart            | int        | 36                |
+| netFlix             | int        | 37                |
+| hotstar             | int        | 38                |
+| amazonPrime         | int        | 39                |
+| googleChat          | int        | 40                |
+| wynk                | int        | 41                |
+| googleDrive         | int        | 42                |
+| dunzo               | int        | 43                |
+| gaana               | int        | 44                |
+| missCall            | int        | 45                |
+| whatsAppBusiness    | int        | 46                |
+| tiktok              | int        | 47                |
+| lyft                | int        | 48                |
+| mail                | int        | 49                |
+| googleMaps          | int        | 50                |
+| slack               | int        | 51                |
+| microsoftTeams      | int        | 53                |
+| mormaiiSmartwatches | int        | 54                |
+| other               | int        | 128               |
 
 ## 17.5 Sets push notifications(old)<Only ios support>
 
@@ -1553,56 +1755,64 @@ Parameter Description :
 
 NotificationType:
 
-| **value**        | value type | value description |
-| ---------------- | ---------- | ----------------- |
-| call             | int        | 0                 |
-| sms              | int        | 1                 |
-| wechat           | int        | 2                 |
-| qq               | int        | 3                 |
-| facebook         | int        | 4                 |
-| twitter          | int        | 5                 |
-| instagram        | int        | 6                 |
-| skype            | int        | 7                 |
-| whatsApp         | int        | 8                 |
-| line             | int        | 9                 |
-| kakao            | int        | 10                |
-| gmail            | int        | 11                |
-| messenger        | int        | 12                |
-| zalo             | int        | 13                |
-| telegram         | int        | 14                |
-| viber            | int        | 15                |
-| nateOn           | int        | 16                |
-| gmail            | int        | 17                |
-| calenda          | int        | 18                |
-| dailyHunt        | int        | 19                |
-| outlook          | int        | 20                |
-| yahoo            | int        | 21                |
-| inshorts         | int        | 22                |
-| phonepe          | int        | 23                |
-| gpay             | int        | 24                |
-| paytm            | int        | 25                |
-| swiggy           | int        | 26                |
-| zomato           | int        | 27                |
-| uber             | int        | 28                |
-| ola              | int        | 29                |
-| reflexApp        | int        | 30                |
-| snapchat         | int        | 31                |
-| ytMusic          | int        | 32                |
-| youTube          | int        | 33                |
-| linkEdin         | int        | 34                |
-| amazon           | int        | 35                |
-| flipkart         | int        | 36                |
-| netFlix          | int        | 37                |
-| hotstar          | int        | 38                |
-| amazonPrime      | int        | 39                |
-| googleChat       | int        | 40                |
-| wynk             | int        | 41                |
-| googleDrive      | int        | 42                |
-| dunzo            | int        | 43                |
-| gaana            | int        | 44                |
-| missCall         | int        | 45                |
-| whatsAppBusiness | int        | 46                |
-| other            | int        | 128               |
+| **value**           | value type | value description |
+| ------------------- | ---------- | ----------------- |
+| call                | int        | 0                 |
+| sms                 | int        | 1                 |
+| wechat              | int        | 2                 |
+| qq                  | int        | 3                 |
+| facebook            | int        | 4                 |
+| twitter             | int        | 5                 |
+| instagram           | int        | 6                 |
+| skype               | int        | 7                 |
+| whatsApp            | int        | 8                 |
+| line                | int        | 9                 |
+| kakao               | int        | 10                |
+| gmail               | int        | 11                |
+| messenger           | int        | 12                |
+| zalo                | int        | 13                |
+| telegram            | int        | 14                |
+| viber               | int        | 15                |
+| nateOn              | int        | 16                |
+| gmail               | int        | 17                |
+| calenda             | int        | 18                |
+| dailyHunt           | int        | 19                |
+| outlook             | int        | 20                |
+| yahoo               | int        | 21                |
+| inshorts            | int        | 22                |
+| phonepe             | int        | 23                |
+| gpay                | int        | 24                |
+| paytm               | int        | 25                |
+| swiggy              | int        | 26                |
+| zomato              | int        | 27                |
+| uber                | int        | 28                |
+| ola                 | int        | 29                |
+| reflexApp           | int        | 30                |
+| snapchat            | int        | 31                |
+| ytMusic             | int        | 32                |
+| youTube             | int        | 33                |
+| linkEdin            | int        | 34                |
+| amazon              | int        | 35                |
+| flipkart            | int        | 36                |
+| netFlix             | int        | 37                |
+| hotstar             | int        | 38                |
+| amazonPrime         | int        | 39                |
+| googleChat          | int        | 40                |
+| wynk                | int        | 41                |
+| googleDrive         | int        | 42                |
+| dunzo               | int        | 43                |
+| gaana               | int        | 44                |
+| missCall            | int        | 45                |
+| whatsAppBusiness    | int        | 46                |
+| dingtalk            | int        | 47                |
+| tikTok              | int        | 48                |
+| lyft                | int        | 49                |
+| mail                | int        | 50                |
+| googleMaps          | int        | 51                |
+| slack               | int        | 52                |
+| microsoftTeams      | int        | 53                |
+| mormaiiSmartwatches | int        | 54                |
+| other               | int        | 128               |
 
 ## 17.6 Gets push notifications(old)<Only ios support>
 
@@ -2250,7 +2460,8 @@ _blePlugin.cameraEveStm.listen(
     // Do something with new state
     if (!mounted) return;
           setState(() {
-            _camera = event.takePhoto!;
+            switch (event.type) {
+              _camera = event.takePhoto!;
             _delayTime = event.delayTime!;
           });
   });

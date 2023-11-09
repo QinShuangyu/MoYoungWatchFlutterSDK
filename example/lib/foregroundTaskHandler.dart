@@ -43,42 +43,28 @@ class ForegroundTaskHandler extends TaskHandler {
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     print('ForegroundTaskHandler: onEvent');
     MoYoungBle _blePlugin = Global.blePlugin;
-    print(await _blePlugin.isConnected('DC:71:DD:50:00:8A'));
-    _blePlugin.queryDeviceBattery;
-    bool enableIncomingNumber = await _blePlugin.enableIncomingNumber(true);
-    print(enableIncomingNumber);
+    bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
+    print("onEvent: $isConnected");
+    // _blePlugin.queryDeviceBattery;
+    // bool enableIncomingNumber = await _blePlugin.enableIncomingNumber(true);
+    // print(enableIncomingNumber);
   }
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
     print('ForegroundTaskHandler: onStart');
-    print('pid: $pid');
+    // print('pid: $pid');
 
 
 
     MoYoungBle _blePlugin = Global.blePlugin;
-    bool isConnected = await _blePlugin.isConnected('DC:71:DD:50:00:8A');
-    // bool isConnected = await _blePlugin.isConnected('F7:3F:2D:0B:F4:F0');
+    bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
+    print("onStart: $isConnected");
     // int time = await _blePlugin.queryTimeSystem;
     // print("onStart: $time");
-    if (!isConnected) {
       // _blePlugin.connect(ConnectBean(autoConnect: true, address: 'F7:3F:2D:0B:F4:F0'));
-      _blePlugin.connect(ConnectBean(autoConnect: false, address: 'DC:71:DD:50:00:8A'));
-    }
-    _blePlugin.deviceBatteryEveStm.listen(
-          (DeviceBatteryBean event) {
-          switch (event.type) {
-            case DeviceBatteryType.deviceBattery:
-              print("deviceBattery: ${event.deviceBattery!}");
-              break;
-            case DeviceBatteryType.subscribe:
-              print(event.subscribe!);
-              break;
-            default:
-              break;
-          }
-      },
-    );
+      // _blePlugin.connect(ConnectBean(autoConnect: false, address: 'DC:71:DD:50:00:8A'));
+    // _blePlugin.connect(ConnectBean(autoConnect: true, address: 'C2:47:2F:8F:6D:57'));
     // print('ForegroundTaskHandler: $isConnected');
   }
 
