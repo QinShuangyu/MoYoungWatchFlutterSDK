@@ -98,9 +98,7 @@ class _TrainingPage extends State<TrainingPage> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              const Text("historyTrainList: as follows"),
-              Text("_historyTrainList: ${_historyTrainList.toString()}"),
-              const Text("trainingInfo: as follows"),
+              Text("historyTrainList: ${_historyTrainList.map((e) => e.toJson())}"),
               Text("typeInfo: $_typeInfo"),
               Text("startTimeInfo: $_startTimeInfo"),
               Text("endTime: $_endTime"),

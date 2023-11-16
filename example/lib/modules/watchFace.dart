@@ -35,7 +35,6 @@ class _WatchFacePage extends State<WatchFacePage> {
   SupportWatchFaceBean? _supportWatchFaceBean;
   String _watchFaceType = "";
   int _displayWatchFace = -1;
-  int _watchFaceSize = 500;
   String _jieliWatchFace = "";
   int _apiVersion = 0;
   int _feature = 0;
@@ -52,7 +51,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   int _id = -1;
   String _preview = "";
   String _file = "";
-  int _size = 0;
+  int _watchFaceSize = 500 * 1024;
 
   @override
   void initState() {
@@ -141,7 +140,7 @@ class _WatchFacePage extends State<WatchFacePage> {
                   Text("jieliWatchFace: $_jieliWatchFace"),
                   Text("preview: $_preview"),
                   Text("file: $_file"),
-                  Text("size: $_size"),
+                  Text("size: $_watchFaceSize"),
                   Text("watchFaceDetailResult: $_watchFaceDetailResult" ),
                   ElevatedButton(
                     child: const Text('sendDisplayWatchFace(1)'),
@@ -204,12 +203,7 @@ class _WatchFacePage extends State<WatchFacePage> {
                   ),
                   ElevatedButton(
                       child: const Text("queryAvailableStorage()"),
-                      onPressed: () async {
-                        int size = await widget.blePlugin.queryAvailableStorage;
-                        setState(() {
-                          _size = size;
-                        });
-                      }),
+                      onPressed: queryAvailableStorage),
                   Column(
                     children: [
                       const Text("Steps to get the id of the watch face"),
@@ -232,13 +226,31 @@ class _WatchFacePage extends State<WatchFacePage> {
                   ),
                   Column(
                     children: [
-                      const Text("Query the ordinary watchFace store"),
+                      const Text("Get the watch face market the old way"),
                       ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
                       ElevatedButton(
                         child: const Text("2. queryFirmwareVersion()"),
                         onPressed: queryFirmwareVersion,
                       ),
                       ElevatedButton(child: const Text('3. queryWatchFaceStore()'), onPressed: queryOrdinaryWatchFaceStore),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text("Query the ordinary watchFace store"),
+                      ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                      ElevatedButton(
+                        child: const Text("2. queryFirmwareVersion()"),
+                        onPressed: queryFirmwareVersion,
+                      ),
+                      ElevatedButton(child: const Text('3. queryAvailableStorage()'), onPressed: queryAvailableStorage),
+                      ElevatedButton(
+                          child: const Text('4. queryWatchFaceStoreTagList()'),
+                          onPressed: () => queryWatchFaceStoreTagList(SupportWatchFaceType.ordinary)),
+                      ElevatedButton(
+                          child: const Text('5. queryWatchFaceStoreList()'), onPressed: () => queryWatchFaceStoreList(SupportWatchFaceType.ordinary)),
+                      ElevatedButton(
+                          child: const Text('6. queryWatchFaceDetail()'), onPressed: () => queryWatchFaceDetail(SupportWatchFaceType.ordinary)),
                     ],
                   ),
                   Column(
@@ -387,7 +399,10 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   Future<void> queryAvailableStorage() async {
-    _watchFaceSize = await widget.blePlugin.queryAvailableStorage;
+    int watchFaceSize = await widget.blePlugin.queryAvailableStorage;
+    setState(() {
+      _watchFaceSize = watchFaceSize * 1024;
+    });
   }
 
   Future<void> queryWatchFaceStoreTagList(String storeType) async {

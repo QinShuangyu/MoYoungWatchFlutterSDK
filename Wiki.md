@@ -432,7 +432,7 @@ _widget.blePlugin.jieliStartOTA(upgradeFilePath)
 
 ## 5.12 Jieli Abort OTA
 
-Jieli watch stops firmware upgrade, parameter is the path of the upgrade file.
+Jieli watch stops firmware upgrade
 
 ```dart
 _widget.blePlugin.jieliAbortOTA
@@ -1189,15 +1189,16 @@ _blePlugin.abortWatchFaceBackground;
 
 ## 14.8 Gets available storage
 
-Check your watch's available storage space to see if you can download a new watch face.
+Check your watch's available storage space to see if you can download a new watch face. It's in kilobytes, which you multiply by 1024.
 
 ```dart
-int size = _blePlugin.queryAvailableStorage;
+int _watchFaceSize = _blePlugin.queryAvailableStorage;
+_watchFaceSize *= 1024；
 ```
 
 ## 14.9 Gets support watchface type
 
-When the watch switches dials, it needs to query the type supported by the dial.
+When the watch switches dials, it needs to query the type supported by the dial. jieli's clock face memory size is measured in bytes.
 
 ```dart
 SupportWatchFaceBean _supportWatchFaceBean = await widget.blePlugin.querySupportWatchFace;
@@ -1229,11 +1230,11 @@ SupportWatchFaceBean:
 
 SupportWatchFaceType:
 
-| type     | value      | value description |
-| -------- | ---------- | ----------------- |
-| ordinary | "ORDINARY" | Ordinary watch    |
-| sifli    | "SIFLI"    | Sifli watch       |
-| jieli    | "JIELI"    | Jieli watch       |
+| type     | value     | value description |
+| -------- | --------- | ----------------- |
+| ordinary | "DEFAULT" | Default watch     |
+| sifli    | "SIFLI"   | Sifli watch       |
+| jieli    | "JIELI"   | Jieli watch       |
 
 SupportWatchFaceInfo:
 
@@ -1384,13 +1385,7 @@ JieliWatchFaceBean:
 | apiVersion     | int                 | Special for Jieli watches. |
 | feature        | int                 | Special for Jieli watches. |
 
-## 14.15 Query Available Storage
-
-```dart
-int _watchFaceSize = _widget.blePlugin.queryAvailableStorage;
-```
-
-## 14.16 Query WatchFace Store Tag List
+## 14.15 Query WatchFace Store Tag List
 
 ```dart
 WatchFaceStoreTagListResult result = _widget.blePlugin.queryWatchFaceStoreTagList(
@@ -1415,7 +1410,7 @@ int _tagId = result.list![0].tagId!;
 
 **maxSize**: Jieli watches are obtained through the querySupportWatchFace interface. Sifli and normal watches are obtained through the queryAvailableStorage interface.
 
-## 14.17 Query WatchFace Store List
+## 14.16 Query WatchFace Store List
 
 The new version of the Get Watch market, it is recommended to use the new version of the watch market to get the watch face, which supports normal, Sifli and Jieli watches.
 
@@ -1453,7 +1448,7 @@ WatchFaceBean:
 
 **tagId**: Get through queryWatchFaceStoreTagList interface.
 
-## 14.18 Query WatchFace Detail
+## 14.17 Query WatchFace Detail
 
 New version of get watch face details.
 

@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-#  logger: ^1.1.0
+#  logger: ^1.1.2
   flutter_contacts: 1.1.4
   permission_handler: any
   path_provider: ^2.0.10
