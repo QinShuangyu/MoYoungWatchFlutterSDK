@@ -432,7 +432,7 @@ _widget.blePlugin.jieliStartOTA(upgradeFilePath)
 
 ## 5.12 Jieli Abort OTA
 
-Jieli watch stops firmware upgrade
+Jieli watch stops firmware upgrade.
 
 ```dart
 _widget.blePlugin.jieliAbortOTA
@@ -1369,6 +1369,16 @@ CustomizeWatchFaceBean:
 | ----- | ---------- | ----------------------------------------------- |
 | index | int        | file id                                         |
 | file  | String     | The address where the watch face file is stored |
+
+## 14.14 Sets watch face id
+
+Upload the watch face id, this method only works for jieli watches. You'll need to call this method once the jieli watch face has been uploaded.
+
+```dart
+_blePlugin.sendWatchFace(id);
+```
+
+
 
 ## 14.14 Query Jieli WatchFace Info
 
@@ -2514,16 +2524,16 @@ _blePlugin.phoneEveStm.listen(
 
 PhoneOperationType:
 
-| value            | value type | value description                                            |
-| ---------------- | ---------- | ------------------------------------------------------------ |
-| musicPlayOrPause | int        | Play / Pause                                                 |
-| musicPrevious    | int        | Previous                                                     |
-| musicNext        | int        | Next                                                         |
-| rejectIncoming   | int        | Hang up the phone. You can press and hold the trigger on the call alert interface. |
-| volumeUp         | int        | Turn up the volume                                           |
-| volumeDown       | int        | Turn down the volume                                         |
-| musicPlay        | int        | Play                                                         |
-| musicPause       | int        | Pause                                                        |
+| value | value type | value description                                            |
+| ----- | ---------- | ------------------------------------------------------------ |
+| 0     | int        | Play / Pause                                                 |
+| 1     | int        | Previous                                                     |
+| 2     | int        | Next                                                         |
+| 3     | int        | Hang up the phone. You can press and hold the trigger on the call alert interface. |
+| 4     | int        | Turn up the volume                                           |
+| 5     | int        | Turn down the volume                                         |
+| 6     | int        | Play                                                         |
+| 7     | int        | Pause                                                        |
 
 # 25 RSSI<Only android support>
 
@@ -3426,15 +3436,7 @@ _blePlugin.trainingEveStm.listen(
                 _historyTrainList = event.historyTrainList!;
                 break;
               case TrainType.trainingChange:
-                _trainingInfo = event.trainingInfo;
-                _typeInfo = _trainingInfo!.type!;
-                _startTimeInfo = _trainingInfo!.startTime!;
-                _endTime = _trainingInfo!.endTime!;
-                _validTime = _trainingInfo!.validTime!;
-                _steps = _trainingInfo!.steps!;
-                _distance = _trainingInfo!.distance!;
-                _calories = _trainingInfo!.calories!;
-                _hrList = _trainingInfo!.hrList!;
+                _trainingList = event.trainingList!;
                 break;
               default:
                 break;
@@ -3451,7 +3453,7 @@ TrainBean
 | ---------------- | ---------------------- | ------------------------------------------------------------ |
 | type             | int                    | Get the corresponding return value according to type, where type is the value corresponding to TrainType. |
 | historyTrainList | List<HistoryTrainList> | Historical training information.                             |
-| trainingInfo     | TrainingInfo           | Training information.                                        |
+| trainingInfo     | List<TrainingInfo>     | Training information.                                        |
 
 TrainType:
 
@@ -3464,8 +3466,9 @@ HistoryTrainList:
 
 | callback value | callback value type | callback value description |
 | -------------- | ------------------- | -------------------------- |
+| id             | int                 | Training id                |
 | startTime      | long                | Training start time        |
-| type           | int                 | The training type          |
+| type           | int                 | The training typestartTime |
 
 TrainingInfo:
 
@@ -3482,7 +3485,7 @@ TrainingInfo:
 
 ## 48.2 Gets History Training
 
-Get historical training details. The query result will be obtained through the trainingEveStm monitoring stream, the return type is historyTrainingChange, and the training detailed data is TrainBean.historyTrainList.
+Get historical training details. The query results will flow through trainingEveStm monitoring, the return type is historyTrainingChange and trainingChange, training history data for TrainBean. HistoryTrainList, The training details data is TrainBean.trainingList.
 
 ```dart
 _blePlugin.queryHistoryTraining;
@@ -3490,7 +3493,7 @@ _blePlugin.queryHistoryTraining;
 
 ## 48.3 Gets Training Detail
 
-Get detailed data for training. The query result will be obtained through the trainingEveStm monitoring stream, the return type is trainingChange, and the training detailed data is TrainBean.trainingInfo
+Get detailed data for training. The query result will be obtained through the trainingEveStm monitoring stream, the return type is trainingChange, and the training detailed data is TrainBean.trainingInfo.
 
 ```dart
 _blePlugin.queryTraining(int id);
@@ -3501,6 +3504,10 @@ Parameter Description :
 | value | value type | value description          |
 | ----- | ---------- | -------------------------- |
 | id    | int        | id is the id of a training |
+
+Precautions:
+
+Get the training history first.
 
 # 49 Calibrate the GSensor
 

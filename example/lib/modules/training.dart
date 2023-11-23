@@ -20,17 +20,8 @@ class TrainingPage extends StatefulWidget {
 class _TrainingPage extends State<TrainingPage> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
   List<HistoryTrainList> _historyTrainList = [];
-  TrainingInfo? _trainingInfo;
-  int _typeInfo = -1;
-  int _startTimeInfo = -1;
-  int _endTime = -1;
-  int _validTime = -1;
-  int _steps = -1;
-  int _distance = -1;
-  int _calories = -1;
-  List<int> _hrList = [];
   int _type = -1;
-  late StreamSubscription<dynamic> a;
+  List<TrainingInfo> _trainingList = [];
 
   @override
   void initState() {
@@ -50,15 +41,7 @@ class _TrainingPage extends State<TrainingPage> {
                 _historyTrainList = event.historyTrainList!;
                 break;
               case TrainType.trainingChange:
-                _trainingInfo = event.trainingInfo;
-                _typeInfo = _trainingInfo!.type!;
-                _startTimeInfo = _trainingInfo!.startTime!;
-                _endTime = _trainingInfo!.endTime!;
-                _validTime = _trainingInfo!.validTime!;
-                _steps = _trainingInfo!.steps!;
-                _distance = _trainingInfo!.distance!;
-                _calories = _trainingInfo!.calories!;
-                _hrList = _trainingInfo!.hrList!;
+                _trainingList = event.trainingList!;
                 break;
               default:
                 break;
@@ -99,15 +82,8 @@ class _TrainingPage extends State<TrainingPage> {
           child: ListView(
             children: <Widget>[
               Text("historyTrainList: ${_historyTrainList.map((e) => e.toJson())}"),
-              Text("typeInfo: $_typeInfo"),
-              Text("startTimeInfo: $_startTimeInfo"),
-              Text("endTime: $_endTime"),
-              Text("validTime: $_validTime"),
-              Text("steps: $_steps"),
-              Text("distance: $_distance"),
-              Text("calories: $_calories"),
-              Text("hrList: $_hrList"),
               Text("type: $_type"),
+              Text("trainingList: ${_trainingList.map((e) => e.toJson())}"),
               ElevatedButton(
                 onPressed: () => {widget.blePlugin.startTraining(1)},
                 child: const Text("startTraining(1)"),
@@ -131,7 +107,9 @@ class _TrainingPage extends State<TrainingPage> {
               ElevatedButton(
                 onPressed: () => {
                   // deleteTrainingStateEveStm(),
-                  widget.blePlugin.queryTraining(1),
+                  if (_historyTrainList.isNotEmpty) {
+                    widget.blePlugin.queryTraining(_historyTrainList[0].id!)
+                  },
                 },
                 child: const Text("queryTraining()"),
               ),
