@@ -319,12 +319,16 @@ class _WatchFacePage extends State<WatchFacePage> {
                   ElevatedButton(
                       child: const Text('2. localFileUpload'),
                       onPressed: () {
-                        if (_watchFacelist.isNotEmpty) {
-                          downloadFile(_watchFacelist[_watchFacelist.length - 1].file!);
+                        if (_watchFaceDetailsInfo!.file.isNotEmpty) {
+                          downloadFile(_watchFaceDetailsInfo!.file);
                         } else {
                           downloadFile("http://qcdn.moyoung.com/files/adc090779afd57d382e2847e41ab0e83.bin");
                         }
                       }),
+                  ElevatedButton(
+                    child: const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
+                    onPressed: () => widget.blePlugin.sendWatchFaceId(6),
+                  ),
                 ],
               ),
             ]))));
@@ -453,7 +457,7 @@ class _WatchFacePage extends State<WatchFacePage> {
       WatchFaceDetailResultBean watchFaceDetailResult = await widget.blePlugin.queryWatchFaceDetail(
         WatchFaceStoreTypeBean(
             storeType: storeType,
-            id: _watchFacelist[0].id!,
+            id: _watchFacelist[6].id!,
             typeList: _supportWatchFaceList,
             firmwareVersion: _firmwareVersion,
             apiVersion: _apiVersion,
