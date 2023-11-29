@@ -148,18 +148,14 @@ class _FirmwarePage extends State<FirmwarePage> {
               },
               child: const Text('iOS：queryUUID')),
           ElevatedButton(
-              onPressed: () async {
-                widget.blePlugin.sifliStartOTA(upgradeFilePath);
-              },
+              onPressed: () => startOTA(OTAMcuType.startSifliOta, upgradeFilePath),
               child: const Text('sifliStartOTA')),
           ElevatedButton(
-              onPressed: () async {
-                widget.blePlugin.jieliStartOTA(upgradeFilePath);
-              },
+              onPressed: () => startOTA(OTAMcuType.startJieliOta, upgradeFilePath),
               child: const Text('jieliStartOTA')),
           ElevatedButton(
               onPressed: () async {
-                widget.blePlugin.jieliAbortOTA;
+                widget.blePlugin.abortOTA(6);
               },
               child: const Text('jieliAbortOTA')),
         ])),
@@ -205,6 +201,14 @@ class _FirmwarePage extends State<FirmwarePage> {
       case 10:
         _oTAType = OTAMcuType.startOta;
         await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startOta));
+        break;
+      case OTAMcuType.startSifliOta:
+        _oTAType = OTAMcuType.startSifliOta;
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startSifliOta));
+        break;
+      case OTAMcuType.startJieliOta:
+        _oTAType = OTAMcuType.startJieliOta;
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startJieliOta));
         break;
       default:
         _oTAType = OTAMcuType.startDefaultOta;
