@@ -18,13 +18,28 @@ Callback Description（event）:
 
 BleScanBean：
 
-| callback value | callback value type |  callback value description  |
-| -------------- | :------------------ | :--------------------------: |
-| isCompleted    | bool                |         is completed         |
-| address        | String              |        Device address        |
-| mRssi          | int                 |        equipment rssi        |
-| mScanRecord    | List<int>           | Bluetooth scan device record |
-| name           | String              |        Equipment name        |
+| callback value | callback value type |        callback value description         |
+| -------------- | :------------------ | :---------------------------------------: |
+| isCompleted    | bool                |               is completed                |
+| address        | String              |              Device address               |
+| mRssi          | int                 |              equipment rssi               |
+| mScanRecord    | List<int>           |       Bluetooth scan device record        |
+| name           | String              |              Equipment name               |
+| platform       | int                 | Watch type, refer to McuPlatform for type |
+
+McuPlatform：
+
+| type               | value | value description |
+| ------------------ | ----- | ----------------- |
+| PLATFORM_NONE      | 0     |                   |
+| PLATFORM_NORDIC    | 1     |                   |
+| PLATFORM_HUNTERSUN | 2     |                   |
+| PLATFORM_REALTEK   | 3     |                   |
+| PLATFORM_GOODIX    | 4     |                   |
+| PLATFORM_SIFLI     | 5     |                   |
+| PLATFORM_JIELI     | 6     |                   |
+
+
 
 ## 2.2 Start scan
 
@@ -98,6 +113,7 @@ ConnectDeviceBean :
 | ----------- | ---------- | ------------------------------------ |
 | autoConnect | bool       | Sets whether reconnection is enabled |
 | address     | String     | The address of the device            |
+| uuid        | String     | uuid of the device（Not required）   |
 
 ## 3.3 IsConnected
 
@@ -310,7 +326,9 @@ OTAType：
 
 The firmware upgrade is divided into four upgrade methods.The calling method is as follows:
 
-Note: There is no first and second upgrade methods on the ios side.
+Note:
+1. There is no first and second upgrade methods on the ios side.
+2. Before starting the firmware upgrade, you need to ensure that the watch battery is above 50%.
 
 ```dart
 _blePlugin.startOTA(OtaBean info);
@@ -333,6 +351,8 @@ OTAMcuType:
 | startRtkOta | 2     | The second way to upgrade |
 | startOta  | 3     | The third way to upgrade  |
 | startDefaultOta   | 4     | The four way to upgrade   |
+| startSifliOta | 5 | Sifli firmware upgrade |
+| startJieliOta | 6 | Jieli firmware upgrade |
 
 the upgrade method is determined according to the mcu value in the firmware version information of the current watch.
 
@@ -363,6 +383,14 @@ switch (mcu) {
     await _blePlugin
         .startOTA(OtaBean(address: address, type: OTAMcuType.startOta));
     break;
+    case 5:
+        _oTAType = OTAMcuType.startSifliOta;
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startSifliOta));
+        break;
+    case 6:
+        _oTAType = OTAMcuType.startJieliOta;
+        await widget.blePlugin.startOTA(OtaBean(address: address, type: 		       		OTAMcuType.startJieliOta));
+        break;
   default:
     oTAType = OTAMcuType.startDefaultOta;
         ///The four way to upgrade
@@ -424,10 +452,10 @@ _widget.blePlugin.sifliStartOTA(upgradeFilePath)
 
 ## 5.11 Jieli Start OTA
 
-Jieli watch starts firmware upgrade, parameter is the path of upgrade file.
+Jieli watch starts firmware upgrade.
 
 ```dart
-_widget.blePlugin.jieliStartOTA(upgradeFilePath)
+_widget.blePlugin.jieliStartOTA
 ```
 
 ## 5.12 Jieli Abort OTA
@@ -766,6 +794,7 @@ Sets up a sleep monitor sleepChangeEveStm, and save the returned value in "event
                 _lightTime = event.sleepInfo!.lightTime!;
                 _soberTime = event.sleepInfo!.soberTime!;
                 _remTime = event.sleepInfo!.remTime!;
+                _details = event.sleepInfo!.details;
                 break;
               case SleepType.historySleepChange:
                 _timeType = event.historySleep!.timeType!;
@@ -774,6 +803,7 @@ Sets up a sleep monitor sleepChangeEveStm, and save the returned value in "event
                 _lightTime = event.historySleep!.sleepInfo!.lightTime!;
                 _soberTime = event.historySleep!.sleepInfo!.soberTime!;
                 _remTime = event.historySleep!.sleepInfo!.remTime!;
+                _details = event.historySleep!.sleepInfo!.details;
                 break;
               case SleepType.goalSleepTimeChange:
                 _goalSleepTime = event.goalSleepTime!;
@@ -807,13 +837,23 @@ SleepType:
 
 SleepInfo：
 
-| value       | value type | value description |
-| :---------- | :--------- | :---------------- |
-| totalTime   | int        | Total sleep time  |
-| restfulTime | int        | restful time      |
-| lightTime   | int        | light time        |
-| soberTime   | int        | awake time        |
-| remTime     | int        | rem time          |
+| value       | value type       | value description |
+| :---------- | :--------------- | :---------------- |
+| totalTime   | int              | Total sleep time  |
+| restfulTime | int              | restful time      |
+| lightTime   | int              | light time        |
+| soberTime   | int              | awake time        |
+| remTime     | int              | rem time          |
+| details     | List<DetailBean> | Sleep details     |
+
+DetailBean:
+
+| value     | value type | value description |
+| --------- | ---------- | ----------------- |
+| startTime | int        | Start time        |
+| endTime   | int        | End time          |
+| totalTime | int        | Total time        |
+| type      | int        | Time type         |
 
 HistorySleepBean：
 
@@ -1086,9 +1126,9 @@ WatchFaceLayoutBean：
 | textColor            | int        | font color(RGB)                                              |
 | thumHeight           | int        | The thum watch face height,The default is 0, which means it is not supported |
 | thumWidth            | int        | The thum watch face width,The default is 0, which means it is not supported |
-| timeBottomContent    | int        | content displayed                                            |
-| timePosition         | int        | time position                                                |
-| timeTopContent       | int        | content                                                      |
+| timeBottomContent    | int        | Whether the content below the time is displayed. 0 means no display and 1 means display. |
+| timePosition         | int        | Time location. 0 means top right and 1 means bottom right.   |
+| timeTopContent       | int        | Whether the content above the time is displayed. 0 means no display and 1 means display. |
 | width                | int        | The watch face width default 240 px.                         |
 
 WatchFaceLayoutType:

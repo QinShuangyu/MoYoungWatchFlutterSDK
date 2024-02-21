@@ -171,7 +171,7 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect(false)"),
                   onPressed: () {
-                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address));
+                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address, uuid: ""));
                     _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");

@@ -42,9 +42,9 @@ class ForegroundTaskHandler extends TaskHandler {
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     print('ForegroundTaskHandler: onEvent');
-    MoYoungBle _blePlugin = Global.blePlugin;
-    bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
-    print("onEvent: $isConnected");
+    // MoYoungBle _blePlugin = Global.blePlugin;
+    // bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
+    // print("onEvent: $isConnected");
     // _blePlugin.queryDeviceBattery;
     // bool enableIncomingNumber = await _blePlugin.enableIncomingNumber(true);
     // print(enableIncomingNumber);
@@ -57,9 +57,9 @@ class ForegroundTaskHandler extends TaskHandler {
 
 
 
-    MoYoungBle _blePlugin = Global.blePlugin;
-    bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
-    print("onStart: $isConnected");
+    // MoYoungBle _blePlugin = Global.blePlugin;
+    // bool isConnected = await _blePlugin.isConnected('F0:B5:B8:6C:C5:E3');
+    // print("onStart: $isConnected");
     // int time = await _blePlugin.queryTimeSystem;
     // print("onStart: $time");
       // _blePlugin.connect(ConnectBean(autoConnect: true, address: 'F7:3F:2D:0B:F4:F0'));

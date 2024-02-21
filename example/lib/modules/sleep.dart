@@ -22,6 +22,7 @@ class _SleepPage extends State<SleepPage> {
   int _soberTime = -1;
   int _remTime = -1;
   int _timeType = -1;
+  List<DetailBean> _details = [];
 
 
   SleepInfo? sleepInfo;
@@ -49,6 +50,7 @@ class _SleepPage extends State<SleepPage> {
                 _lightTime = event.sleepInfo!.lightTime!;
                 _soberTime = event.sleepInfo!.soberTime!;
                 _remTime = event.sleepInfo!.remTime!;
+                _details = event.sleepInfo!.details;
                 break;
               case SleepType.historySleepChange:
                 _timeType = event.historySleep!.timeType!;
@@ -57,6 +59,7 @@ class _SleepPage extends State<SleepPage> {
                 _lightTime = event.historySleep!.sleepInfo!.lightTime!;
                 _soberTime = event.historySleep!.sleepInfo!.soberTime!;
                 _remTime = event.historySleep!.sleepInfo!.remTime!;
+                _details = event.historySleep!.sleepInfo!.details;
                 break;
               case SleepType.goalSleepTimeChange:
                 _goalSleepTime = event.goalSleepTime!;
@@ -86,6 +89,7 @@ class _SleepPage extends State<SleepPage> {
                   Text("lightTime: $_lightTime"),
                   Text("soberTime: $_soberTime"),
                   Text("remTime: $_remTime"),
+                  Text("details: ${_details.map((e) => detailBeanToJson(e))}"),
                   Text("goalSleepTime: $_goalSleepTime"),
 
                   ElevatedButton(

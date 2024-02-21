@@ -24,7 +24,6 @@ class _StepsPage extends State<StepsPage> {
   String stepsCategoryInfo = "";
   String actionDetailsInfo = "";
 
-
   @override
   void initState() {
     super.initState();

@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FirmwarePage extends StatefulWidget {
   final MoYoungBle blePlugin;
@@ -31,6 +33,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   String _customizeVersion = "";
   String _uuid = "";
   String upgradeFilePath = "";
+  String pathname = "https://p.moyoung.com/uploads/jieli/V37_QIpBxMKILvdR5SYRGAhsUVx3CTAxdIxV/fZaBQ5zVwUMPiM4mxHBWBEGe6XzeC5P6.ufw";
 
   @override
   void initState() {
@@ -150,12 +153,14 @@ class _FirmwarePage extends State<FirmwarePage> {
           ElevatedButton(
               onPressed: () => startOTA(OTAMcuType.startSifliOta, upgradeFilePath),
               child: const Text('sifliStartOTA')),
+
           ElevatedButton(
-              onPressed: () => startOTA(OTAMcuType.startJieliOta, upgradeFilePath),
+              onPressed: () => startOTA(OTAMcuType.startJieliOta, pathname),
               child: const Text('jieliStartOTA')),
+
           ElevatedButton(
               onPressed: () async {
-                widget.blePlugin.abortOTA(6);
+                widget.blePlugin.abortOTA(OTAMcuType.startJieliOta);
               },
               child: const Text('jieliAbortOTA')),
         ])),
@@ -208,12 +213,37 @@ class _FirmwarePage extends State<FirmwarePage> {
         break;
       case OTAMcuType.startJieliOta:
         _oTAType = OTAMcuType.startJieliOta;
-        await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startJieliOta));
+        downloadFile(address);
+        // await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startJieliOta));
         break;
       default:
         _oTAType = OTAMcuType.startDefaultOta;
         await widget.blePlugin.startOTA(OtaBean(address: address, type: OTAMcuType.startDefaultOta));
         break;
     }
+  }
+
+  ///获取下载路径
+  Future<String> getPathFile(String file) async {
+    int index = file.lastIndexOf('/');
+    String name = file.substring(index, file.length);
+    String pathFile = "";
+    await getApplicationDocumentsDirectory().then((value) => pathFile = value.path + name);
+    return pathFile;
+  }
+
+  ///下载文件
+  Future<void> downloadFile(String file) async {
+    String pathFile = await getPathFile(file);
+    BaseOptions options = BaseOptions(
+      baseUrl: file,
+      connectTimeout: 5000,
+      receiveTimeout: 3000,
+    );
+    Dio dio = Dio(options);
+    await dio
+        .download(file, pathFile, onReceiveProgress: (received, total) {})
+        .then((value) => {widget.blePlugin.startOTA(OtaBean(address: pathFile, type: OTAMcuType.startJieliOta))})
+        .onError((error, stackTrace) => {});
   }
 }
