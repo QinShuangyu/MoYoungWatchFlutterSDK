@@ -14,6 +14,8 @@ class AlarmPage extends StatefulWidget {
 
 class _AlarmPage extends State<AlarmPage> {
   List<AlarmClockBean> _list = [];
+  bool _isNew = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,24 +26,26 @@ class _AlarmPage extends State<AlarmPage> {
         body: Center(
           child: ListView(
             children: [
+              Text("isNew: $_isNew"),
               Text("list: ${_list.map((e) => alarmClockBeanToJson(e))}"),
-              ElevatedButton(
-                  child: const Text('sendAlarmClock()'),
-                  onPressed: () => widget.blePlugin.sendAlarm(AlarmClockBean(
-                      enable: true,
-                      hour: 1,
-                      id: AlarmClockBean.firstClock,
-                      minute: 0,
-                      repeatMode: AlarmClockBean.everyday))),
-              ElevatedButton(
-                  child: const Text('queryAllAlarmClock()'),
-                  onPressed: () async {
-                    List<AlarmClockBean> list =
-                        await widget.blePlugin.queryAllAlarm;
-                    setState(() {
-                      _list = list;
-                    });
-                  }),
+
+              // ElevatedButton(
+              //     child: const Text('sendAlarmClock()'),
+              //     onPressed: () => widget.blePlugin.sendAlarm(AlarmClockBean(
+              //         enable: true,
+              //         hour: 1,
+              //         id: AlarmClockBean.firstClock,
+              //         minute: 0,
+              //         repeatMode: AlarmClockBean.everyday))),
+              // ElevatedButton(
+              //     child: const Text('queryAllAlarmClock()'),
+              //     onPressed: () async {
+              //       List<AlarmClockBean> list =
+              //           await widget.blePlugin.queryAllAlarm;
+              //       setState(() {
+              //         _list = list;
+              //       });
+              //     }),
               ElevatedButton(
                   child: const Text('sendNewAlarm()'),
                   onPressed: () => widget.blePlugin.sendNewAlarm(AlarmClockBean(
@@ -60,9 +64,10 @@ class _AlarmPage extends State<AlarmPage> {
               ElevatedButton(
                   child: const Text("queryAllNewAlarm()"),
                   onPressed: () async {
-                    List<AlarmClockBean> list = await widget.blePlugin.queryAllNewAlarm;
+                    AlarmBean alarm = await widget.blePlugin.queryAllNewAlarm;
                     setState(() {
-                      _list = list;
+                      _list = alarm.list;
+                      _isNew = alarm.isNew;
                     });
                   }),
             ],

@@ -24,7 +24,6 @@ class _NotificationPage extends State<NotificationPage> {
   List<int> _messageType = [];
   final List<int> _newMessageType = [];
   bool started = true;
-  String _customizeVersion = "";
   bool _enableIncomingNumber = false;
 
   ReceivePort port = ReceivePort();
@@ -63,7 +62,6 @@ class _NotificationPage extends State<NotificationPage> {
               Text("firmwareVersion: $_firmwareVersion"),
               Text("messageType: $_messageType"),
               Text("newMessageType: $_newMessageType"),
-              Text("customizeVersion: $_customizeVersion"),
               ElevatedButton(
                 child: const Text('android:enableIncomingNumber(true)'),
                 onPressed: () async {
@@ -101,14 +99,6 @@ class _NotificationPage extends State<NotificationPage> {
                     List<int> messageType = await widget.blePlugin.queryMessageList;
                     setState(() {
                       _messageType = messageType;
-                    });
-                  }),
-              ElevatedButton(
-                  child: const Text("queryCustomizeVersion"),
-                  onPressed: () async {
-                    String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
-                    setState(() {
-                      _customizeVersion = customizeVersion;
                     });
                   }),
               ElevatedButton(

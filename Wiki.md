@@ -261,14 +261,6 @@ Gets the current firmware version of the watch.
 String firmwareVersion = await _blePlugin.queryFirmwareVersion;
 ```
 
-## 5.3 Gets customize version
-
-Gets the firmware version of the custom watch.
-
-```dart
-String customizeVersion = await _blePlugin.queryCustomizeVersion;
-```
-
 ## 5.3 Check firmware
 
 Gets the latest version information.
@@ -703,7 +695,7 @@ Use yesterdaySteps and dayBeforeYesterdaySteps parameters.
 | fiveDaysAgo           | int        | 5                 |
 | sixDaysAgo            | int        | 6                 |
 
-## 9.4 Sets steps Detail listener
+## 9.4 Sets steps detail listener
 
 Set a step detail listener stepsDetailEveStm, and the result is saved in the "event" through the data stream return, which is returned as a StepsDetailBean object.
 
@@ -764,9 +756,7 @@ ActionDetailsBean:
 | distanceList | List<int>  |
 | caloriesList | List<int>  |
 
-
-
-## 9.5 Gets steps Detail
+## 9.5 Gets steps detail
 
 Some watches support categorical statistics for the past two days.
 
@@ -775,6 +765,8 @@ Gets classification statistics for the past two days. The query result will be o
 ```
 _blePlugin.queryStepsDetail(StepsDetailDateType);
 ```
+
+
 
 # 10 Sleep
 
@@ -1415,7 +1407,7 @@ CustomizeWatchFaceBean:
 Upload the watch face id, this method only works for jieli watches. You'll need to call this method once the jieli watch face has been uploaded.
 
 ```dart
-_blePlugin.sendWatchFace(id);
+_blePlugin.sendWatchFaceId(id);
 ```
 
 
@@ -1558,31 +1550,34 @@ RecommendWatchFaceBean:
 
 # 15 Alarm
 
-## 15.1 Sets alarm
+## 15.1 Gets all alarm
 
-The watch supports three alarm clocks, and the alarm clock information can be set according to the alarm clock serial number. Single alarm clock supports setting date.
+Gets all alarm clock information saved by the watch.
 
 ```dart
-_blePlugin.sendAlarm(AlarmClockBean);
+AlarmBean alarm = _blePlugin.queryAllNewAlarm;
 ```
+
+Callback Description:
+
+AlarmBean:
+
+| callback value | callback value type  | callback  value description                                  |
+| -------------- | -------------------- | ------------------------------------------------------------ |
+| list           | List<AlarmClockBean> | A list of alarm clocks.                                      |
+| isNew          | bool                 | If it is a new watch, true means new watch, false means old watch. |
 
 Parameter Description :
 
 AlarmClockBean:
 
-| value      | value type | value description     |
-| ---------- | ---------- | --------------------- |
-| id         | int        | AlarmId               |
-| hour       | int        | hour (24-hour format) |
-| minute     | int        | minute                |
-| repeatMode | int        | from RepeatMode       |
-| enable     | bool       | enable                |
-
-AlarmId：
-
-| firstClock        | **secondClock**    | thirdClock        |
-| ----------------- | ------------------ | ----------------- |
-| First alarm clock | Second alarm clock | Third alarm clock |
+| value      | value type | value description         |
+| ---------- | ---------- | ------------------------- |
+| id         | int        | An integer starting at 0. |
+| hour       | int        | hour (24-hour format)     |
+| minute     | int        | minute                    |
+| repeatMode | int        | from RepeatMode           |
+| enable     | bool       | enable                    |
 
 RepeatMode：
 
@@ -1590,30 +1585,29 @@ RepeatMode：
 | ------------------------- | ---------------- | ---------------- | ----------------- | ------------------- | ------------------ | ---------------- | ------------------ | -------- |
 | Single, only valid today. | Repeat on Sunday | Repeat on Monday | Repeat on Tuesday | Repeat on Wednesday | Repeat on Thursday | Repeat on Friday | Repeat on Saturday | Everyday |
 
-## 15.2 Gets all alarm
+## 15.2 Sets alarm
 
-Gets all alarm clock information saved by the watch.
-
-```dart
-List<AlarmClockBean> listInfo = await _blePlugin.queryAllAlarm;
-```
-
-## 15.3 Sets alarm(new)
+1. The old watch fixed three alarm clocks, can not be added and deleted.
+2. The new watch has up to 8 alarms that can be added and removed.
 
 ```dart
 _blePlugin.sendNewAlarm(AlarmClockBean);
 ```
 
-## 15.4 Deleted alarm(new)
+## 15.3 Deleted alarm(new)
+
+The method only supports new watches.
 
 ```dart
 _blePlugin.deleteNewAlarm(AlarmClockBean.id);
 ```
 
-## 15.5 Gets all alarm(new)
+## 15.3 Deleted all alarm(new)
+
+The method only supports new watches.
 
 ```dart
-List<AlarmClockBean> list = _blePlugin.queryAllNewAlarm;
+_blePlugin.deleteAllNewAlarm();
 ```
 
 # 16 Language
@@ -2533,22 +2527,6 @@ _blePlugin.enterCameraView;
 _blePlugin.exitCameraView;
 ```
 
-## 23.4 Sets time-lapse photo
-
-Unit: second.
-
-```dart
-_blePlugin.sendDelayTaking(100));
-```
-
-## 23.5 Gets the time of a time-lapse photo
-
-The data is returned by listening to the cameraEveStm.
-
-```dart
-_blePlugin.queryDelayTaking;
-```
-
 # 24 Mobile phone related operations
 
 Set up a listener for phone-related operations such as music control, hanging up, and callbacks. The result is returned via the data stream phoneEveStm.
@@ -2766,7 +2744,7 @@ MenstrualCycleBean：
 | -------------------- | ---------- | ------------------------------------------------------------ |
 | physiologcalPeriod   | int        | Menstrual cycle (unit: day)1                                 |
 | menstrualPeriod      | int        | Menstrual period (unit: day)                                 |
-| startDate            | String     | menstrual cycle start time                                   |
+| startDate            | String     | menstrual cycle start time(The startDate data returned uses the month and day.The year, hour, minute, and second are all the current time.) |
 | menstrualReminder    | bool       | Menstrual start reminder time (the day before the menstrual cycle reminder) |
 | ovulationReminder    | bool       | Ovulation reminder (a reminder the day before ovulation)     |
 | ovulationDayReminder | bool       | Ovulation Day Reminder (Reminder the day before ovulation)   |

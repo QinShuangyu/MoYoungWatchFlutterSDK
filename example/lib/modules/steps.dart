@@ -21,8 +21,6 @@ class _StepsPage extends State<StepsPage> {
   String stepsInfo = "";
   String historyStepsInfo = "";
   String list = "";
-  String stepsCategoryInfo = "";
-  String actionDetailsInfo = "";
 
   @override
   void initState() {
@@ -42,26 +40,6 @@ class _StepsPage extends State<StepsPage> {
                 break;
               case StepsChangeType.historyStepChange:
                 historyStepsInfo = historyStepInfoBeanToJson(event.historyStepsInfo!);
-                break;
-              default:
-                break;
-            }
-          });
-        },
-      ),
-    );
-
-    _streamSubscriptions.add(
-      widget.blePlugin.stepsDetailEveStm.listen(
-            (StepsDetailBean event) {
-              if (!mounted) return;
-          setState(() {
-            switch (event.type) {
-              case StepsDetailType.stepsCategoryChange:
-                stepsCategoryInfo = stepsCategoryBeanToJson(event.stepsCategoryInfo!);
-                break;
-              case StepsDetailType.actionDetailsChange:
-                actionDetailsInfo = actionDetailsBeanToJson(event.actionDetailsInfo!);
                 break;
               default:
                 break;
@@ -93,8 +71,6 @@ class _StepsPage extends State<StepsPage> {
                   Text("stepsInfo: $stepsInfo"),
                   Text("historyStepsInfo: $historyStepsInfo"),
                   Text("list: $list"),
-                  Text("stepsCategoryInfo: $stepsCategoryInfo"),
-                  Text("actionDetailsInfo: $actionDetailsInfo"),
 
                   ElevatedButton(
                       child: const Text('querySteps'),
@@ -110,10 +86,6 @@ class _StepsPage extends State<StepsPage> {
                   ElevatedButton(
                       child: const Text('queryStepsDetail(today)'),
                       onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.today)),
-                  /// 获取全天步数、距离和卡路里半小时统计
-                  ElevatedButton(
-                      child: const Text('queryActionDetails()'),
-                      onPressed: () => widget.blePlugin.queryActionDetails(StepsDetailDateType.today)),
                 ],
               ),
             )

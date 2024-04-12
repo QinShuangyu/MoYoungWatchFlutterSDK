@@ -20,6 +20,7 @@ class FindPhonePage extends StatefulWidget {
 class _FindPhonePage extends State<FindPhonePage> {
 
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+  String findState = '';
 
   @override
   void initState() {
@@ -33,8 +34,14 @@ class _FindPhonePage extends State<FindPhonePage> {
             (FindPhoneBean event) {
           switch (event.type) {
             case FindPhoneType.find:
+              setState(() {
+                findState = 'finding';
+              });
               break;
             case FindPhoneType.complete:
+              setState(() {
+                findState = 'completed';
+              });
               break;
           }
         },
@@ -50,6 +57,7 @@ class _FindPhonePage extends State<FindPhonePage> {
               title: const Text("Find Phone"),
             ),
             body: Center(child: ListView(children: <Widget>[
+              Text(findState),
               ElevatedButton(
                   onPressed: () => widget.blePlugin.startFindPhone,
                   child: const Text('startFindPhone()')),

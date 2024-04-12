@@ -28,8 +28,6 @@ class _SleepPage extends State<SleepPage> {
   SleepInfo? sleepInfo;
   HistorySleepBean? historySleep;
 
-  int _goalSleepTime = -1;
-
 
   @override
   void initState() {
@@ -61,9 +59,6 @@ class _SleepPage extends State<SleepPage> {
                 _remTime = event.historySleep!.sleepInfo!.remTime!;
                 _details = event.historySleep!.sleepInfo!.details;
                 break;
-              case SleepType.goalSleepTimeChange:
-                _goalSleepTime = event.goalSleepTime!;
-                break;
               default:
                 break;
             }
@@ -90,7 +85,6 @@ class _SleepPage extends State<SleepPage> {
                   Text("soberTime: $_soberTime"),
                   Text("remTime: $_remTime"),
                   Text("details: ${_details.map((e) => detailBeanToJson(e))}"),
-                  Text("goalSleepTime: $_goalSleepTime"),
 
                   ElevatedButton(
                       child: const Text('querySleep'),
@@ -98,13 +92,6 @@ class _SleepPage extends State<SleepPage> {
                   ElevatedButton(
                       child: const Text('queryRemSleep'),
                       onPressed: () => widget.blePlugin.queryRemSleep),
-                  ElevatedButton(
-                      child: const Text('sendGoalSleepTime'),
-                      /// Must be a multiple of 10, with a maximum value of 750
-                      onPressed: () => widget.blePlugin.sendGoalSleepTime(10)),
-                  ElevatedButton(
-                      child: const Text('queryGoalSleepTime'),
-                      onPressed: () => widget.blePlugin.queryGoalSleepTime),
                   ElevatedButton(
                       child: const Text('queryHistorySleep(YESTERDAY)'),
                       onPressed: () => widget.blePlugin.queryHistorySleep(SleepHistoryTimeType.yesterday)),
