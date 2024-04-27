@@ -50,15 +50,15 @@ class _MenstrualCyclePage extends State<MenstrualCyclePage> {
                       ElevatedButton(
                           onPressed: () =>
                               widget.blePlugin.sendMenstrualCycle(MenstrualCycleBean(
-                                  physiologcalPeriod: 1,
-                                  menstrualPeriod: 1,
-                                  startDate: DateTime.now().microsecondsSinceEpoch.toString(),
-                                  menstrualReminder: true,
-                                  ovulationReminder: true,
-                                  ovulationDayReminder: true,
-                                  ovulationEndReminder: true,
-                                  reminderHour: 1,
-                                  reminderMinute: 1
+                                  physiologcalPeriod: 30, /// 生理周期（天）
+                                  menstrualPeriod: 5, /// 经期周期（天）
+                                  startDate: (DateTime.now().subtract(const Duration(days: 5)).microsecondsSinceEpoch ~/ 1000).toString(),
+                                  menstrualReminder: true, /// 经期开始提醒
+                                  ovulationReminder: true, /// 排卵期提醒
+                                  ovulationDayReminder: true, /// 排卵日提醒
+                                  ovulationEndReminder: true, /// 排卵期结束提醒
+                                  reminderHour: 10, /// 提醒小时
+                                  reminderMinute: 0 /// 提醒分钟
                               )),
                           child: const Text("sendMenstrualCycle()")),
                       ElevatedButton(

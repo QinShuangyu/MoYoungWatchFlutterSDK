@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 import 'package:moyoung_ble_plugin_example/modules/GSensor.dart';
 import 'package:moyoung_ble_plugin_example/modules/protoclVersion.dart';
@@ -85,6 +86,7 @@ class _DevicePage extends State<DevicePage> {
   bool _reconnect = true;
 
   String oTAType = "";
+  List<BluetoothDevice> list = [];
 
   @override
   void initState() {
@@ -147,6 +149,7 @@ class _DevicePage extends State<DevicePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<BluetoothDevice> _list;
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -155,10 +158,11 @@ class _DevicePage extends State<DevicePage> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              Text(device.name + ',' + device.address),
+              Text('${device.name}; ${device.address}; ${device.platform}'),
               Text('connectionState: $_connetionState'),
               Text('autoConnect: $_autoConnect'),
               Text('isConn= $_isConn'),
+              Text('Pairing list: ${list.map((e) => e.name)}'),
               ElevatedButton(
                   child: const Text('isConnected()'),
                   onPressed: () async {
@@ -171,7 +175,7 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect(false)"),
                   onPressed: () {
-                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address, uuid: ""));
+                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address));
                     _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");
@@ -186,6 +190,18 @@ class _DevicePage extends State<DevicePage> {
                     // _blePlugin.connect("EC:28:65:94:61:1D");
                     // _blePlugin.connect("D3:C3:1D:46:73:7A");
                   }),
+              ElevatedButton(child: const Text('Bluetooth pairing'), onPressed: () async => {
+                  await FlutterBluetoothSerial.instance.bondDeviceAtAddress(device.address)
+              }),
+              ElevatedButton(child: const Text('Get the Bluetooth pairing list'), onPressed: () async => {
+                _list = await FlutterBluetoothSerial.instance.getBondedDevices(),
+                setState(() {
+                  list = _list;
+                })
+              }),
+              ElevatedButton(child: const Text('Unpairing Bluetooth'), onPressed: () async => {
+                await FlutterBluetoothSerial.instance.removeDeviceBondWithAddress(device.address)
+              }),
               ElevatedButton(
                   child: const Text('disconnect()'),
                   onPressed: () async {
