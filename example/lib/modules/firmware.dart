@@ -30,6 +30,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   String _hsOtaAddress = "";
   int _deviceOtaStatus = -1;
   int _otaType = -1;
+  String _customizeVersion = "";
   String _uuid = "";
   String upgradeFilePath = "";
   String pathname = "https://p.moyoung.com/uploads/jieli/V37_QIpBxMKILvdR5SYRGAhsUVx3CTAxdIxV/fZaBQ5zVwUMPiM4mxHBWBEGe6XzeC5P6.ufw";
@@ -89,8 +90,17 @@ class _FirmwarePage extends State<FirmwarePage> {
           Text("deviceOtaStatus: $_deviceOtaStatus"),
           Text("hsOtaAddress: $_hsOtaAddress"),
           Text("OtaType: $_otaType"),
+          Text("customizeVersion: $_customizeVersion"),
           Text("uuid: $_uuid"),
           ElevatedButton(child: Text(_firmwareVersion), onPressed: queryFirmwareVersion),
+          ElevatedButton(
+              child: const Text("queryCustomizeVersion"),
+              onPressed: () async {
+                String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
+                setState(() {
+                  _customizeVersion = customizeVersion;
+                });
+              }),
           ElevatedButton(child: Text(_newFirmwareInfo), onPressed: () => checkFirmwareVersion(_firmwareVersion, OTAType.normalUpgradeType)),
           ElevatedButton(
               child: const Text('queryHsOtaAddress()'),
@@ -171,7 +181,7 @@ class _FirmwarePage extends State<FirmwarePage> {
   }
 
   Future<void> startOTA(String address) async {
-    widget.blePlugin.startOTA(OtaBean(address: address, type: widget.device.platform));
+    await widget.blePlugin.startOTA(OtaBean(address: address, type: widget.device.platform));
   }
 
   ///获取下载路径

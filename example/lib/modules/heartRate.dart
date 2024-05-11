@@ -20,7 +20,7 @@ class _HearRatePage extends State<HeartRatePage> {
   List<HistoryHeartRateBean> _historyHrList = [];
   MeasureCompleteBean? _measureComplete = MeasureCompleteBean(
     historyDynamicRateType: "",
-    heartRate: HeartRateInfo(heartRateType: '', heartRateList: [], timeInterval: -1, startTime: -1),
+    heartRate: HeartRateInfo(heartRateType: '', heartRateList: [], timeInterval: -1, startTime: -1, isAllDay: 0),
   );
   final List<HeartRateInfo> _hour24MeasureResultList = [];
   List<TrainingHeartRateBean> _trainingList = [];

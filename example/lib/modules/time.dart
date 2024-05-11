@@ -33,7 +33,17 @@ class _TimePage extends State<TimePage> {
 
                   ElevatedButton(
                       child: const Text('queryTime()'),
-                      onPressed: () => widget.blePlugin.queryTime),
+                      onPressed: () {
+                        widget.blePlugin.queryTime(DateTime.now().subtract(const Duration(days: 5)).millisecondsSinceEpoch);
+                      }),
+                  ElevatedButton(
+                      child: const Text('queryTime()'),
+                      onPressed: () {
+                        widget.blePlugin.queryTime(DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch);
+                      }),
+                  ElevatedButton(
+                      child: const Text('queryTime()'),
+                      onPressed: () => widget.blePlugin.queryTime()),
                   ElevatedButton(
                       child: const Text('sendTimeSystem(TIME_SYSTEM_12)'),
                       onPressed: () => widget.blePlugin

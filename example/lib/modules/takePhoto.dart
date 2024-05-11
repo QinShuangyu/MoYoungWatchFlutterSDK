@@ -70,6 +70,12 @@ class _TakePhotoPage extends State<TakePhotoPage> {
                   child: const Text('enterCameraView'),
                   onPressed: () => widget.blePlugin.enterCameraView),
               ElevatedButton(
+                  child: const Text('sendDelayTaking(2)'),
+                  onPressed: () => widget.blePlugin.sendDelayTaking(2)),
+              // ElevatedButton(
+              //     child: const Text('queryDelayTaking'),
+              //     onPressed: () => widget.blePlugin.queryDelayTaking),
+              ElevatedButton(
                   child: const Text('exitCameraView'),
                   onPressed: () => widget.blePlugin.exitCameraView),
             ])

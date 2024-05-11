@@ -34,13 +34,15 @@ class _FindPhonePage extends State<FindPhonePage> {
             (FindPhoneBean event) {
           switch (event.type) {
             case FindPhoneType.find:
+              print('11111111');
               setState(() {
                 findState = 'finding';
               });
               break;
             case FindPhoneType.complete:
+              print('222222222');
               setState(() {
-                findState = 'completed';
+                findState = 'complete';
               });
               break;
           }

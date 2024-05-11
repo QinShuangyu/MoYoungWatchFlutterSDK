@@ -163,8 +163,10 @@ ConnectDeviceBean :
 
 Synchronize the time of your phone and watch.
 
+timestamp is an optional parameter and defaults to the current time.
+
 ```dart
-_blePlugin.queryTime;
+_blePlugin.queryTime(int? timestamp);
 ```
 
 ## 4.2 Sets Time System
@@ -259,6 +261,18 @@ Gets the current firmware version of the watch.
 
 ```dart
 String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+```
+
+## 5.3 Gets customize version
+
+> [!CAUTION]
+>
+> The method only supports JM iTOUCH Active watches and Active 3 watches.
+
+Gets the firmware version of the custom watch.
+
+```dart
+String customizeVersion = await _blePlugin.queryCustomizeVersion;
 ```
 
 ## 5.3 Check firmware
@@ -766,6 +780,20 @@ Gets classification statistics for the past two days. The query result will be o
 _blePlugin.queryStepsDetail(StepsDetailDateType);
 ```
 
+## 9.6 Gets action details
+
+> [!CAUTION]
+>
+> The method only supports JM iTOUCH Active watches and Active 3 watches.
+
+Get half-hour counts of steps, distance, and calories throughout the day.
+
+The query result will be obtained through the stepsDetailEveStm listening stream and saved in "event" as the ActionDetailsBean object.
+
+```dart
+_blePlugin.queryActionDetails(StepsDetailDateType);
+```
+
 
 
 # 10 Sleep
@@ -1067,6 +1095,28 @@ TrainingDayInfoBean:
 
 ```dart
 TrainingDayInfoBean trainingDay = _blePlugin.queryTrainingDay;
+```
+
+## 13.9 Sets and obtain exercise target reminder switch status
+
+```dart
+_blePlugin.sendGoalsRemindState(GoalsRemindStateBean);
+```
+
+Parameter Description :
+
+GoalsRemindStateBean:
+
+| value          | value type | value description      |
+| -------------- | ---------- | ---------------------- |
+| stepsEnable    | bool       | distanceEnable         |
+| caloriesEnable | bool       | calories enable status |
+| distanceEnable | bool       | distance enable status |
+
+## 13.10 Gets exercise target reminder switch status
+
+```dart
+GoalsRemindStateBean goalsRemindStateBean = _blePlugin.queryGoalsRemindState;
 ```
 
 # 14 Watchface
@@ -1732,11 +1782,12 @@ BleMessageType:
 | qq                  | int        | 3                 |
 | facebook            | int        | 130               |
 | twitter             | int        | 131               |
+| whatsApp            | int        | 4                 |
+| wechatIn            | int        | 5                 |
 | instagram           | int        | 6                 |
 | skype               | int        | 7                 |
-| whatsApp            | int        | 4                 |
-| line                | int        | 9                 |
 | kaKao               | int        | 8                 |
+| line                | int        | 9                 |
 | email               | int        | 11                |
 | messenger           | int        | 12                |
 | zalo                | int        | 13                |
@@ -1773,11 +1824,12 @@ BleMessageType:
 | gaana               | int        | 44                |
 | missCall            | int        | 45                |
 | whatsAppBusiness    | int        | 46                |
-| tiktok              | int        | 47                |
-| lyft                | int        | 48                |
-| mail                | int        | 49                |
-| googleMaps          | int        | 50                |
-| slack               | int        | 51                |
+| dingtalk            | int        | 47                |
+| tiktok              | int        | 48                |
+| lyft                | int        | 49                |
+| mail                | int        | 50                |
+| googleMaps          | int        | 51                |
+| slack               | int        | 52                |
 | microsoftTeams      | int        | 53                |
 | mormaiiSmartwatches | int        | 54                |
 | other               | int        | 128               |
@@ -2527,6 +2579,22 @@ _blePlugin.enterCameraView;
 _blePlugin.exitCameraView;
 ```
 
+## 23.4 Sets time-lapse photo
+
+Unit: second.
+
+```dart
+_blePlugin.sendDelayTaking(100));
+```
+
+## 23.5 Gets the time of a time-lapse photo
+
+The data is returned by listening to the cameraEveStm.
+
+```dart
+_blePlugin.queryDelayTaking;
+```
+
 # 24 Mobile phone related operations
 
 Set up a listener for phone-related operations such as music control, hanging up, and callbacks. The result is returned via the data stream phoneEveStm.
@@ -2744,7 +2812,7 @@ MenstrualCycleBean：
 | -------------------- | ---------- | ------------------------------------------------------------ |
 | physiologcalPeriod   | int        | Menstrual cycle (unit: day)1                                 |
 | menstrualPeriod      | int        | Menstrual period (unit: day)                                 |
-| startDate            | String     | menstrual cycle start time(The startDate data returned uses the month and day.The year, hour, minute, and second are all the current time.) |
+| startDate            | String     | menstrual cycle start time(Month and day are used; all other years, hours, minutes, and seconds are the current time) |
 | menstrualReminder    | bool       | Menstrual start reminder time (the day before the menstrual cycle reminder) |
 | ovulationReminder    | bool       | Ovulation reminder (a reminder the day before ovulation)     |
 | ovulationDayReminder | bool       | Ovulation Day Reminder (Reminder the day before ovulation)   |

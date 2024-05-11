@@ -158,7 +158,7 @@ class _DevicePage extends State<DevicePage> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              Text('${device.name}; ${device.address}; ${device.platform}'),
+              Text(device.name + ',' + device.address),
               Text('connectionState: $_connetionState'),
               Text('autoConnect: $_autoConnect'),
               Text('isConn= $_isConn'),
@@ -175,7 +175,7 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect(false)"),
                   onPressed: () {
-                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address));
+                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address, uuid: ""));
                     _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");

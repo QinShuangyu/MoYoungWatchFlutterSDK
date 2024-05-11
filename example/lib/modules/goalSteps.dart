@@ -16,6 +16,7 @@ class _GoalStepPage extends State<GoalStepsPage> {
   int _goalSteps = -1;
   String _dailGoalsInfo = "";
   String _trainingDay = "";
+  String _goalsRemindState = "";
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class _GoalStepPage extends State<GoalStepsPage> {
               Text("goalSteps: $_goalSteps"),
               Text("dailyGoalsInfo: $_dailGoalsInfo"),
               Text("trainingDay: $_trainingDay"),
+              Text("goalsRemindState: $_goalsRemindState"),
               ElevatedButton(
                 child: const Text('sendGoalSteps(5000)'),
                 onPressed: () => widget.blePlugin.sendGoalSteps(5000),
@@ -82,6 +84,24 @@ class _GoalStepPage extends State<GoalStepsPage> {
                     TrainingDayInfoBean trainingDay = await widget.blePlugin.queryTrainingDay;
                     setState(() {
                       _trainingDay = trainingDayInfoBeanToJson(trainingDay);
+                    });
+                  }),
+              ElevatedButton(
+                child: const Text("sendGoalsRemindState() - open"),
+                onPressed: () =>
+                    widget.blePlugin.sendGoalsRemindState(GoalsRemindStateBean(stepsEnable: true, caloriesEnable: true, distanceEnable: true)),
+              ),
+              ElevatedButton(
+                child: const Text("sendGoalsRemindState() - close"),
+                onPressed: () =>
+                    widget.blePlugin.sendGoalsRemindState(GoalsRemindStateBean(stepsEnable: false, caloriesEnable: false, distanceEnable: false)),
+              ),
+              ElevatedButton(
+                  child: const Text('queryGoalsRemindState()'),
+                  onPressed: () async {
+                    GoalsRemindStateBean goalsRemindStateBean = await widget.blePlugin.queryGoalsRemindState;
+                    setState(() {
+                      _goalsRemindState = goalsRemindStateBeanToJson(goalsRemindStateBean);
                     });
                   }),
             ]))));

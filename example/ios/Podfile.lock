@@ -13,7 +13,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.3.0):
+  - permission_handler_apple (9.1.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -58,10 +58,10 @@ SPEC CHECKSUMS:
   flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   moyoung_ble_plugin: 45ab3422aff63cb17e3d77125ce7f3e89bc25a4d
-  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
+  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
 
-PODFILE CHECKSUM: ed11558a0d8dbe86d51e8ab6f07b7bd4e2f07bae
+PODFILE CHECKSUM: a28cbe0da805b138a015db8a13aebc7e32ab152c
 
 COCOAPODS: 1.15.2
