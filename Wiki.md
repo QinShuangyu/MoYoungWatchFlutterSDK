@@ -1060,6 +1060,8 @@ The watch supports a variety of different watchfaces, which can be switched free
 Send watchface type,Parameters provided by WatchFaceType.
 
 ```
+// The index of the built-in watch face starts from 1 and increases sequentially. The index of the download watchfaceis after the built-in watch face.
+
 _blePlugin.sendDisplayWatchFace(WatchFaceType);
 ```
 
@@ -1074,9 +1076,9 @@ WatchFaceType:
 | thirdWatchFace        | int        | 3                 |
 | newCustomizeWatchFace | int        | 4                 |
 
-## 14.2 Gets the watchface
+## 14.2 Gets display watch face index
 
-Gets the watchface being displayed.
+Gets the index of the watch face being used by the watch.
 
 ```dart
 int displayWatchFace = await _blePlugin.queryDisplayWatchFace;
@@ -1084,11 +1086,11 @@ int displayWatchFace = await _blePlugin.queryDisplayWatchFace;
 
 ## 14.3 Gets the watchface layout
 
+Gets the watch watchface layout information.
+
 ```dart
 WatchFaceLayoutBean info = await _blePlugin.queryWatchFaceLayout;
 ```
-
-Parameter Description :
 
 WatchFaceLayoutBean：
 
@@ -1193,9 +1195,9 @@ WatchFaceBackgroundBean:
 | width          | int                 | width of bitmap                         |
 | height         | int                 | height of bitmap                        |
 
-## 14.7 Abort watchface background
+## 14.7 Abort watchface background (Only Android Support)
 
-Stop sending the watchface background.
+Abort transfer during watch face background image transfer.
 
 ```dart
 _blePlugin.abortWatchFaceBackground;
@@ -1203,12 +1205,22 @@ _blePlugin.abortWatchFaceBackground;
 
 ## 14.8 Gets available storage
 
-Check your watch's available storage space to see if you can download a new watch face. It's in kilobytes, which you multiply by 1024.
+Gets the available storage space of the watch to determine whether the watch can download new dials. It's in kilobytes, which you multiply by 1024.
 
 ```dart
-int _watchFaceSize = _blePlugin.queryAvailableStorage;
+int _watchFaceSize = _blePlugin.queryAvailableStorage(int platform);
 _watchFaceSize *= 1024；
 ```
+
+| platform | value description |
+| :------- | :---------------- |
+| 0        | default           |
+| 1        | Nordic            |
+| 2        | Hs                |
+| 3        | Rtk               |
+| 4        | Goodix            |
+| 5        | Sifli             |
+| 6        | Jieli             |
 
 ## 14.9 Gets support watchface type
 
@@ -1434,6 +1446,8 @@ int _tagId = result.list![0].tagId!;
 
 **maxSize**: Jieli watches are obtained through the querySupportWatchFace interface. Sifli and normal watches are obtained through the queryAvailableStorage interface.
 
+The parameters **apiVersion** and **feature** need to be obtained using queryJieliWatchFaceInfo on the Jieli platform. For other platforms, apiVersion and feature can be set to 0.
+
 ## 14.16 Query WatchFace Store List
 
 The new version of the Get Watch market, it is recommended to use the new version of the watch market to get the watch face, which supports normal, Sifli and Jieli watches.
@@ -1528,7 +1542,249 @@ RecommendWatchFaceBean:
 | size    | int        |                   |
 | preview | String     |                   |
 
+## 14.18 The acquisition process of watchface store on different platforms
 
+### 14.18.1 Gets old watchface store
+
+1. Get the current firmware version of the watch.
+
+   ```
+   String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+   ```
+
+2. Get support watchface type
+
+   ```
+   SupportWatchFaceBean supportWatchFaceBean = await _blePlugin.querySupportWatchFace
+   ```
+
+3. Get watchface store
+
+   ```
+   List<WatchFaceBean> listInfo= await _blePlugin.queryWatchFaceStore(WatchFaceStoreBean);
+   ```
+
+### 14.18.2 Gets new watchface store(recommended)
+
+In the new version of the dial market, different platforms have different parameters for obtaining dials. The following is an introduction to the process of obtaining dial markets on Jieli, Sifli and ordinary platforms.
+
+#### 14.18.2.1 steps to get Jieli watchface store
+
+1. Get the current firmware version of the watch
+
+   ```
+   String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+   ```
+
+2. Get support watchface type
+
+   ```
+   SupportWatchFaceBean supportWatchFaceBean = await _blePlugin.querySupportWatchFace
+   ```
+
+3. Get Jieli watch watchface information
+
+   ```
+   JieliWatchFaceBean jieliWatchFace = await _blePlugin.queryJieliWatchFaceInfo;
+   ```
+
+4. Get tagId
+
+   ```
+   WatchFaceStoreTagListResult result = await _blePlugin.queryWatchFaceStoreTagList(
+           WatchFaceStoreTagListBean(
+               storeType: supportWatchFaceBean!.type,
+               typeList: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               perPageCount: 9,
+               pageIndex: 1,
+               maxSize: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!,
+               apiVersion: jieliWatchFace.apiVersion,
+               feature: jieliWatchFace.feature),
+         );
+   int tagId = result.list![0].tagId!;
+   ```
+
+5. Get watchface store
+
+   ```
+   List<WatchFaceBean> watchFacelist = await _blePlugin.queryWatchFaceStoreList(
+           WatchFaceStoreListBean(
+               watchFaceStoreTagList: WatchFaceStoreTagListBean(
+                   storeType: supportWatchFaceBean!.type,
+                   typeList: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!,
+                   firmwareVersion: firmwareVersion,
+                   perPageCount: 9,
+                   pageIndex: 1,
+                   maxSize: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!,
+                   apiVersion: jieliWatchFace.apiVersion,
+                   feature: jieliWatchFace.feature),
+               tagId: tagId),
+         );
+   ```
+
+6. Get watchface details
+
+   ```
+   WatchFaceDetailResultBean watchFaceDetailResult = _widget.blePlugin.queryWatchFaceDetail(
+           WatchFaceStoreTypeBean(
+               storeType:  supportWatchFaceBean!.type,
+               id: watchFacelist[0].id!,
+               typeList: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               maxSize: supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!,
+               apiVersion: jieliWatchFace.apiVersion,
+               feature: jieliWatchFace.apiVersion,
+               ),
+         );
+   ```
+
+#### 14.18.2.2 steps to get Sifli watchface store
+
+1. Get the current firmware version of the watch
+
+   ```
+   String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+   ```
+
+2. Get support watchface type
+
+   ```
+   SupportWatchFaceBean supportWatchFaceBean = await _blePlugin.querySupportWatchFace
+   ```
+
+3. Get watch available storage space
+
+   The storage space size obtained by queryAvailableStorage is in KB and needs to be converted to Byte.
+
+   ```
+   int watchFaceSize = await _blePlugin.queryAvailableStorage
+   watchFaceSize = watchFaceSize * 1024
+   ```
+
+4. Get tagId
+
+   ```
+   WatchFaceStoreTagListResult result = await _blePlugin.queryWatchFaceStoreTagList(
+           WatchFaceStoreTagListBean(
+               storeType: supportWatchFaceBean!.type,
+               typeList: supportWatchFaceBean!.sifliSupportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               perPageCount: 9,
+               pageIndex: 1,
+               maxSize: watchFaceSize,
+               apiVersion: 0,
+               feature: 0,
+         );
+   int tagId = result.list![0].tagId!;
+   ```
+
+5. Get watchface store
+
+   ```
+   List<WatchFaceBean> watchFacelist = await _blePlugin.queryWatchFaceStoreList(
+           WatchFaceStoreListBean(
+               watchFaceStoreTagList: WatchFaceStoreTagListBean(
+                   storeType: supportWatchFaceBean!.type,
+                   typeList: supportWatchFaceBean!.sifliSupportWatchFaceInfo!.supportTypeList!,
+                   firmwareVersion: firmwareVersion,
+                   perPageCount: 9,
+                   pageIndex: 1,
+                   maxSize: watchFaceSize,
+                   apiVersion: 0,
+                   feature: 0),
+               tagId: tagId),
+         );
+   ```
+
+6. Get watchface details
+
+   ```
+   WatchFaceDetailResultBean watchFaceDetailResult = _widget.blePlugin.queryWatchFaceDetail(
+           WatchFaceStoreTypeBean(
+               storeType:  supportWatchFaceBean!.type,
+               id: watchFacelist[0].id!,
+               typeList: supportWatchFaceBean!.sifliSupportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               maxSize: watchFaceSize,
+               apiVersion: 0,
+               feature: 0,
+               ),
+         );
+   ```
+
+#### 14.18.3.3 steps to get ordinary watchface store
+
+1. Get the current firmware version of the watch
+
+   ```
+   String firmwareVersion = await _blePlugin.queryFirmwareVersion;
+   ```
+
+2. Get support watchface type
+
+   ```
+   SupportWatchFaceBean supportWatchFaceBean = await _blePlugin.querySupportWatchFace
+   ```
+
+3. Get watch available storage space
+
+   ```
+   int watchFaceSize = 500*1024
+   ```
+
+4. Get tagId
+
+   ```
+   WatchFaceStoreTagListResult result = await _blePlugin.queryWatchFaceStoreTagList(
+           WatchFaceStoreTagListBean(
+               storeType: supportWatchFaceBean!.type,
+               typeList: supportWatchFaceBean!.supportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               perPageCount: 9,
+               pageIndex: 1,
+               maxSize: watchFaceSize,
+               apiVersion: 0,
+               feature: 0,
+         );
+   int tagId = result.list![0].tagId!;
+   ```
+
+5. Get watchface store
+
+   ```
+   List<WatchFaceBean> watchFacelist = await _blePlugin.queryWatchFaceStoreList(
+           WatchFaceStoreListBean(
+               watchFaceStoreTagList: WatchFaceStoreTagListBean(
+                   storeType: supportWatchFaceBean!.type,
+                   typeList: supportWatchFaceBean!.supportWatchFaceInfo!.supportTypeList!,
+                   firmwareVersion: firmwareVersion,
+                   perPageCount: 9,
+                   pageIndex: 1,
+                   maxSize: watchFaceSize,
+                   apiVersion: 0,
+                   feature: 0),
+               tagId: tagId),
+         );
+   ```
+
+6. Get watchface details
+
+   ```
+   WatchFaceDetailResultBean watchFaceDetailResult = _widget.blePlugin.queryWatchFaceDetail(
+           WatchFaceStoreTypeBean(
+               storeType:  supportWatchFaceBean!.type,
+               id: watchFacelist[0].id!,
+               typeList: supportWatchFaceBean!.supportWatchFaceInfo!.supportTypeList!,
+               firmwareVersion: firmwareVersion,
+               maxSize: watchFaceSize,
+               apiVersion: 0,
+               feature: 0,
+               ),
+         );
+   ```
+
+   
 
 # 15 Alarm
 
@@ -3561,6 +3817,20 @@ Parameter Description :
 Precautions:
 
 Get the training history first.
+
+## 48.4 steps to get training heart rate
+
+### 48.4.1 JM Tracker or Air 3
+
+After the watch finishes exercising, queryTodayHeartRate(TodayHeartRateType.allDayHeartRate) is used to obtain the heart rate for the whole day, and then queryTrainingHeartRate is used to obtain the start and end time of the exercise. Using the start and end time, the heart rate set for this exercise is extracted from the heart rate for the whole day.
+
+### 48.4.2 itech Gladiator or Itouch Explorer
+
+After the watch finishes exercising, the heart rate setting for this exercise will be returned from the HeartRateType.measureComplete callback in heartRateEveStm.
+
+### 48.4.3 Active 3 or Active 4
+
+Use QueryHistoryTraining to query, and all exercise data will be returned from trainingEveStm.
 
 # 49 Calibrate the GSensor
 

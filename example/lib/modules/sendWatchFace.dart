@@ -65,6 +65,7 @@ class _SendWatchFaceState extends State<SendWatchFace> {
   void subscriptStream() {
     _streamSubscriptions.add(widget.blePlugin.wfFileTransEveStm.listen(
       (FileTransBean event) {
+        print("MOYOUNG-demo:wfFileTransEveStm - ${wfFileTransBeanToJson(event)}");
         if (!mounted) return;
         setState(() {
           switch (event.type) {
@@ -210,6 +211,7 @@ class _SendWatchFaceState extends State<SendWatchFace> {
   }
 
   sendWatchFace(id, file) async {
+    print("MOYOUNG-Demo:sendWatchFace id:$id file:$file");
     // Download the file and save
     int index = file.lastIndexOf('/');
     String name = file.substring(index, file.length);
@@ -226,6 +228,7 @@ class _SendWatchFaceState extends State<SendWatchFace> {
 
     //call native interface
     CustomizeWatchFaceBean info = CustomizeWatchFaceBean(index: id, file: pathFile);
+    print("MOYOUNG-Demo:blePlugin.sendWatchFace - ${customizeWatchFaceBeanToJson(info)}");
     await widget.blePlugin.sendWatchFace(SendWatchFaceBean(watchFaceFlutterBean: info, timeout: 30));
   }
 

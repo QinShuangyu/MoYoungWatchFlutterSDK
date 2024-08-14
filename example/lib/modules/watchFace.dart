@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 import 'package:path_provider/path_provider.dart';
@@ -93,6 +94,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   void subscriptStream() {
     _streamSubscriptions.add(widget.blePlugin.fileTransEveStm.listen(
       (FileTransBean event) {
+        print("MOYOUNG-Demo:blePlugin.fileTransEveStm - ${wfFileTransBeanToJson(event)}");
         if (!mounted) return;
         setState(() {
           switch (event.type) {
@@ -392,6 +394,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   sendWatchFaceBackground() async {
+    print("MOYOUNG-Demo:sendWatchFaceBackground");
     String bitmapPath = "assets/images/img_2.png";
     ByteData bitmapBytes = await rootBundle.load(bitmapPath);
     Uint8List bitmapUint8List = bitmapBytes.buffer.asUint8List();
@@ -399,6 +402,22 @@ class _WatchFacePage extends State<WatchFacePage> {
     String thumbBitmapPath = "assets/images/img_2.png";
     ByteData thumbBitmapBytes = await rootBundle.load(thumbBitmapPath);
     Uint8List thumbBitmapUint8List = thumbBitmapBytes.buffer.asUint8List();
+
+    // 部分手机原相机拍摄的图片可能上板会被旋转，这可能是由于图片中的EXIF的orientation并不为0导致，尽量让客户通过裁剪图片尺寸，修正旋转方向以解决该问题
+    var bitmapUint8List1 = await FlutterImageCompress.compressWithList(
+      bitmapUint8List,
+      minHeight: 240,
+      minWidth: 296,
+      quality: 100,
+      rotate: 0,
+    );
+    var thumbBitmapUint8List1 = await FlutterImageCompress.compressWithList(
+      thumbBitmapUint8List,
+      minHeight: 240,
+      minWidth: 296,
+      quality: 100,
+      rotate: 0,
+    );
 
     WatchFaceBackgroundBean bgBean = WatchFaceBackgroundBean(
       bitmap: bitmapUint8List,
@@ -409,6 +428,7 @@ class _WatchFacePage extends State<WatchFacePage> {
       thumbWidth: _watchFaceLayoutInfo!.thumWidth,
       thumbHeight: _watchFaceLayoutInfo!.thumHeight,
     );
+    print("MOYOUNG-Demo:blePlugin.sendWatchFaceBackground - ${watchFaceBackgroundBeanToJson(bgBean)}");
     widget.blePlugin.sendWatchFaceBackground(bgBean);
   }
 
