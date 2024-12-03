@@ -1,0 +1,48 @@
+
+/**
+ * gradle脚本
+ * data：2024.12.3
+ * author: renae
+ * explain: 由于本次将flutter版本由3.7.7升级到3.24.5，且后续flutter新版本均将采取namespace形式声明。
+ *          而demo中的插件存在未维护版本，因此采用脚本自动化添加namespace处理；
+ * 验证：
+ * flutter pub cache clean
+ * flutter pub upgrade win32
+ * example 目录下 yaml 文件运行 pub get
+ * @return
+ */
+
+def addNamespaceFromManifest() {
+    rootProject.subprojects { project ->
+        def buildFile = project.file("build.gradle")
+        def manifestFile = project.file("src/main/AndroidManifest.xml")
+
+        // 仅处理存在 AndroidManifest.xml 且未设置 namespace 的模块
+        if (buildFile.exists() && manifestFile.exists() && buildFile.text.contains("com.android.") && !buildFile.text.contains("namespace ")) {
+            def manifestContent = manifestFile.text
+
+            // 使用正则提取 package 属性
+            def packageMatch = manifestContent =~ /package\s*=\s*"(.*?)"/
+            if (packageMatch.find()) {
+                def packageName = packageMatch.group(1)
+                def content = buildFile.text
+
+                // 在 android { 块中添加 namespace
+                content = content.replaceFirst("android \\{", "android {\n    namespace '${packageName}'")
+
+                // 写回 build.gradle 文件
+                buildFile.write(content)
+                println "Added namespace '${packageName}' to ${project.name}"
+
+                // 移除 AndroidManifest.xml 中的 package 属性
+                manifestContent = manifestContent.replaceAll('package="[^"]+"', '')
+                manifestFile.write(manifestContent)
+                println "Removed package attribute from ${manifestFile}"
+            } else {
+                println "No package found in ${manifestFile}"
+            }
+        }
+    }
+}
+
+addNamespaceFromManifest()
