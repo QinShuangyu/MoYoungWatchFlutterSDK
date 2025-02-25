@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class GoalStepsPage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
@@ -18,11 +16,7 @@ class _GoalStepPage extends State<GoalStepsPage> {
   int _goalSteps = -1;
   String _dailGoalsInfo = "";
   String _trainingDay = "";
-
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
-  CrossFadeState displayState2 = CrossFadeState.showSecond;
-  CrossFadeState displayState3 = CrossFadeState.showSecond;
-  CrossFadeState displayState4 = CrossFadeState.showSecond;
+  String _goalsRemindState = "";
 
   @override
   Widget build(BuildContext context) {
@@ -30,102 +24,86 @@ class _GoalStepPage extends State<GoalStepsPage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Goal Steps"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
                 child: ListView(children: [
-              CustomGestureDetector(
-                  title: 'queryGoalStep',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
+              Text("goalSteps: $_goalSteps"),
+              Text("dailyGoalsInfo: $_dailGoalsInfo"),
+              Text("trainingDay: $_trainingDay"),
+              Text("goalsRemindState: $_goalsRemindState"),
+              ElevatedButton(
+                child: const Text('sendGoalSteps(5000)'),
+                onPressed: () => widget.blePlugin.sendGoalSteps(5000),
+              ),
+              ElevatedButton(
+                  child: const Text('queryGoalStep()'),
+                  onPressed: () async {
+                    int goalSteps = await widget.blePlugin.queryGoalSteps;
                     setState(() {
-                      displayState1 = newDisplayState;
+                      _goalSteps = goalSteps;
                     });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("goalSteps: $_goalSteps", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('sendGoalSteps(5000)'), onPressed: () => widget.blePlugin.sendGoalSteps(5000)),
-                    ElevatedButton(
-                        child: const Text('queryGoalStep()'),
-                        onPressed: () async {
-                          int goalSteps = await widget.blePlugin.queryGoalSteps;
-                          setState(() {
-                            _goalSteps = goalSteps;
-                          });
-                        }),
-                  ]),
-              CustomGestureDetector(
-                  title: 'queryDailyGoals',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
+                  }),
+              ElevatedButton(
+                child: const Text('sendDailyGoals()'),
+                onPressed: () => widget.blePlugin.sendDailyGoals(
+                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 1000),
+                ),
+              ),
+              ElevatedButton(
+                  child: const Text('queryDailyGoals()'),
+                  onPressed: () async {
+                    DailyGoalsInfoBean dailGoalsInfo = await widget.blePlugin.queryDailyGoals;
                     setState(() {
-                      displayState2 = newDisplayState;
+                      _dailGoalsInfo = dailyGoalsInfoBeanToJson(dailGoalsInfo);
                     });
-                  },
-                  displayState: displayState2,
-                  children: <Widget>[
-                    Text("dailyGoalsInfo: $_dailGoalsInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                      child: const Text('sendDailyGoals()'),
-                      onPressed: () => widget.blePlugin.sendDailyGoals(
-                        DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 1000),
-                      ),
-                    ),
-                    ElevatedButton(
-                        child: const Text('queryDailyGoals()'),
-                        onPressed: () async {
-                          DailyGoalsInfoBean dailGoalsInfo = await widget.blePlugin.queryDailyGoals;
-                          setState(() {
-                            _dailGoalsInfo = dailyGoalsInfoBeanToJson(dailGoalsInfo);
-                          });
-                        }),
-                  ]),
-              CustomGestureDetector(
-                  title: 'queryDailyGoals',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
+                  }),
+              ElevatedButton(
+                child: const Text('sendTrainingDayGoals()'),
+                onPressed: () => widget.blePlugin.sendTrainingDayGoals(
+                  DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10),
+                ),
+              ),
+              ElevatedButton(
+                  child: const Text('queryTrainingDayGoals()'),
+                  onPressed: () async {
+                    DailyGoalsInfoBean dailGoalsInfo = await widget.blePlugin.queryTrainingDayGoals;
                     setState(() {
-                      displayState3 = newDisplayState;
+                      _dailGoalsInfo = dailyGoalsInfoBeanToJson(dailGoalsInfo);
                     });
-                  },
-                  displayState: displayState3,
-                  children: <Widget>[
-                    Text("dailyGoalsInfo: $_dailGoalsInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                      child: const Text('sendTrainingDayGoals()'),
-                      onPressed: () => widget.blePlugin.sendTrainingDayGoals(
-                        DailyGoalsInfoBean(steps: 100, calories: 500, trainingTime: 30, distance: 10),
-                      ),
-                    ),
-                    ElevatedButton(
-                        child: const Text('queryTrainingDayGoals()'),
-                        onPressed: () async {
-                          DailyGoalsInfoBean dailGoalsInfo = await widget.blePlugin.queryTrainingDayGoals;
-                          setState(() {
-                            _dailGoalsInfo = dailyGoalsInfoBeanToJson(dailGoalsInfo);
-                          });
-                        }),
-                    Text("trainingDay: $_trainingDay", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                      child: const Text("sendTrainingDays()"),
-                      onPressed: () => widget.blePlugin.sendTrainingDays(TrainingDayInfoBean(
-                        enable: false,
-                        trainingDays: [0, 1, 2],
-                      )),
-                    ),
-                    ElevatedButton(
-                        child: const Text('queryTrainingDay()'),
-                        onPressed: () async {
-                          TrainingDayInfoBean trainingDay = await widget.blePlugin.queryTrainingDay;
-                          setState(() {
-                            _trainingDay = trainingDayInfoBeanToJson(trainingDay);
-                          });
-                        })
-                  ])
+                  }),
+              ElevatedButton(
+                child: const Text("sendTrainingDays()"),
+                onPressed: () => widget.blePlugin.sendTrainingDays(TrainingDayInfoBean(
+                  enable: false,
+                  trainingDays: [0, 1, 2],
+                )),
+              ),
+              ElevatedButton(
+                  child: const Text('queryTrainingDay()'),
+                  onPressed: () async {
+                    TrainingDayInfoBean trainingDay = await widget.blePlugin.queryTrainingDay;
+                    setState(() {
+                      _trainingDay = trainingDayInfoBeanToJson(trainingDay);
+                    });
+                  }),
+              ElevatedButton(
+                child: const Text("sendGoalsRemindState() - open"),
+                onPressed: () =>
+                    widget.blePlugin.sendGoalsRemindState(GoalsRemindStateBean(stepsEnable: true, caloriesEnable: true, distanceEnable: true)),
+              ),
+              ElevatedButton(
+                child: const Text("sendGoalsRemindState() - close"),
+                onPressed: () =>
+                    widget.blePlugin.sendGoalsRemindState(GoalsRemindStateBean(stepsEnable: false, caloriesEnable: false, distanceEnable: false)),
+              ),
+              ElevatedButton(
+                  child: const Text('queryGoalsRemindState()'),
+                  onPressed: () async {
+                    GoalsRemindStateBean goalsRemindStateBean = await widget.blePlugin.queryGoalsRemindState;
+                    setState(() {
+                      _goalsRemindState = goalsRemindStateBeanToJson(goalsRemindStateBean);
+                    });
+                  }),
             ]))));
   }
 }

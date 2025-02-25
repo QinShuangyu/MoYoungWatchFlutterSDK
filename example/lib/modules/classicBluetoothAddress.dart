@@ -24,13 +24,6 @@ class _ClassicBluetoothAddressPage extends State<ClassicBluetoothAddressPage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Classic Bluetooth Address"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(child: ListView(children: <Widget>[
               Text("address: $_address"),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
 import '../Global.dart';
-import '../components/base/CustomGestureDetector.dart';
 
 class BatteryPage extends StatefulWidget {
   final MoYoungBle blePlugin;
@@ -25,7 +24,7 @@ class _BatteryPage extends State<BatteryPage> {
   int _deviceBattery = -1;
   bool _subscribe = false;
   final MoYoungBle _blePlugin = Global.blePlugin;
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
+
 
   @override
   void initState() {
@@ -61,30 +60,23 @@ class _BatteryPage extends State<BatteryPage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Battery"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
-                child: ListView(children: <Widget>[
-              CustomGestureDetector(
-                  title: 'Battery',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState1 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("deviceBattery: $_deviceBattery", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('queryDeviceBattery()'), onPressed: () => _blePlugin.queryDeviceBattery),
-                    Text("enable: $_subscribe", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('subscribeDeviceBattery()'), onPressed: () => _blePlugin.subscribeDeviceBattery),
-                  ])
-            ]))));
+                child: ListView(
+                    children: <Widget>[
+                      Text("deviceBattery: $_deviceBattery"),
+                      Text("enable: $_subscribe"),
+
+                      ElevatedButton(
+                          child: const Text('queryDeviceBattery()'),
+                          onPressed: () => _blePlugin.queryDeviceBattery),
+                      ElevatedButton(
+                          child: const Text('subscribeDeviceBattery()'),
+                          onPressed: () => _blePlugin.subscribeDeviceBattery),
+                    ]
+                )
+            )
+        )
+    );
   }
 }

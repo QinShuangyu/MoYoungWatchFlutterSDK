@@ -63,13 +63,6 @@ class _DemoState extends State<Demo> with WidgetsBindingObserver {
         child: Scaffold(
           appBar: AppBar(
             title: const Text("Demo"),
-            automaticallyImplyLeading: false, // 禁用默认的返回按钮
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context); // 手动处理返回逻辑
-              },
-            ),
           ),
           body: Center(
             child: Column(

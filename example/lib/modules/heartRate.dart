@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 import 'dart:async';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class HeartRatePage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
@@ -27,12 +25,6 @@ class _HearRatePage extends State<HeartRatePage> {
   final List<HeartRateInfo> _hour24MeasureResultList = [];
   List<TrainingHeartRateBean> _trainingList = [];
   int _timingMeasure = -1;
-  int _averageHeartRate = -1;
-
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
-  CrossFadeState displayState2 = CrossFadeState.showSecond;
-  CrossFadeState displayState3 = CrossFadeState.showSecond;
-  CrossFadeState displayState4 = CrossFadeState.showSecond;
 
   @override
   void initState() {
@@ -92,120 +84,74 @@ class _HearRatePage extends State<HeartRatePage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Hear Rate"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
                 child: ListView(children: [
-              CustomGestureDetector(
-                  title: 'queryLastDynamicRate',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
+              Text("measuring: $_measuring"),
+              Text("onceMeasureComplete: $_onceMeasureComplete"),
+              Text("historyHrList[0]: $_historyHrList"),
+              Text("measureComplete: ${measureCompleteBeanToJson(_measureComplete!)}"),
+              Text("_hour24MeasureResult: ${_hour24MeasureResultList.map((value) => heartRateInfoToJson(value))}"),
+              Text("trainingList: ${_trainingList.map((value) => trainingHeartRateBeanToJson(value))}"),
+              Text("timingMeasure: $_timingMeasure"),
+              ElevatedButton(
+                  child: const Text('queryLastDynamicRate(1)'),
+                  onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.firstHeartRate)),
+              ElevatedButton(
+                  child: const Text('queryLastDynamicRate(2)'),
+                  onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.secondHeartRate)),
+              ElevatedButton(
+                  child: const Text('queryLastDynamicRate(3)'),
+                  onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.thirdHeartRate)),
+              ElevatedButton(
+                child: const Text('enableTimingMeasureHeartRate(5)'),
+                onPressed: () => widget.blePlugin.enableTimingMeasureHeartRate(5),
+              ),
+              ElevatedButton(
+                child: const Text('disableTimingMeasureHeartRate()'),
+                onPressed: () => widget.blePlugin.disableTimingMeasureHeartRate,
+              ),
+              ElevatedButton(
+                  child: const Text('queryTimingMeasureHeartRate()'),
+                  onPressed: () async {
+                    int timingMeasure = await widget.blePlugin.queryTimingMeasureHeartRate;
                     setState(() {
-                      displayState1 = newDisplayState;
+                      _timingMeasure = timingMeasure;
                     });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("measuring: $_measuring", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("measureComplete: ${measureCompleteBeanToJson(_measureComplete!)}",
-                        style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                        child: const Text('queryLastDynamicRate(firstHeartRate)'),
-                        onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.firstHeartRate)),
-                    ElevatedButton(
-                        child: const Text('queryLastDynamicRate(secondHeartRate)'),
-                        onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.secondHeartRate)),
-                    ElevatedButton(
-                        child: const Text('queryLastDynamicRate(thirdHeartRate)'),
-                        onPressed: () => widget.blePlugin.queryLastDynamicRate(HistoryDynamicRateType.thirdHeartRate))
-                  ]),
-              CustomGestureDetector(
-                  title: 'queryTimingMeasureHeartRate',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState2 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState2,
-                  children: <Widget>[
-                    Text("timingMeasure: $_timingMeasure", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    const Text("The interval is in units of 5", style: TextStyle(height: 1.5, fontSize: 14, color: Colors.deepOrange)),
-                    ElevatedButton(
-                        child: const Text('enableTimingMeasureHeartRate(5)'), onPressed: () => widget.blePlugin.enableTimingMeasureHeartRate(5)),
-                    ElevatedButton(
-                        child: const Text('disableTimingMeasureHeartRate()'), onPressed: () => widget.blePlugin.disableTimingMeasureHeartRate),
-                    ElevatedButton(
-                        child: const Text('queryTimingMeasureHeartRate()'),
-                        onPressed: () async {
-                          int timingMeasure = await widget.blePlugin.queryTimingMeasureHeartRate;
-                          setState(() {
-                            _timingMeasure = timingMeasure;
-                          });
-                        }),
-                  ]),
-              CustomGestureDetector(
-                  title: 'ALL HeartRate',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState3 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState3,
-                  children: <Widget>[
-                    Text("_hour24MeasureResult: ${_hour24MeasureResultList.map((value) => heartRateInfoToJson(value))}",
-                        style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                        child: const Text('queryTodayHeartRate(TIMING_MEASURE_HEART_RATE)'),
-                        onPressed: () => widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.timingMeasureHeartRate)),
-                    ElevatedButton(
-                        child: const Text('queryTodayHeartRate(ALL_DAY_HEART_RATE)'),
-                        onPressed: () {
-                          _hour24MeasureResultList.clear();
-                          widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.allDayHeartRate);
-                        }),
-                    ElevatedButton(
-                        child: const Text('queryPastHeartRate'),
-                        onPressed: () => widget.blePlugin.queryPastHeartRate(HistoryHeartRateDay.historyDay)),
-                    Text("trainingList: ${_trainingList.map((value) => trainingHeartRateBeanToJson(value))}",
-                        style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                      child: const Text('queryTrainingHeartRate'),
-                      onPressed: () => widget.blePlugin.queryTrainingHeartRate,
-                    ),
-                  ]),
-              CustomGestureDetector(
-                  title: 'Measure Once HeartRate',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState4 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState4,
-                  children: <Widget>[
-                    Text("measuring: $_measuring", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("onceMeasureComplete: $_onceMeasureComplete", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('startMeasureOnceHeartRate'), onPressed: () => widget.blePlugin.startMeasureOnceHeartRate),
-                    ElevatedButton(child: const Text('stopMeasureOnceHeartRate'), onPressed: () => widget.blePlugin.stopMeasureOnceHeartRate),
-                    Text("historyHrList: $_historyHrList", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('queryHistoryHeartRate'), onPressed: () => widget.blePlugin.queryHistoryHeartRate),
-                    const Text("Only For debugging, manual modification is required",
-                        style: TextStyle(height: 1.5, fontSize: 14, color: Colors.deepOrange)),
-                    Text("_averageHeartRate: $_averageHeartRate", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                      onPressed: () async {
-                        int averageHeartRate = await widget.blePlugin.queryAverageHeartRate(1681488040, 1681488340, []);
-                        setState(() {
-                          _averageHeartRate = averageHeartRate;
-                        });
-                      },
-                      child: const Text('queryAverageHeartRate'),
-                    )
-                  ])
+                  }),
+              ElevatedButton(
+                  child: const Text('queryTodayHeartRate(TIMING_MEASURE_HEART_RATE)'),
+                  onPressed: () => widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.timingMeasureHeartRate)),
+              ElevatedButton(
+                  child: const Text('queryTodayHeartRate(ALL_DAY_HEART_RATE)'),
+                  onPressed: () {
+                    _hour24MeasureResultList.clear();
+                    widget.blePlugin.queryTodayHeartRate(TodayHeartRateType.allDayHeartRate);
+                  }),
+              ElevatedButton(
+                child: const Text('queryPastHeartRate'),
+                onPressed: () => widget.blePlugin.queryPastHeartRate(HistoryHeartRateDay.historyDay),
+              ),
+              ElevatedButton(
+                child: const Text('queryTrainingHeartRate'),
+                onPressed: () => widget.blePlugin.queryTrainingHeartRate,
+              ),
+              ElevatedButton(
+                child: const Text('startMeasureOnceHeartRate'),
+                onPressed: () => widget.blePlugin.startMeasureOnceHeartRate,
+              ),
+              ElevatedButton(
+                child: const Text('stopMeasureOnceHeartRate'),
+                onPressed: () => widget.blePlugin.stopMeasureOnceHeartRate,
+              ),
+              ElevatedButton(
+                child: const Text('queryHistoryHeartRate'),
+                onPressed: () => widget.blePlugin.queryHistoryHeartRate,
+              ),
+              ElevatedButton(
+                onPressed: () => widget.blePlugin.queryAverageHeartRate(1681488040, 1681488340, []),
+                child: const Text('queryAverageHeartRate'),
+              ),
             ]))));
   }
 }

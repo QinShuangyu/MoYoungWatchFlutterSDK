@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class BloodPressurePage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
@@ -26,9 +24,6 @@ class _BloodPressurePage extends State<BloodPressurePage> {
   BloodPressureInfo? info;
   int _startTime = -1;
   int _timeInterval = -1;
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
-  CrossFadeState displayState2 = CrossFadeState.showSecond;
-  CrossFadeState displayState3 = CrossFadeState.showSecond;
 
   @override
   void initState() {
@@ -74,60 +69,39 @@ class _BloodPressurePage extends State<BloodPressurePage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Blood Pressure"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
-            body: Center(
-                child: ListView(children: [
-              CustomGestureDetector(
-                  title: 'Blood Pressure',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState1 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("systolicBloodPressure: $_systolicBloodPressure", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("diastolicBloodPressure: $_diastolicBloodPressure", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('startMeasureBloodPressure'), onPressed: () => widget.blePlugin.startMeasureBloodPressure),
-                    ElevatedButton(child: const Text('stopMeasureBloodPressure'), onPressed: () => widget.blePlugin.stopMeasureBloodPressure),
-                  ]),
-              CustomGestureDetector(
-                  title: 'Continue Blood Pressure',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState2 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState2,
-                  children: <Widget>[
-                    ElevatedButton(child: const Text('enableContinueBloodPressure'), onPressed: () => widget.blePlugin.enableContinueBloodPressure),
-                    ElevatedButton(child: const Text('disableContinueBloodPressure'), onPressed: () => widget.blePlugin.disableContinueBloodPressure),
-                    Text("continueState: $_continueState", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                        child: const Text('queryContinueBloodPressureState'), onPressed: () => widget.blePlugin.queryContinueBloodPressureState),
-                    Text("startTime: $_startTime", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("timeInterval: $_timeInterval", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('queryLast24HourBloodPressure'), onPressed: () => widget.blePlugin.queryLast24HourBloodPressure),
-                  ]),
-              CustomGestureDetector(
-                  title: 'History Blood Pressure',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState3 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState3,
-                  children: <Widget>[
-                    Text("historyBpList[0]: $_historyBpList", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(child: const Text('queryHistoryBloodPressure'), onPressed: () => widget.blePlugin.queryHistoryBloodPressure),
-                  ])
-            ]))));
+            body: Center(child: ListView(children: [
+              Text("continueState: $_continueState"),
+              Text("systolicBloodPressure: $_systolicBloodPressure"),
+              Text("diastolicBloodPressure: $_diastolicBloodPressure"),
+              Text("historyBpList[0]: $_historyBpList"),
+              Text("startTime: $_startTime"),
+              Text("timeInterval: $_timeInterval"),
+
+              ElevatedButton(
+                  child: const Text('startMeasureBloodPressure'),
+                  onPressed: () => widget.blePlugin.startMeasureBloodPressure),
+              ElevatedButton(
+                  child: const Text('stopMeasureBloodPressure'),
+                  onPressed: () => widget.blePlugin.stopMeasureBloodPressure),
+              ElevatedButton(
+                  child: const Text('enableContinueBloodPressure'),
+                  onPressed: () => widget.blePlugin.enableContinueBloodPressure),
+              ElevatedButton(
+                  child: const Text('disableContinueBloodPressure'),
+                  onPressed: () => widget.blePlugin.disableContinueBloodPressure),
+              ElevatedButton(
+                  child: const Text('queryContinueBloodPressureState'),
+                  onPressed: () => widget.blePlugin.queryContinueBloodPressureState),
+              ElevatedButton(
+                  child: const Text('queryLast24HourBloodPressure'),
+                  onPressed: () => widget.blePlugin.queryLast24HourBloodPressure),
+              ElevatedButton(
+                  child: const Text('queryHistoryBloodPressure'),
+                  onPressed: () => widget.blePlugin.queryHistoryBloodPressure),
+            ])
+            )
+        )
+    );
   }
 }

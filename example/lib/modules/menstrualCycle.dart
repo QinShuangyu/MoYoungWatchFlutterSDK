@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class MenstrualCyclePage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
@@ -28,7 +26,6 @@ class _MenstrualCyclePage extends State<MenstrualCyclePage> {
   bool _ovulationEndReminder = false;
   int _reminderHour = -1;
   int _reminderMinute = -1;
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
 
   @override
   Widget build(BuildContext context) {
@@ -36,65 +33,39 @@ class _MenstrualCyclePage extends State<MenstrualCyclePage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Menstrual Cycle"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
-                child: ListView(children: <Widget>[
-              CustomGestureDetector(
-                  title: 'Menstrual Cycle',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState1 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("physiologcalPeriod: $_physiologcalPeriod", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("menstrualPeriod: $_menstrualPeriod", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("startDate: $_startDate", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("menstrualReminder: $_menstrualReminder", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("ovulationReminder: $_ovulationReminder", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("ovulationDayReminder: $_ovulationDayReminder", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("ovulationEndReminder: $_ovulationEndReminder", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("reminderHour: $_reminderHour", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    Text("reminderMinute: $_reminderMinute", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(
-                        onPressed: () => widget.blePlugin.sendMenstrualCycle(MenstrualCycleBean(
-                            physiologcalPeriod: 30,/// 生理周期（天）
-                            menstrualPeriod: 5,/// 经期周期（天）
-                            startDate: (DateTime.now().subtract(const Duration(days: 5)).microsecondsSinceEpoch ~/ 1000).toString(),
-                            menstrualReminder: true,/// 经期开始提醒
-                            ovulationReminder: true,/// 排卵期提醒
-                            ovulationDayReminder: true,/// 排卵日提醒
-                            ovulationEndReminder: true,/// 排卵期结束提醒
-                            reminderHour: 10,/// 提醒小时
-                            reminderMinute: 0/// 提醒分钟
-                            )),
-                        child: const Text("sendMenstrualCycle()")),
-                    ElevatedButton(
-                        onPressed: () => widget.blePlugin.sendMenstrualCycle(MenstrualCycleBean(
-                            physiologcalPeriod: 30,/// 生理周期（天）
-                            menstrualPeriod: 7,/// 经期周期（天）
-                            startDate: (DateTime.now().subtract(const Duration(days: 5)).microsecondsSinceEpoch ~/ 1000).toString(),
-                            menstrualReminder: true,/// 经期开始提醒
-                            ovulationReminder: false,/// 排卵期提醒
-                            ovulationDayReminder: true,/// 排卵日提醒
-                            ovulationEndReminder: false,/// 排卵期结束提醒
-                            reminderHour: 5,/// 提醒小时
-                            reminderMinute: 5/// 提醒分钟
-                            )),
-                        child: const Text("sendMenstrualCycle()")),
-                    ElevatedButton(
-                        onPressed: () async {
-                          _menstrualCycleBean = await widget.blePlugin.queryMenstrualCycle;
-                          setState(() {
-                            _physiologcalPeriod = _menstrualCycleBean!.physiologcalPeriod;
+                child: ListView(
+                    children: <Widget>[
+                      Text("physiologcalPeriod: $_physiologcalPeriod"),
+                      Text("menstrualPeriod: $_menstrualPeriod"),
+                      Text("startDate: $_startDate"),
+                      Text("menstrualReminder: $_menstrualReminder"),
+                      Text("ovulationReminder: $_ovulationReminder"),
+                      Text("ovulationDayReminder: $_ovulationDayReminder"),
+                      Text("ovulationEndReminder: $_ovulationEndReminder"),
+                      Text("reminderHour: $_reminderHour"),
+                      Text("reminderMinute: $_reminderMinute"),
+
+                      ElevatedButton(
+                          onPressed: () =>
+                              widget.blePlugin.sendMenstrualCycle(MenstrualCycleBean(
+                                  physiologcalPeriod: 28,
+                                  menstrualPeriod: 5,
+                                  startDate: (DateTime.now().subtract(const Duration(days: 5)).microsecondsSinceEpoch ~/ 1000).toString(),
+                                  menstrualReminder: true,
+                                  ovulationReminder: true,
+                                  ovulationDayReminder: true,
+                                  ovulationEndReminder: true,
+                                  reminderHour: 10,
+                                  reminderMinute: 0
+                              )),
+                          child: const Text("sendMenstrualCycle()")),
+                      ElevatedButton(
+                          onPressed: () async {
+                            _menstrualCycleBean = await widget.blePlugin.queryMenstrualCycle;
+                            setState(() {
+                              _physiologcalPeriod = _menstrualCycleBean!.physiologcalPeriod;
                             _menstrualPeriod = _menstrualCycleBean!.menstrualPeriod;
                             _startDate = _menstrualCycleBean!.startDate;
                             _menstrualReminder = _menstrualCycleBean!.menstrualReminder;
@@ -103,10 +74,11 @@ class _MenstrualCyclePage extends State<MenstrualCyclePage> {
                             _ovulationEndReminder = _menstrualCycleBean!.ovulationEndReminder;
                             _reminderHour = _menstrualCycleBean!.reminderHour;
                             _reminderMinute = _menstrualCycleBean!.reminderMinute;
-                          });
-                        },
-                        child: const Text("queryMenstrualCycle()"))
-                  ])
-            ]))));
+                          });},
+                          child: const Text("queryMenstrualCycle()")),
+                    ])
+            )
+        )
+    );
   }
 }

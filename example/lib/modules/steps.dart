@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 import 'dart:async';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class StepsPage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
-  const StepsPage({Key? key, required this.blePlugin}) : super(key: key);
+  const StepsPage({
+    Key? key,
+    required this.blePlugin
+  }) : super(key: key);
 
   @override
   State<StepsPage> createState() {
@@ -22,9 +23,6 @@ class _StepsPage extends State<StepsPage> {
   String list = "";
   String stepsCategoryInfo = "";
   String actionDetailsInfo = "";
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
-  CrossFadeState displayState2 = CrossFadeState.showSecond;
-  CrossFadeState displayState3 = CrossFadeState.showSecond;
 
   @override
   void initState() {
@@ -35,8 +33,8 @@ class _StepsPage extends State<StepsPage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       widget.blePlugin.stepsChangeEveStm.listen(
-        (StepsChangeBean event) {
-          if (!mounted) return;
+            (StepsChangeBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StepsChangeType.stepChange:
@@ -55,8 +53,8 @@ class _StepsPage extends State<StepsPage> {
 
     _streamSubscriptions.add(
       widget.blePlugin.stepsDetailEveStm.listen(
-        (StepsDetailBean event) {
-          if (!mounted) return;
+            (StepsDetailBean event) {
+              if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StepsDetailType.stepsCategoryChange:
@@ -88,68 +86,38 @@ class _StepsPage extends State<StepsPage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Steps"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
               child: ListView(
                 children: [
-                  // Text("list: $list"),
-                  CustomGestureDetector(
-                      title: 'StepsInfo',
-                      childrenBCallBack: (CrossFadeState newDisplayState) {
-                        setState(() {
-                          displayState1 = newDisplayState;
-                        });
-                      },
-                      displayState: displayState1,
-                      children: <Widget>[
-                        Text("stepsInfo: $stepsInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                        ElevatedButton(child: const Text('querySteps'), onPressed: () => widget.blePlugin.querySteps)
-                      ]),
-                  CustomGestureDetector(
-                      title: 'queryHistorySteps',
-                      childrenBCallBack: (CrossFadeState newDisplayState) {
-                        setState(() {
-                          displayState2 = newDisplayState;
-                        });
-                      },
-                      displayState: displayState2,
-                      children: <Widget>[
-                        Text("historyStepsInfo: $historyStepsInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                        ElevatedButton(
-                            child: const Text('queryHistorySteps(yesterday)'),
-                            onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.yesterday)),
+                  Text("stepsInfo: $stepsInfo"),
+                  Text("historyStepsInfo: $historyStepsInfo"),
+                  Text("list: $list"),
+                  Text("stepsCategoryInfo: $stepsCategoryInfo"),
+                  Text("actionDetailsInfo: $actionDetailsInfo"),
 
-                        /// 获取步数历史记录
-                        ElevatedButton(
-                            child: const Text('queryHistorySteps(theDayBeforeYesterday)'),
-                            onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.theDayBeforeYesterday)),
-                      ]),
-                  CustomGestureDetector(
-                      title: 'queryStepsDetail',
-                      childrenBCallBack: (CrossFadeState newDisplayState) {
-                        setState(() {
-                          displayState3 = newDisplayState;
-                        });
-                      },
-                      displayState: displayState3,
-                      children: <Widget>[
-                        Text("stepsCategoryInfo: $stepsCategoryInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                        Text("actionDetailsInfo: $actionDetailsInfo", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-
-                        /// 获取最近两天步数半小时分类统计
-                        ElevatedButton(
-                            child: const Text('queryStepsDetail(today)'),
-                            onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.today)),
-                      ])
+                  ElevatedButton(
+                      child: const Text('querySteps'),
+                      onPressed: () => widget.blePlugin.querySteps),
+                  ElevatedButton(
+                      child: const Text('queryHistorySteps(yesterday)'),
+                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.yesterday)),
+                  /// 获取步数历史记录
+                  ElevatedButton(
+                      child: const Text('queryHistorySteps(theDayBeforeYesterday)'),
+                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.theDayBeforeYesterday)),
+                  /// 获取最近两天步数半小时分类统计
+                  ElevatedButton(
+                      child: const Text('queryStepsDetail(today)'),
+                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.today)),
+                  /// 获取全天步数、距离和卡路里半小时统计
+                  ElevatedButton(
+                      child: const Text('queryActionDetails()'),
+                      onPressed: () => widget.blePlugin.queryActionDetails(StepsDetailDateType.today)),
                 ],
               ),
-            )));
+            )
+        )
+    );
   }
 }

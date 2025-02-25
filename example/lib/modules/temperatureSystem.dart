@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
 
-import '../components/base/CustomGestureDetector.dart';
-
 class TemperatureSystemPage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
@@ -21,8 +19,14 @@ class TemperatureSystemPage extends StatefulWidget {
 
 class _TemperatureSystemPage extends State<TemperatureSystemPage> {
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+  bool _enable = false;
+  double _temp = 0;
+  bool _state = false;
+  TempInfo? _tempInfo;
+  String _tempTimeType = "";
+  int _startTime = -1;
+  List<double> _tempList = [];
   int _tempUnit = -1;
-  CrossFadeState displayState1 = CrossFadeState.showSecond;
 
   @override
   void initState() {
@@ -31,6 +35,35 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
   }
 
   void subscriptStream() {
+    _streamSubscriptions.add(
+      widget.blePlugin.tempChangeEveStm.listen(
+        (TempChangeBean event) {
+          if (!mounted) return;
+          setState(() {
+            switch (event.type) {
+              case TempChangeType.continueState:
+                _enable = event.enable!;
+                break;
+              case TempChangeType.measureTemp:
+                _temp = event.temp!;
+                break;
+              case TempChangeType.measureState:
+                _state = event.state!;
+                break;
+              case TempChangeType.continueTemp:
+                _tempInfo = event.tempInfo;
+                _tempTimeType = _tempInfo!.tempTimeType!;
+                _startTime = _tempInfo!.startTime!;
+                _tempList = _tempInfo!.tempList!;
+                break;
+              default:
+                break;
+            }
+          });
+        },
+      ),
+    );
+
     _streamSubscriptions.add(
       widget.blePlugin.weatherChangeEveStm.listen(
         (WeatherChangeBean event) {
@@ -57,30 +90,19 @@ class _TemperatureSystemPage extends State<TemperatureSystemPage> {
         home: Scaffold(
             appBar: AppBar(
               title: const Text("Temperature System"),
-              automaticallyImplyLeading: false, // 禁用默认的返回按钮
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context); // 手动处理返回逻辑
-                },
-              ),
             ),
             body: Center(
                 child: ListView(children: <Widget>[
-              CustomGestureDetector(
-                  title: 'Supported Contacts',
-                  childrenBCallBack: (CrossFadeState newDisplayState) {
-                    setState(() {
-                      displayState1 = newDisplayState;
-                    });
-                  },
-                  displayState: displayState1,
-                  children: <Widget>[
-                    Text("weather: $_tempUnit", style: const TextStyle(height: 1.5, fontSize: 14, color: Colors.grey)),
-                    ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.celsius), child: const Text("sendTempUnit()")),
-                    ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.fahrenheit), child: const Text("sendTempUnit()")),
-                    ElevatedButton(onPressed: () => widget.blePlugin.queryTempUnit, child: const Text("queryTempUnit()"))
-                  ])
+              Text("enable: $_enable"),
+              Text("temp: $_temp"),
+              Text("state: $_state"),
+              Text("tempTimeType: $_tempTimeType"),
+              Text("startTime: $_startTime"),
+              Text("tempList: $_tempList"),
+              Text("weather: $_tempUnit"),
+              ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.celsius), child: const Text("sendTempUnit()")),
+              ElevatedButton(onPressed: () => widget.blePlugin.sendTempUnit(TempUnit.fahrenheit), child: const Text("sendTempUnit()")),
+              ElevatedButton(onPressed: () => widget.blePlugin.queryTempUnit, child: const Text("queryTempUnit()")),
             ]))));
   }
 }
