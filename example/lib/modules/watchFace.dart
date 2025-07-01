@@ -61,6 +61,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   String _preview = "";
   String _file = "";
   int _watchFaceSize = 500 * 1024;
+  bool isMultiple = false;
 
   @override
   void initState() {
@@ -327,7 +328,7 @@ class _WatchFacePage extends State<WatchFacePage> {
                       }),
                   ElevatedButton(
                     child: const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
-                    onPressed: () => widget.blePlugin.sendWatchFaceId(6),
+                    onPressed: () => widget.blePlugin.sendWatchFaceId(6, isMultiple),
                   ),
                 ],
               ),
@@ -493,7 +494,7 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   sendWatchFaceId(WatchFaceDetailsBean watchFaceDetails) async {
-    await widget.blePlugin.sendWatchFaceId(watchFaceDetails.id);
+    await widget.blePlugin.sendWatchFaceId(watchFaceDetails.id, isMultiple);
   }
 
   ///获取下载路径

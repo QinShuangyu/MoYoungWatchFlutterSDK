@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
+// import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:moyoung_ble_plugin/moyoung_ble.dart';
+import 'package:moyoung_ble_plugin_example/utils/toast_util.dart';
 
 import 'Global.dart';
 import 'modules/contact_list_page.dart';
@@ -137,13 +138,14 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
     bool _enableBluetooth = await _blePlugin.checkBluetoothEnable;
     if (!_enableBluetooth) {
-      BluetoothEnable.enableBluetooth.then((value) {
-        if (value == "true") {
-          setState(() {
-            enableBluetooth = true;
-          });
-        }
-      });
+      ToastUtil.show('Bluetooth not enabled', Toast.LENGTH_SHORT);
+      // BluetoothEnable.enableBluetooth.then((value) {
+      //   if (value == "true") {
+      //     setState(() {
+      //       enableBluetooth = true;
+      //     });
+      //   }
+      // });
     }
     setState(() {
       enableBluetooth = _enableBluetooth;

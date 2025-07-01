@@ -805,28 +805,20 @@ Sets up a sleep monitor sleepChangeEveStm, and save the returned value in "event
 ```dart
       _blePlugin.sleepChangeEveStm.listen(
         (SleepBean event) {
-          /// Do something with new state,for example:
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case SleepType.sleepChange:
-                _totalTime = event.sleepInfo!.totalTime!;
-                _restfulTime = event.sleepInfo!.restfulTime!;
-                _lightTime = event.sleepInfo!.lightTime!;
-                _soberTime = event.sleepInfo!.soberTime!;
-                _remTime = event.sleepInfo!.remTime!;
-                _details = event.sleepInfo!.details;
+                _sleepInfo = event.sleepInfo!;
                 break;
               case SleepType.historySleepChange:
-                _timeType = event.historySleep!.timeType!;
-                _totalTime = event.historySleep!.sleepInfo!.totalTime!;
-                _restfulTime = event.historySleep!.sleepInfo!.restfulTime!;
-                _lightTime = event.historySleep!.sleepInfo!.lightTime!;
-                _soberTime = event.historySleep!.sleepInfo!.soberTime!;
-                _remTime = event.historySleep!.sleepInfo!.remTime!;
-                _details = event.historySleep!.sleepInfo!.details;
+                _historySleep = event.historySleep!;
                 break;
               case SleepType.goalSleepTimeChange:
                 _goalSleepTime = event.goalSleepTime!;
+                break;
+              case SleepType.historyNapSleepChange:
+                _historyNapSleep = event.historyNapSleep!;
                 break;
               default:
                 break;
@@ -840,20 +832,22 @@ Callback Description（event）:
 
 SleepBean：
 
-| callback value | callback value type | callback value description                              |
-| :------------- | :------------------ | :------------------------------------------------------ |
-| type           | int                 | Weather change return value type, the type is SleepType |
-| sleepInfo      | SleepInfo           | Current sleep information                               |
-| historySleep   | HistorySleepBean    | Historical sleep information                            |
-| goalSleepTime  | int                 | Target sleep time                                       |
+| callback value  | callback value type | callback value description                              |
+| :-------------- | :------------------ | :------------------------------------------------------ |
+| type            | int                 | Weather change return value type, the type is SleepType |
+| sleepInfo       | SleepInfo           | Current sleep information                               |
+| historySleep    | HistorySleepBean    | Historical sleep information                            |
+| goalSleepTime   | int                 | Target sleep time                                       |
+| historyNapSleep | HistoryNapSleepBean | Nap time                                                |
 
 SleepType:
 
-| value               | value type | value description                                      |
-| :------------------ | :--------- | :----------------------------------------------------- |
-| sleepChange         | 1          | Gets the data returned by the current sleep monitor    |
-| historySleepChange  | 2          | Gets the data returned by the historical sleep monitor |
-| goalSleepTimeChange | 3          | Get the data returned by the target sleep time         |
+| value                 | value type | value description                                      |
+| :-------------------- | :--------- | :----------------------------------------------------- |
+| sleepChange           | 1          | Gets the data returned by the current sleep monitor    |
+| historySleepChange    | 2          | Gets the data returned by the historical sleep monitor |
+| goalSleepTimeChange   | 3          | Get the data returned by the target sleep time         |
+| historyNapSleepChange | 4          | Get the data returned by the nap sleep time            |
 
 SleepInfo：
 
@@ -890,8 +884,28 @@ Use yesterdaySleep and dayBeforeYesterdaySleep parameters.
 
 | value                 | value type | value description |
 | :-------------------- | :--------- | :---------------- |
+| today                 | int        | 0                 |
 | yesterday             | int        | 1                 |
 | theDayBeforeYesterday | int        | 2                 |
+| threeDaysAgo          | int        | 3                 |
+| fourDaysAgo           | int        | 4                 |
+| fiveDaysAgo           | int        | 5                 |
+| sixDaysAgo            | int        | 6                 |
+
+HistoryNapSleepBean:
+
+| value    | value type         | value description                          |
+| :------- | :----------------- | :----------------------------------------- |
+| timeType | int                | days,from SleepHistoryTimeType             |
+| list     | List<NapSleepInfo> | Nap time, returned in the form of an array |
+
+NapSleepInfo:
+
+| value     | value type | value description                                   |
+| :-------- | :--------- | :-------------------------------------------------- |
+| startTime | int        | start time（The number of minutes since 0 o'clock） |
+| endTime   | int        | end time （The number of minutes since 0 o'clock）  |
+| totalTime | int        | total time（minute）                                |
 
 ## 10.2 Gets today's sleep
 
@@ -907,7 +921,7 @@ _blePlugin.querySleep;
 
 The watch can save the sleep data of the past three days, and can query the sleep data of a certain day.
 
-Gets the sleep data of a certain day. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.past field and the SleepBean.pastSleepInfo field.
+Gets the sleep data of a certain day. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.historySleep field.
 
 ```dart
 _blePlugin.queryHistorySleep(HistoryTimeType);
@@ -929,6 +943,14 @@ Gets the sleep data of a certain day. The query result will be obtained through 
 
 ```dart
 _blePlugin.queryGoalSleepTime;
+```
+
+## 10.6 Gets History Nap time
+
+Obtain the sleep data for a specific day. The query result will be obtained through the sleepChangeEveStm listening stream and saved in the SleepBean.historyNapSleep field.
+
+```dart
+_blePlugin.queryHistoryNapSleep(HistoryTimeType);
 ```
 
 # 11 Unit system
@@ -1450,8 +1472,10 @@ CustomizeWatchFaceBean:
 
 Upload the watch face id, this method only works for jieli watches. You'll need to call this method once the jieli watch face has been uploaded.
 
+If isMultiple refers to watch support dial, with widgets. BlePlugin. QuerySupportWatchFace returns the parameter field.
+
 ```dart
-_blePlugin.sendWatchFaceId(id);
+_blePlugin.sendWatchFaceId(int id, bool isMultiple);
 ```
 
 
@@ -1945,8 +1969,10 @@ _blePlugin.endCall;
 
 Only send the name of the outgoing contact. The incoming contact still uses sendMessage.
 
+nameLength The nameLength field returned by the checkSupportQuickContact() interface.
+
 ```dart
-_blePlugin.sendCallContactName("name");
+_blePlugin.sendCallContactName(String name, int nameLength);
 ```
 
 ## 17.11 Call notification<Only android support>
@@ -2916,10 +2942,45 @@ DrinkWaterPeriodBean:
 _blePlugin.disableDrinkWaterReminder;
 ```
 
-## **33.3 Gets drinking **reminder
+## **33.3 Set drinking reminder listen **
+
+Sets the drinking reminder listen  and get the return value through drinkWaterEveStm.
 
 ```dart
-DrinkWaterPeriodBean info = await _blePlugin.queryDrinkWaterReminderPeriod;
+_blePlugin.drinkWaterEveStm.listen(
+        (DrinkWaterBean event) {
+          if (!mounted) return;
+          setState(() {
+            switch (event.type) {
+              case DrinkWaterType.dwPeriod:
+                _drinkWaterPeriodBean = event.crpDrinkWaterPeriodInfo;
+                break;
+            }
+          });
+        })
+```
+
+Callback Description（event）:
+
+DrinkWaterBean:
+
+| callback value          | callback value type  | callback value description                                   |
+| ----------------------- | -------------------- | ------------------------------------------------------------ |
+| type                    | int                  | Get the corresponding return value according to type, where type is the value corresponding to DrinkWaterType |
+| crpDrinkWaterPeriodInfo | DrinkWaterPeriodBean | Current water reminder message                               |
+
+DrinkWaterType:
+
+| type     | value | value description                          |
+| -------- | ----- | ------------------------------------------ |
+| dwPeriod | 1     | Type of the current water reminder message |
+
+## **33.4 Gets drinking **reminder
+
+Query the current watch water remind information, results through drinkWaterEveStm monitor return, return type to DrinkWaterType.dwPeriod, data is stored in crpDrinkWaterPeriodInfo field.
+
+```dart
+_blePlugin.queryDrinkWaterReminderPeriod;
 ```
 
 # 34 Heart rate alarm
@@ -3332,12 +3393,13 @@ Callback Description:
 
 ContactConfigBean：
 
-| value     | value type | value description                          |
-| --------- | ---------- | ------------------------------------------ |
-| supported | bool       | Whether symbols are supported, such as ”+“ |
-| count     | int        | Maximum number of contacts                 |
-| width     | int        | The width of the contact avatar            |
-| height    | int        | The height of contact avatar               |
+| value      | value type | value description                                 |
+| ---------- | ---------- | ------------------------------------------------- |
+| supported  | bool       | Whether symbols are supported, such as ”+“        |
+| count      | int        | Maximum number of contacts                        |
+| width      | int        | The width of the contact avatar                   |
+| height     | int        | The height of contact avatar                      |
+| nameLength | int        | Length of the contact name supported by the watch |
 
 ## 44.4 Gets current contacts count
 
@@ -3357,21 +3419,43 @@ Parameter Description :
 
 ContactBean:
 
-| value   | value type | value description         |
-| ------- | ---------- | ------------------------- |
-| id      | int        | The contact id            |
-| width   | int        | The contact avatar width  |
-| height  | int        | The contact avatar height |
-| address | int        | The contact address       |
-| name    | String     | The contact name          |
-| number  | String     | The contact phone number  |
-| avatar  | Uint8List? | The contact avatar        |
+| value         | value type | value description                 |
+| ------------- | ---------- | --------------------------------- |
+| id            | int        | The contact id                    |
+| width         | int        | The contact avatar width          |
+| height        | int        | The contact avatar height         |
+| address       | int        | The contact address               |
+| name          | String     | The contact name                  |
+| number        | String     | The contact phone number          |
+| avatar        | Uint8List? | The contact avatar                |
+| maxNameLength | int?       | Maximum length of supported names |
 
 Precautions:
 
 - The Uint8List? type is a picture type, interacts with the backend, and converts it to a bitmap type at the backend.
 - Contacts sent to the watch face, must have an avatar.
-- id has size limit. The maximum value of id can be viewed through count in the return value of _blePlugin.checkSupportQuickContact, and cannot be greater than or equal to the queried value.
+- id has size limit. The maximum value of id can be viewed through count in the return value of _blePlugin.checkSupportQuickContact, and cannot be greater than or equal to the queried value. And it should be noted that the IDs are arranged in ascending order, such as 0, 1, 2, 3, 4...
+- maxNameLength: This field is obtained from the "nameLength" field of the "checkSupportQuickContact" interface. If not specified, it defaults to 20. Values that do not match those on the firmware side will result in a setting failure.
+
+## 44.5.1 Sets multiple  contacts information
+
+Sets the contact, the result is obtained through contactEveStm.
+
+```
+_blePlugin.sendMultiContact(ContactMultiBean info);
+```
+
+Parameter Description :
+
+ContactMultiBean:
+
+| value    | value type        | value description |
+| -------- | ----------------- | ----------------- |
+| contacts | List<ContactBean> | The contact       |
+
+Precautions:
+
+It is necessary to pay attention to the corresponding matters of "sendContact" and follow the precautions. The data IDs should be arranged in ascending order. The details can be seen in the "sendMultiContact" method handling on the Contacts page of the demo.
 
 ## 44.6 Sets contact avatar information
 

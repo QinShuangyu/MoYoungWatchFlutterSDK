@@ -20,15 +20,15 @@ dependencies:
     sdk: flutter
 
 #  logger: ^1.1.4
-  flutter_contacts: 1.1.4
-  permission_handler: any
-  path_provider: ^2.0.10
+  flutter_contacts: 1.1.9+2
+  permission_handler: ^12.0.0+1
+  path_provider: ^2.1.5
 #  phone_state: ^1.0.2
     # HTTP network request library
   dio: ^4.0.6
-  bluetooth_enable_fork: ^0.1.6
+#  bluetooth_enable_fork: ^0.1.6
 
-#  1.2.22-norealtek-itouch-2025.2.25
+#  1.2.24-norealtek-itouch-2025.6.30
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z
@@ -46,6 +46,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  fluttertoast: ^8.0.9
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -53,6 +54,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+
+# 由于默认版本的win32过旧，因此指定新版本
+dependency_overrides:
+  win32: 5.10.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

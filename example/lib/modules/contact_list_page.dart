@@ -12,9 +12,11 @@ class FlutterContactsExample extends StatefulWidget {
 }
 
 class _FlutterContactsExampleState extends State<FlutterContactsExample> {
-  BuildContext pageContext;
+  final BuildContext pageContext;
   List<Contact>? _contacts;
   bool _permissionDenied = false;
+  bool _multiSelectMode = false;
+  final Set<String> _selectedContactIds = {};  // Set to keep track of selected contacts
 
   _FlutterContactsExampleState(this.pageContext);
 
@@ -35,9 +37,43 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(title: const Text('flutter_contacts_example')),
-          body: _body()));
+    home: Scaffold(
+      appBar: AppBar(
+        title: const Text('flutter_contacts_example'),
+        actions: [
+          IconButton(
+            icon: Icon(_multiSelectMode ? Icons.close : Icons.checklist),
+            onPressed: () {
+              setState(() {
+                _multiSelectMode = !_multiSelectMode;
+                _selectedContactIds.clear();  // Reset selections when toggling mode
+              });
+            },
+          ),
+        ],
+      ),
+      body: _body(),
+      bottomNavigationBar: _multiSelectMode && _selectedContactIds.isNotEmpty
+          ? Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: () async {
+            // Fetch the full contacts for selected IDs
+            final selectedContacts = await Future.wait(
+              _contacts!
+                  .where((c) => _selectedContactIds.contains(c.id))
+                  .map((c) => FlutterContacts.getContact(c.id)),
+            );
+
+            // Filter null values and return selected contacts
+            Navigator.pop(pageContext, selectedContacts.whereType<Contact>().toList());
+          },
+          child: Text('complete (${_selectedContactIds.length})'),
+        ),
+      )
+          : null,
+    ),
+  );
 
   Widget _body() {
     if (_permissionDenied) {
@@ -46,33 +82,54 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
     if (_contacts == null) {
       return const Center(child: CircularProgressIndicator());
     }
+
     return ListView.builder(
-        itemCount: _contacts!.length,
-        itemBuilder: (context, i) => ListTile(
-            leading: avatar(_contacts![i], 18.0),
-            title: Text(_contacts![i].displayName),
-            onTap: () async {
-              final fullContact = await FlutterContacts.getContact(_contacts![i].id);
-              Navigator.pop(pageContext, fullContact);
-              /*await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ContactPage(fullContact!)));*/
-            }));
+      itemCount: _contacts!.length,
+      itemBuilder: (context, i) {
+        final contact = _contacts![i];
+        final isSelected = _selectedContactIds.contains(contact.id);
+        return ListTile(
+          leading: avatar(contact, 18.0),
+          title: Text(contact.displayName),
+          trailing: _multiSelectMode
+              ? Checkbox(
+            value: isSelected,
+            onChanged: (checked) {
+              setState(() {
+                if (checked == true) {
+                  _selectedContactIds.add(contact.id);
+                } else {
+                  _selectedContactIds.remove(contact.id);
+                }
+              });
+            },
+          )
+              : null,
+          onTap: () async {
+            if (_multiSelectMode) {
+              setState(() {
+                // Add or remove the contact from selected list
+                if (isSelected) {
+                  _selectedContactIds.remove(contact.id);
+                } else {
+                  _selectedContactIds.add(contact.id);
+                }
+              });
+            } else {
+              // Single selection: return the selected contact
+              final fullContact = await FlutterContacts.getContact(contact.id);
+
+              // Ensure the contact is not null before returning
+              if (fullContact != null) {
+                Navigator.pop(pageContext, [fullContact]); // Return as a list of one
+              } else {
+                // Handle the case where fullContact is null (if necessary)
+                print("Selected contact is null");
+              }
+            }
+          },
+        );
+      },
+    );
   }
-}
-
-class ContactPage extends StatelessWidget {
-  final Contact contact;
-  const ContactPage({Key? key, required this.contact}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: Text(contact.displayName)),
-      body: Column(children: [
-        Text('First name: ${contact.name.first}'),
-        Text('Last name: ${contact.name.last}'),
-        Text(
-            'Phone number: ${contact.phones.isNotEmpty ? contact.phones.first.number : '(none)'}'),
-        Text(
-            'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
-      ]));
 }
