@@ -18,9 +18,28 @@ class PaddingPage extends StatefulWidget {
 }
 
 class _PaddingPage extends State<PaddingPage> {
+  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+  int _bondState = -1;
 
-  int _key = -1;
-  
+  @override
+  void initState() {
+    super.initState();
+    subscriptStream();
+  }
+
+  void subscriptStream() {
+    _streamSubscriptions.add(
+      widget.blePlugin.createBondEveStm.listen(
+        (int event) {
+          if (!mounted) return;
+          setState(() {
+            _bondState = event;
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,16 +49,28 @@ class _PaddingPage extends State<PaddingPage> {
         ),
         body: Center(
           child: ListView(children: <Widget>[
-            Text("key: $_key"),
-
+            Text("key: $_bondState"),
             ElevatedButton(
                 onPressed: () async {
-                  int key = await widget.blePlugin.createBond([1, 2]);
-                  setState(() {
-                    _key = key;
-                  });
+                  await widget.blePlugin.createBond([1, 1, 1, 1, 1, 1]);
                 },
                 child: const Text("createBond")),
+            const SizedBox(
+              height: 30,
+            ),
+            const Text(
+              "When the watch firmware has a pairing code, only the Android end requires the following writing method.",
+              style: TextStyle(color: Colors.grey, fontSize: 10),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  await widget.blePlugin.createBond(
+                    [1, 1, 1, 1, 1, 1],
+                    isBond: false,
+                    pairingCode: 123456,
+                  );
+                },
+                child: const Text("createBond(MultiP)")),
           ]),
         ),
       ),

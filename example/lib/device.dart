@@ -760,7 +760,7 @@ class _DevicePage extends State<DevicePage> {
                       }));
                     }
                   },
-                  child: const Text("51-Padding")),
+                  child: const Text("51-Pairing")),
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
