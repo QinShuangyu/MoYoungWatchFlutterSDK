@@ -4183,41 +4183,80 @@ VibrationStrength:
 
 ## 57.1 Set up GPS listener
 
-Set up a GPS listener, and the result is returned through the data stream and saved in the "event" as a GpsHandlerBean object.
+If you want to receive updates for the GPT EPO File, you need to register for this monitoring immediately after the connection is successful. The monitoring will track the updates of the GPT requests on the watch.
+
+Set up a GPS listener, and the result is returned through the data stream and saved in the "event" as a GpsChangeEventBeanobject.
 
 ```
-_blePlugin.watchGpsChangeEveStm.listen(
-       (GpsHandlerBean event) {
-       // Do something with new state
-        ......
-    },
-  ),
+      widget.blePlugin.gpsChangeEveStm.listen(
+        (GpsChangeEventBean event) {
+          if (!mounted) return;
+          setState(() {
+            type = event.type;
+            switch (event.type) {
+              case GpsChangeType.historyGpsPathChange:
+                list = event.list;
+                break;
+              case GpsChangeType.gpsPathChange:
+                gpsPathInfo = event.gpsPathInfo;
+                break;
+              case GpsChangeType.locationChanged:
+                location = event.location;
+                break;
+              case GpsChangeType.updateGpsLocationChange:
+                // Handle updateGpsLocationChange if needed
+                break;
+            }
+          });
+        },
+      ),
 ```
 
-## 57.2 Query historical GPS records
+GpsChangeEventBean
+
+| value       | value type  | value description                                      |
+| ----------- | ----------- | ------------------------------------------------------ |
+| type        | int         | type                                                   |
+| list        | List<int>   | Historical record time                                 |
+| gpsPathInfo | GpsPathInfo | Detailed GPT records for the corresponding time period |
+| location    | Location    | Latitude and longitude records                         |
+
+gpsPathInfo
+
+| value        | value type     | value description |
+| ------------ | -------------- | ----------------- |
+| time         | int            | time              |
+| locationList | List<Location> | location info     |
+
+Location
+
+| value     | value type | value description |
+| --------- | ---------- | ----------------- |
+| latitude  | double     | latitude          |
+| longitude | double     | longitude         |
+
+## 57.2 Send the current time zone and location.
+
+The current time zone and longitude and latitude need to be sent to the watch at regular intervals.
 
 ```
-_blePlugin.queryWatchHistoryGps;
+sendGpsLocation(double longitude, double latitude)
 ```
 
-## 57.3 Query GPS details
+## 57.3 Query historical GPS records
+
+The results are returned through the gpsChangeEveStm stream and saved in the list.
+
+```
+_blePlugin.queryHistoryGps;
+```
+
+## 57.4 Query GPS details 
+
+The parameter passed is the timestamp obtained from queryHistoryGps. The result is returned through the "gpsChangeEveStm" stream and is saved in the "gpsPathInfo" field.
 
 ```
 // time is the timestamp when the GPS exercise started (unit: seconds)
-_blePlugin.queryWatchGpsDetail(int time);
+_blePlugin.queryGpsDetail(int time);
 ```
 
-## 57.4 Send epo file
-
-Updating the epo file can help the watch search for satellites more quickly. After receiving the EpoType callback returned by the watchGpsChangeEveStm  monitor, send the corresponding epo file to the watch. 
-
-```
-_blePlugin.sendEpoFile(GpsBean gpsInfo);
-```
-
-GpsBean：
-
-| value | value type | value description                                            |
-| ----- | ---------- | ------------------------------------------------------------ |
-| file  | String     | epo file path                                                |
-| type  | int        | Get the corresponding return value according to type, where type is the value corresponding to EpoType. |
