@@ -4217,16 +4217,17 @@ GpsChangeEventBean
 | value       | value type  | value description                                      |
 | ----------- | ----------- | ------------------------------------------------------ |
 | type        | int         | type                                                   |
-| list        | List<int>   | Historical record time                                 |
+| list        | List<int>   | Historical record time,second                          |
 | gpsPathInfo | GpsPathInfo | Detailed GPT records for the corresponding time period |
 | location    | Location    | Latitude and longitude records                         |
 
 gpsPathInfo
 
-| value        | value type     | value description |
-| ------------ | -------------- | ----------------- |
-| time         | int            | time              |
-| locationList | List<Location> | location info     |
+| value        | value type     | value description                                            |
+| ------------ | -------------- | ------------------------------------------------------------ |
+| time         | int            | time,second                                                  |
+| locationList | List<Location> | location info                                                |
+| interval     | int            | The time interval between each latitude and longitude coordinate in the gpsPathInfo |
 
 Location
 
