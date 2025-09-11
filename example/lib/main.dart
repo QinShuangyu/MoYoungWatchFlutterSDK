@@ -38,7 +38,6 @@ class _MyAppState extends State<MyApp> {
   bool enableBluetooth = false;
   final List<BleScanBean> _deviceList = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -81,43 +80,41 @@ class _MyAppState extends State<MyApp> {
             children: <Widget>[
               ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return Demo(
-                        // blePlugin: _blePlugin,
-                        // device: device,
-                      );
+                          // blePlugin: _blePlugin,
+                          // device: device,
+                          );
                     }));
                   },
                   child: const Text("Demo")),
               ElevatedButton(
-                  child: Text(_permissionTxt),
-                  onPressed: requestPermissions),
-              ElevatedButton(onPressed: checkBluetoothEnable, child: Text("checkBluetoothPermission: $enableBluetooth")),
+                  child: Text(_permissionTxt), onPressed: requestPermissions),
               ElevatedButton(
-                  child: Text(_scanBtnTxt),
-                  onPressed: startScan),
+                  onPressed: checkBluetoothEnable,
+                  child: Text("checkBluetoothPermission: $enableBluetooth")),
+              ElevatedButton(child: Text(_scanBtnTxt), onPressed: startScan),
               ElevatedButton(
-                  child: Text(_cancelScanResult),
-                  onPressed: cancelScan),
-
+                  child: Text(_cancelScanResult), onPressed: cancelScan),
               ElevatedButton(
-                  child: Text(_contactInfo),
-                  onPressed: selectContact),
-
+                  child: Text(_contactInfo), onPressed: selectContact),
               Expanded(
                 child: ListView.separated(
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
-                          title: Text(_deviceList[index].name + ',' + _deviceList[index].address),
+                          title: Text(_deviceList[index].name +
+                              ',' +
+                              _deviceList[index].address),
                           onTap: () {
                             cancelScan();
 
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                                  return DevicePage(
-                                    device : _deviceList[index],
-                                  );
-                                }));
+                              return DevicePage(
+                                device: _deviceList[index],
+                              );
+                            }));
                           });
                     },
                     separatorBuilder: (BuildContext context, int index) {
@@ -153,41 +150,59 @@ class _MyAppState extends State<MyApp> {
   }
 
   void requestPermissions() {
-    [Permission.location, Permission.storage, Permission.manageExternalStorage,
-      Permission.bluetoothConnect, Permission.bluetoothScan, Permission.bluetoothAdvertise]
-        .request().then((value) => {
-      setState(() {
-        Map<Permission, PermissionStatus> statuses = value;
-        if (statuses[Permission.location] == PermissionStatus.denied) {
-          String permissionName = Permission.location.toString();
-          _permissionTxt = "$permissionName is denied";
-          return;
-        }
-        if (statuses[Permission.storage] == PermissionStatus.denied) {
-          String permissionName = Permission.storage.toString();
-          _permissionTxt = "$permissionName is denied";
-          return;
-        }
+    [
+      Permission.location,
+      Permission.storage,
+      Permission.manageExternalStorage,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+      Permission.bluetoothAdvertise
+    ].request().then((value) => {
+          setState(() {
+            Map<Permission, PermissionStatus> statuses = value;
+            if (statuses[Permission.location] == PermissionStatus.denied) {
+              String permissionName = Permission.location.toString();
+              _permissionTxt = "$permissionName is denied";
+              return;
+            }
+            if (statuses[Permission.storage] == PermissionStatus.denied) {
+              String permissionName = Permission.storage.toString();
+              _permissionTxt = "$permissionName is denied";
+              return;
+            }
 
-        _permissionTxt = "Permission is granted.";
-      })
-
-    });
+            _permissionTxt = "Permission is granted.";
+          })
+        });
   }
 
-  void startScan() {
+  void startScan() async {
     if (!mounted) return;
-    _blePlugin.startScan(10*1000).then((value) => {
-      setState(() {
-        _scanBtnTxt = value ? "Scanning" : "Scan filed";
-      })
-    }).onError((error, stackTrace) => {
-      print(error)
-    });
+    // 检查定位和蓝牙权限
+    var status = await Permission.location.status;
+    var scanStatus = await Permission.bluetoothScan.status;
+    var connectStatus = await Permission.bluetoothConnect.status;
+    if (!status.isGranted ||
+        !scanStatus.isGranted ||
+        !connectStatus.isGranted) {
+      await [
+        Permission.location,
+        Permission.bluetoothScan,
+        Permission.bluetoothConnect,
+      ].request();
+    }
+    _blePlugin
+        .startScan(10 * 1000)
+        .then((value) => {
+              setState(() {
+                _scanBtnTxt = value ? "Scanning" : "Scan filed";
+              })
+            })
+        .onError((error, stackTrace) => {print(error)});
   }
 
   Future<void> cancelScan() async {
-     await _blePlugin.cancelScan;
+    await _blePlugin.cancelScan;
     if (!mounted) return;
     setState(() {
       _cancelScanResult = 'cancelScan()';
@@ -195,10 +210,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> selectContact() async {
-    final Contact contact = await Navigator.push(context, MaterialPageRoute(
-      builder: (context) => FlutterContactsExample(pageContext: context),
-      )
-    );
+    final Contact contact = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FlutterContactsExample(pageContext: context),
+        ));
 
     if (!mounted) return;
 

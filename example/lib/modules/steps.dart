@@ -5,10 +5,7 @@ import 'dart:async';
 class StepsPage extends StatefulWidget {
   final MoYoungBle blePlugin;
 
-  const StepsPage({
-    Key? key,
-    required this.blePlugin
-  }) : super(key: key);
+  const StepsPage({Key? key, required this.blePlugin}) : super(key: key);
 
   @override
   State<StepsPage> createState() {
@@ -33,15 +30,18 @@ class _StepsPage extends State<StepsPage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       widget.blePlugin.stepsChangeEveStm.listen(
-            (StepsChangeBean event) {
-              if (!mounted) return;
+        (StepsChangeBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StepsChangeType.stepChange:
                 stepsInfo = stepInfoBeanToJson(event.stepsInfo!);
+                print("stepsInfo: $stepsInfo");
                 break;
               case StepsChangeType.historyStepChange:
-                historyStepsInfo = historyStepInfoBeanToJson(event.historyStepsInfo!);
+                historyStepsInfo =
+                    historyStepInfoBeanToJson(event.historyStepsInfo!);
+                print("historyStepsInfo: $historyStepsInfo");
                 break;
               default:
                 break;
@@ -53,15 +53,19 @@ class _StepsPage extends State<StepsPage> {
 
     _streamSubscriptions.add(
       widget.blePlugin.stepsDetailEveStm.listen(
-            (StepsDetailBean event) {
-              if (!mounted) return;
+        (StepsDetailBean event) {
+          if (!mounted) return;
           setState(() {
             switch (event.type) {
               case StepsDetailType.stepsCategoryChange:
-                stepsCategoryInfo = stepsCategoryBeanToJson(event.stepsCategoryInfo!);
+                stepsCategoryInfo =
+                    stepsCategoryBeanToJson(event.stepsCategoryInfo!);
+                print("stepsCategoryInfo: $stepsCategoryInfo");
                 break;
               case StepsDetailType.actionDetailsChange:
-                actionDetailsInfo = actionDetailsBeanToJson(event.actionDetailsInfo!);
+                actionDetailsInfo =
+                    actionDetailsBeanToJson(event.actionDetailsInfo!);
+                print("actionDetailsInfo: $actionDetailsInfo");
                 break;
               default:
                 break;
@@ -101,23 +105,29 @@ class _StepsPage extends State<StepsPage> {
                       onPressed: () => widget.blePlugin.querySteps),
                   ElevatedButton(
                       child: const Text('queryHistorySteps(yesterday)'),
-                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.yesterday)),
+                      onPressed: () => widget.blePlugin
+                          .queryHistorySteps(StepsDetailDateType.yesterday)),
+
                   /// 获取步数历史记录
                   ElevatedButton(
-                      child: const Text('queryHistorySteps(theDayBeforeYesterday)'),
-                      onPressed: () => widget.blePlugin.queryHistorySteps(StepsDetailDateType.theDayBeforeYesterday)),
+                      child: const Text(
+                          'queryHistorySteps(theDayBeforeYesterday)'),
+                      onPressed: () => widget.blePlugin.queryHistorySteps(
+                          StepsDetailDateType.theDayBeforeYesterday)),
+
                   /// 获取最近两天步数半小时分类统计
                   ElevatedButton(
                       child: const Text('queryStepsDetail(today)'),
-                      onPressed: () => widget.blePlugin.queryStepsDetail(StepsDetailDateType.today)),
+                      onPressed: () => widget.blePlugin
+                          .queryStepsDetail(StepsDetailDateType.today)),
+
                   /// 获取全天步数、距离和卡路里半小时统计
                   ElevatedButton(
                       child: const Text('queryActionDetails()'),
-                      onPressed: () => widget.blePlugin.queryActionDetails(StepsDetailDateType.today)),
+                      onPressed: () => widget.blePlugin
+                          .queryActionDetails(StepsDetailDateType.today)),
                 ],
               ),
-            )
-        )
-    );
+            )));
   }
 }

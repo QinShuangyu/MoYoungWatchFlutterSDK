@@ -3645,7 +3645,30 @@ TrainingInfo:
 | steps          | int                 | Steps                      |
 | distance       | int                 | Distance                   |
 | calories       | int                 | Calories                   |
-| hrList         | List<int>           | heart rate list            |
+| hrList         | List<HeartRateData> | Heart rate data with timestamp (every 10 seconds) |
+| cadences       | List<int>           | cadences list (steps per minute) |
+| strides        | List<int>           | strides list (distance per minute in centimeters) |
+| cadencesPer10s | List<int>           | detailed cadences list (steps per 10 seconds) |
+| stridesPer10s  | List<int>           | detailed strides list (distance per 10 seconds in centimeters) |
+| hrZone         | Map<String, Map<String, dynamic>> | Heart rate zone statistics with percentage and duration |
+| hrInterval     | int                 | Heart rate measurement interval in seconds (default: 10) |
+| cadencesInterval | int               | Cadences measurement interval in seconds (default: 10) |
+| stridesInterval | int                | Strides measurement interval in seconds (default: 10) |
+| cadencesList   | List<CadenceData>   | Cadence data with timestamp (every 10 seconds) |
+| stridesList    | List<StrideData>    | Stride data with timestamp (every 10 seconds) |
+
+**hrZone Structure:**
+- L0 (0-120 bpm): Warm-up and relaxation zone
+- L1 (121-140 bpm): Fat burning zone  
+- L2 (141-160 bpm): Aerobic/cardio zone
+- L3 (161-180 bpm): Anaerobic/endurance zone
+- L4 (>181 bpm): Maximum effort zone
+
+Each zone contains:
+- `percent`: Percentage of time spent in this zone (%)
+- `duration`: Time spent in this zone (seconds)
+
+Example: `{'L0': {'percent': 25.5, 'duration': 300}, 'L1': {'percent': 30.2, 'duration': 420}, ...}`
 
 ## 48.2 Gets History Training
 
