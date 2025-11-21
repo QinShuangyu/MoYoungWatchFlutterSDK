@@ -18,7 +18,6 @@ class TimePage extends StatefulWidget {
 class _TimePage extends State<TimePage> {
   int _time = -1;
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,42 +26,43 @@ class _TimePage extends State<TimePage> {
           title: const Text("Time"),
         ),
         body: Center(
-            child: ListView(
-                children: <Widget>[
-                  Text("time: $_time"),
-
-                  ElevatedButton(
-                      child: const Text('queryTime()'),
-                      onPressed: () {
-                        widget.blePlugin.queryTime(DateTime.now().subtract(const Duration(days: 5)).millisecondsSinceEpoch);
-                      }),
-                  ElevatedButton(
-                      child: const Text('queryTime()'),
-                      onPressed: () {
-                        widget.blePlugin.queryTime(DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch);
-                      }),
-                  ElevatedButton(
-                      child: const Text('queryTime()'),
-                      onPressed: () => widget.blePlugin.queryTime()),
-                  ElevatedButton(
-                      child: const Text('sendTimeSystem(TIME_SYSTEM_12)'),
-                      onPressed: () => widget.blePlugin
-                          .sendTimeSystem(TimeSystemType.timeSystem12)),
-                  ElevatedButton(
-                      child: const Text('sendTimeSystem(TIME_SYSTEM_24)'),
-                      onPressed: () => widget.blePlugin
-                          .sendTimeSystem(TimeSystemType.timeSystem24)),
-                  ElevatedButton(
-                      child: const Text('queryTimeSystem()'),
-                      onPressed: () async {
-                        int time = await widget.blePlugin.queryTimeSystem;
-                        setState(() {
-                          _time = time;
-                        });
-                      }),
-                ]
-            )
-        ),
+            child: ListView(children: <Widget>[
+          Text("time: $_time"),
+          ElevatedButton(
+              child: const Text('queryTime(): five days ago'),
+              onPressed: () {
+                widget.blePlugin.queryTime(DateTime.now()
+                    .subtract(const Duration(days: 5))
+                    .millisecondsSinceEpoch);
+              }),
+          ElevatedButton(
+              child: const Text('queryTime(): three days ago'),
+              onPressed: () {
+                widget.blePlugin.queryTime(DateTime.now()
+                    .subtract(const Duration(days: 3))
+                    .millisecondsSinceEpoch);
+              }),
+          ElevatedButton(
+              child: const Text('queryTime(): now'),
+              onPressed: () => widget.blePlugin
+                  .queryTime(DateTime.now().millisecondsSinceEpoch)),
+          ElevatedButton(
+              child: const Text('sendTimeSystem(TIME_SYSTEM_12)'),
+              onPressed: () =>
+                  widget.blePlugin.sendTimeSystem(TimeSystemType.timeSystem12)),
+          ElevatedButton(
+              child: const Text('sendTimeSystem(TIME_SYSTEM_24)'),
+              onPressed: () =>
+                  widget.blePlugin.sendTimeSystem(TimeSystemType.timeSystem24)),
+          ElevatedButton(
+              child: const Text('queryTimeSystem()'),
+              onPressed: () async {
+                int time = await widget.blePlugin.queryTimeSystem;
+                setState(() {
+                  _time = time;
+                });
+              }),
+        ])),
       ),
     );
   }

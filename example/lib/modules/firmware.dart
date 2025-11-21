@@ -10,7 +10,8 @@ class FirmwarePage extends StatefulWidget {
 
   final BleScanBean device;
 
-  const FirmwarePage({Key? key, required this.blePlugin, required this.device}) : super(key: key);
+  const FirmwarePage({Key? key, required this.blePlugin, required this.device})
+      : super(key: key);
 
   @override
   State<FirmwarePage> createState() {
@@ -33,7 +34,8 @@ class _FirmwarePage extends State<FirmwarePage> {
   String _customizeVersion = "";
   String _uuid = "";
   String upgradeFilePath = "";
-  String pathname = "https://p.moyoung.com/uploads/jieli/V37_QIpBxMKILvdR5SYRGAhsUVx3CTAxdIxV/fZaBQ5zVwUMPiM4mxHBWBEGe6XzeC5P6.ufw";
+  String pathname =
+      "https://p.moyoung.com/uploads/jieli/V37_QIpBxMKILvdR5SYRGAhsUVx3CTAxdIxV/fZaBQ5zVwUMPiM4mxHBWBEGe6XzeC5P6.ufw";
 
   @override
   void initState() {
@@ -92,16 +94,39 @@ class _FirmwarePage extends State<FirmwarePage> {
           Text("OtaType: $_otaType"),
           Text("customizeVersion: $_customizeVersion"),
           Text("uuid: $_uuid"),
-          ElevatedButton(child: Text(_firmwareVersion), onPressed: queryFirmwareVersion),
+          ElevatedButton(
+              child: Text(_firmwareVersion), onPressed: queryFirmwareVersion),
           ElevatedButton(
               child: const Text("queryCustomizeVersion"),
               onPressed: () async {
-                String customizeVersion = await widget.blePlugin.queryCustomizeVersion;
+                String customizeVersion =
+                    await widget.blePlugin.queryCustomizeVersion;
                 setState(() {
                   _customizeVersion = customizeVersion;
                 });
               }),
-          ElevatedButton(child: Text(_newFirmwareInfo), onPressed: () => checkFirmwareVersion(_firmwareVersion, OTAType.normalUpgradeType)),
+          ElevatedButton(
+              child: const Text("queryCustomizeVersion 20 times"),
+              onPressed: () async {
+                for (int i = 0; i < 20; i++) {
+                  try {
+                    String version =
+                        await widget.blePlugin.queryCustomizeVersion;
+                    print("第 ${i + 1} 次成功: $version");
+                    await Future.delayed(Duration(milliseconds: 500));
+                  } catch (e) {
+                    print("第 ${i + 1} 次失败: $e");
+                    break;
+                  }
+                  // 随机延迟模拟真实场景
+                  await Future.delayed(
+                      Duration(milliseconds: 100 + (i % 5) * 100));
+                }
+              }),
+          ElevatedButton(
+              child: Text(_newFirmwareInfo),
+              onPressed: () => checkFirmwareVersion(
+                  _firmwareVersion, OTAType.normalUpgradeType)),
           ElevatedButton(
               child: const Text('queryHsOtaAddress()'),
               onPressed: () async {
@@ -116,16 +141,21 @@ class _FirmwarePage extends State<FirmwarePage> {
           ElevatedButton(
               child: const Text('startOTA(address)'),
               onPressed: () => startOTA(widget.device.address)),
-          ElevatedButton(child: const Text('abortOTA(oTAType)'), onPressed: () => widget.blePlugin.abortOTA(_oTAType!)),
+          ElevatedButton(
+              child: const Text('abortOTA(oTAType)'),
+              onPressed: () => widget.blePlugin.abortOTA(_oTAType!)),
           ElevatedButton(
               child: const Text('queryDeviceOtaStatus()'),
               onPressed: () async {
-                int deviceOtaStatus = await widget.blePlugin.queryDeviceOtaStatus;
+                int deviceOtaStatus =
+                    await widget.blePlugin.queryDeviceOtaStatus;
                 setState(() {
                   _deviceOtaStatus = deviceOtaStatus;
                 });
               }),
-          ElevatedButton(child: const Text('enableHsOta()'), onPressed: () => widget.blePlugin.enableHsOta),
+          ElevatedButton(
+              child: const Text('enableHsOta()'),
+              onPressed: () => widget.blePlugin.enableHsOta),
           ElevatedButton(
               child: const Text('queryOtaType()'),
               onPressed: () async {
@@ -145,11 +175,9 @@ class _FirmwarePage extends State<FirmwarePage> {
           ElevatedButton(
               onPressed: () => startOTA(upgradeFilePath),
               child: const Text('sifliStartOTA')),
-
           ElevatedButton(
               onPressed: () => startOTA(pathname),
               child: const Text('jieliStartOTA')),
-
           ElevatedButton(
               onPressed: () async {
                 widget.blePlugin.abortOTA(OTAMcuType.startJieliOta);
@@ -171,7 +199,9 @@ class _FirmwarePage extends State<FirmwarePage> {
   }
 
   Future<void> checkFirmwareVersion(String version, int oTAType) async {
-    CheckFirmwareVersionBean versionInfo = await widget.blePlugin.checkFirmwareVersion(FirmwareVersion(version: version, otaType: oTAType));
+    CheckFirmwareVersionBean versionInfo = await widget.blePlugin
+        .checkFirmwareVersion(
+            FirmwareVersion(version: version, otaType: oTAType));
     if (!mounted) {
       return;
     }
@@ -181,7 +211,8 @@ class _FirmwarePage extends State<FirmwarePage> {
   }
 
   Future<void> startOTA(String address) async {
-    await widget.blePlugin.startOTA(OtaBean(address: address, type: widget.device.platform));
+    await widget.blePlugin
+        .startOTA(OtaBean(address: address, type: widget.device.platform));
   }
 
   ///获取下载路径
@@ -189,7 +220,8 @@ class _FirmwarePage extends State<FirmwarePage> {
     int index = file.lastIndexOf('/');
     String name = file.substring(index, file.length);
     String pathFile = "";
-    await getApplicationDocumentsDirectory().then((value) => pathFile = value.path + name);
+    await getApplicationDocumentsDirectory()
+        .then((value) => pathFile = value.path + name);
     return pathFile;
   }
 
@@ -204,7 +236,10 @@ class _FirmwarePage extends State<FirmwarePage> {
     Dio dio = Dio(options);
     await dio
         .download(file, pathFile, onReceiveProgress: (received, total) {})
-        .then((value) => {widget.blePlugin.startOTA(OtaBean(address: pathFile, type: OTAMcuType.startJieliOta))})
+        .then((value) => {
+              widget.blePlugin.startOTA(
+                  OtaBean(address: pathFile, type: OTAMcuType.startJieliOta))
+            })
         .onError((error, stackTrace) => {});
   }
 }

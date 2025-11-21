@@ -88,6 +88,10 @@ class _DevicePage extends State<DevicePage> {
   String oTAType = "";
   List<BluetoothDevice> list = [];
 
+  String _syncTimeStatus = "Wait for connection...";
+  String _syncGpsStatus = "Wait for connection...";
+  String _watchGpsStatus = "Wait for watch report...";
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +99,28 @@ class _DevicePage extends State<DevicePage> {
   }
 
   void subscriptStream() {
+    _streamSubscriptions.add(
+      _blePlugin.gpsChangeEveStm.listen((GpsChangeEventBean event) {
+        debugPrint('DevicePage received GPS event: type=${event.type}');
+        if (event.type == 6) {
+          setState(() {
+            _watchGpsStatus = "Watch requested GPS update";
+          });
+        } else if (event.type == 7) {
+          if (event.location.isValid) {
+            setState(() {
+              _watchGpsStatus =
+                  "Lat: ${event.location.latitude}, Lng: ${event.location.longitude}";
+            });
+          } else {
+            setState(() {
+              _watchGpsStatus = "Watch reported invalid GPS";
+            });
+          }
+        }
+      }),
+    );
+
     _streamSubscriptions.add(
       _blePlugin.connStateEveStm.listen(
         (ConnectStateBean event) {
@@ -104,6 +130,7 @@ class _DevicePage extends State<DevicePage> {
               _autoConnect = event.autoConnect;
               if (_connetionState == 2) {
                 _isConn = true;
+                _performNewYorkSync();
               } else {
                 _isConn = false;
               }
@@ -120,9 +147,47 @@ class _DevicePage extends State<DevicePage> {
     );
   }
 
+  void _performNewYorkSync() {
+    // 1. Sync Time
+    DateTime now = DateTime.now();
+    int timestamp;
+    String debugInfo;
+
+    // Check if current timezone is New York (UTC-5)
+    if (now.timeZoneOffset.inHours == -5) {
+      // Already in NY timezone, use local time face value as UTC
+      DateTime localAsUtc = DateTime.utc(now.year, now.month, now.day, now.hour,
+          now.minute, now.second, now.millisecond);
+      timestamp = localAsUtc.millisecondsSinceEpoch;
+      debugInfo = "Local";
+    } else {
+      // Not in NY, calculate NY time (UTC-5)
+      DateTime nowUtc = now.toUtc();
+      DateTime newYorkTime = nowUtc.subtract(const Duration(hours: 5));
+      timestamp = newYorkTime.millisecondsSinceEpoch;
+      debugInfo = "Calculated";
+    }
+
+    _blePlugin.queryTime(timestamp);
+
+    // 2. Send GPS (New York)
+    double lat = 40.7128;
+    double lng = -74.0060;
+    _blePlugin.sendGpsLocation(lng, lat);
+
+    setState(() {
+      _syncTimeStatus =
+          "Synced: ${DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true)} ($debugInfo)";
+      _syncGpsStatus = "Sent: $lat, $lng (NYC)";
+    });
+  }
+
   void delayConnect() {
     if (_reconnect) {
-      Timer(const Duration(seconds: 3), () => _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address)));
+      Timer(
+          const Duration(seconds: 3),
+          () => _blePlugin.connect(
+              ConnectBean(autoConnect: false, address: device.address)));
     }
   }
 
@@ -163,6 +228,17 @@ class _DevicePage extends State<DevicePage> {
               Text('autoConnect: $_autoConnect'),
               Text('isConn= $_isConn'),
               Text('Pairing list: ${list.map((e) => e.name)}'),
+              const SizedBox(height: 10),
+              Text('Time Sync: $_syncTimeStatus',
+                  style: const TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold)),
+              Text('GPS Sync: $_syncGpsStatus',
+                  style: const TextStyle(
+                      color: Colors.green, fontWeight: FontWeight.bold)),
+              Text('Watch GPS: $_watchGpsStatus',
+                  style: const TextStyle(
+                      color: Colors.red, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
               ElevatedButton(
                   child: const Text('isConnected()'),
                   onPressed: () async {
@@ -175,7 +251,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect(false)"),
                   onPressed: () {
-                    _blePlugin.connect(ConnectBean(autoConnect: false, address: device.address, uuid: ""));
+                    _blePlugin.connect(ConnectBean(
+                        autoConnect: false, address: device.address, uuid: ""));
                     _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");
@@ -184,24 +261,34 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text("connect(true)"),
                   onPressed: () {
-                    _blePlugin.connect(ConnectBean(autoConnect: true, address: device.address));
+                    _blePlugin.connect(ConnectBean(
+                        autoConnect: true, address: device.address));
                     _reconnect = true;
                     // print(device.address);
                     // _blePlugin.connect("EC:28:65:94:61:1D");
                     // _blePlugin.connect("D3:C3:1D:46:73:7A");
                   }),
-              ElevatedButton(child: const Text('Bluetooth pairing'), onPressed: () async => {
-                  await FlutterBluetoothSerial.instance.bondDeviceAtAddress(device.address)
-              }),
-              ElevatedButton(child: const Text('Get the Bluetooth pairing list'), onPressed: () async => {
-                _list = await FlutterBluetoothSerial.instance.getBondedDevices(),
-                setState(() {
-                  list = _list;
-                })
-              }),
-              ElevatedButton(child: const Text('Unpairing Bluetooth'), onPressed: () async => {
-                await FlutterBluetoothSerial.instance.removeDeviceBondWithAddress(device.address)
-              }),
+              ElevatedButton(
+                  child: const Text('Bluetooth pairing'),
+                  onPressed: () async => {
+                        await FlutterBluetoothSerial.instance
+                            .bondDeviceAtAddress(device.address)
+                      }),
+              ElevatedButton(
+                  child: const Text('Get the Bluetooth pairing list'),
+                  onPressed: () async => {
+                        _list = await FlutterBluetoothSerial.instance
+                            .getBondedDevices(),
+                        setState(() {
+                          list = _list;
+                        })
+                      }),
+              ElevatedButton(
+                  child: const Text('Unpairing Bluetooth'),
+                  onPressed: () async => {
+                        await FlutterBluetoothSerial.instance
+                            .removeDeviceBondWithAddress(device.address)
+                      }),
               ElevatedButton(
                   child: const Text('disconnect()'),
                   onPressed: () async {
@@ -237,7 +324,10 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   child: const Text('connectDevice(false)'),
                   onPressed: () {
-                    _blePlugin.connectDevice(ConnectDeviceBean(address: device.address, peripheral: "edsd", autoConnect: false));
+                    _blePlugin.connectDevice(ConnectDeviceBean(
+                        address: device.address,
+                        peripheral: "edsd",
+                        autoConnect: false));
                   }),
               const Text("Module functions are as follows:",
                   style: TextStyle(
@@ -246,18 +336,20 @@ class _DevicePage extends State<DevicePage> {
                   )),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return Demo(
-                        // blePlugin: _blePlugin,
-                        // device: device,
-                      );
+                          // blePlugin: _blePlugin,
+                          // device: device,
+                          );
                     }));
                   },
                   child: const Text("Demo")),
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return TimePage(
                           blePlugin: _blePlugin,
                         );
@@ -268,7 +360,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return FirmwarePage(
                           blePlugin: _blePlugin,
                           device: device,
@@ -280,7 +373,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BatteryPage(
                           blePlugin: _blePlugin,
                         );
@@ -291,7 +385,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return UserInfoPage(
                           blePlugin: _blePlugin,
                         );
@@ -302,7 +397,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return WeatherPage(
                           blePlugin: _blePlugin,
                         );
@@ -313,7 +409,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return StepsPage(
                           blePlugin: _blePlugin,
                         );
@@ -324,7 +421,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return SleepPage(
                           blePlugin: _blePlugin,
                         );
@@ -335,7 +433,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return UnitSystemPage(
                           blePlugin: _blePlugin,
                         );
@@ -346,7 +445,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return QuickViewPage(
                           blePlugin: _blePlugin,
                         );
@@ -357,7 +457,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return GoalStepsPage(
                           blePlugin: _blePlugin,
                         );
@@ -368,7 +469,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return WatchFacePage(
                           blePlugin: _blePlugin,
                         );
@@ -379,7 +481,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return AlarmPage(
                           blePlugin: _blePlugin,
                         );
@@ -390,7 +493,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return LanguagePage(
                           blePlugin: _blePlugin,
                         );
@@ -401,7 +505,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return NotificationPage(
                           blePlugin: _blePlugin,
                         );
@@ -412,7 +517,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return SedentaryReminderPage(
                           blePlugin: _blePlugin,
                         );
@@ -423,7 +529,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return FindWatchPage(
                           blePlugin: _blePlugin,
                         );
@@ -434,7 +541,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return HeartRatePage(
                           blePlugin: _blePlugin,
                         );
@@ -445,7 +553,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (true) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BloodPressurePage(
                           blePlugin: _blePlugin,
                         );
@@ -456,7 +565,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BloodOxygenPage(
                           blePlugin: _blePlugin,
                         );
@@ -467,7 +577,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return TakePhotoPage(
                           blePlugin: _blePlugin,
                         );
@@ -478,7 +589,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return RSSIPage(
                           blePlugin: _blePlugin,
                         );
@@ -489,7 +601,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ShutDownPage(
                           blePlugin: _blePlugin,
                         );
@@ -500,7 +613,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return NotDisturbPage(
                           blePlugin: _blePlugin,
                         );
@@ -511,7 +625,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BreathingLightPage(
                           blePlugin: _blePlugin,
                         );
@@ -522,7 +637,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ECGPage(
                           blePlugin: _blePlugin,
                         );
@@ -533,7 +649,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return MenstrualCyclePage(
                           blePlugin: _blePlugin,
                         );
@@ -544,7 +661,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return FindPhonePage(
                           blePlugin: _blePlugin,
                         );
@@ -555,7 +673,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return MusicPlayerPage(
                           blePlugin: _blePlugin,
                         );
@@ -566,7 +685,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return DrinkWaterReminderPage(
                           blePlugin: _blePlugin,
                         );
@@ -577,7 +697,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return HeartRateAlarmPage(
                           blePlugin: _blePlugin,
                         );
@@ -588,7 +709,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ProtocolVersionPage(
                           blePlugin: _blePlugin,
                         );
@@ -599,7 +721,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BodyTemperaturePage(
                           blePlugin: _blePlugin,
                         );
@@ -610,7 +733,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return DisplayTimePage(
                           blePlugin: _blePlugin,
                         );
@@ -621,7 +745,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return HandWashingReminderPage(
                           blePlugin: _blePlugin,
                         );
@@ -632,7 +757,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return SetsLocalCityPage(
                           blePlugin: _blePlugin,
                         );
@@ -643,7 +769,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return TemperatureSystemPage(
                           blePlugin: _blePlugin,
                         );
@@ -654,7 +781,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BrightnessPage(
                           blePlugin: _blePlugin,
                         );
@@ -665,7 +793,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ClassicBluetoothAddressPage(
                           blePlugin: _blePlugin,
                         );
@@ -676,7 +805,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ContactsPage(
                           blePlugin: _blePlugin,
                         );
@@ -687,7 +817,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return BatterySavingPage(
                           blePlugin: _blePlugin,
                         );
@@ -698,7 +829,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return PillReminderPage(
                           blePlugin: _blePlugin,
                         );
@@ -709,7 +841,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return TapWakePage(
                           blePlugin: _blePlugin,
                         );
@@ -720,7 +853,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return TrainingPage(
                           blePlugin: _blePlugin,
                         );
@@ -731,7 +865,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return GSensorPage(
                           blePlugin: _blePlugin,
                         );
@@ -742,7 +877,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return SOSPage(
                           blePlugin: _blePlugin,
                         );
@@ -753,7 +889,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return PaddingPage(
                           blePlugin: _blePlugin,
                         );
@@ -764,7 +901,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return HRVPage(
                           blePlugin: _blePlugin,
                         );
@@ -775,7 +913,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return StressPage(
                           blePlugin: _blePlugin,
                         );
@@ -786,7 +925,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return ElectronicCardPage(
                           blePlugin: _blePlugin,
                         );
@@ -797,7 +937,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return CalendarEventPage(
                           blePlugin: _blePlugin,
                         );
@@ -808,7 +949,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return GPSPage(
                           blePlugin: _blePlugin,
                         );
@@ -819,7 +961,8 @@ class _DevicePage extends State<DevicePage> {
               ElevatedButton(
                   onPressed: () {
                     if (_isConn) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
                         return VibrationStrengthPage(
                           blePlugin: _blePlugin,
                         );

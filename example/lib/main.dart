@@ -38,6 +38,10 @@ class _MyAppState extends State<MyApp> {
   bool enableBluetooth = false;
   final List<BleScanBean> _deviceList = [];
 
+  // --- 在此处设置您要过滤的设备名称关键字 ---
+  // 如果设置为空字符串 ""，则会显示所有扫描到的设备。
+  static const String _deviceNameFilter = ""; // 例如: "MoYoung", "Watch", "Band"
+
   @override
   void initState() {
     super.initState();
@@ -52,11 +56,50 @@ class _MyAppState extends State<MyApp> {
             if (event.isCompleted) {
               //Scan completed, do something
             } else {
-              _deviceList.add(event);
+              // --- 修改: 添加过滤逻辑 ---
+              // 如果过滤器为空，或设备名称包含过滤关键字，则添加设备
+              debugPrint(
+                  'Scanned Device: name=${event.name}, address=${event.address}');
+              if (_deviceNameFilter.isEmpty ||
+                  event.name
+                      .toLowerCase()
+                      .contains(_deviceNameFilter.toLowerCase())) {
+                // 避免重复添加
+                if (!_deviceList.any((d) => d.address == event.address)) {
+                  _deviceList.add(event);
+                }
+              }
             }
           });
         },
       ),
+    );
+
+    // 订阅 GPS 事件流,确保原生层监听器被激活
+    _streamSubscriptions.add(
+      _blePlugin.gpsChangeEveStm.listen((GpsChangeEventBean event) {
+        debugPrint('GPS事件: type=${event.type}');
+
+        // EPO 相关事件处理
+        if (event.type == 6 || event.type == 7) {
+          debugPrint('收到手表GPS请求! type=${event.type}');
+
+          // 显示手表上报的坐标信息 (如果有)
+          if (event.location.isValid) {
+            String gpsInfo =
+                'Watch GPS: ${event.location.latitude}, ${event.location.longitude}';
+            debugPrint(gpsInfo);
+            // ToastUtil.show(gpsInfo, Toast.LENGTH_LONG);
+          } else {
+            debugPrint('Watch GPS Request: No valid location in event');
+          }
+
+          // type=6 是手表请求GPS位置 (UPDATEGPSLOCATIONCHANGE)
+          // 手表在更新EPO前通常需要获取当前GPS位置以确定卫星数据
+          // 必须回复位置信息，否则手表可能卡在等待位置状态，不会继续请求EPO数据
+          // 这里获取手表坐标，实际项目中应使用 geolocator 获取真实坐标
+        }
+      }),
     );
   }
 
@@ -82,10 +125,11 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return Demo(
-                          // blePlugin: _blePlugin,
-                          // device: device,
-                          );
+                      return Demo();
+                      // return Demo(
+                      //   blePlugin: _blePlugin,
+                      //   device: device,
+                      // );
                     }));
                   },
                   child: const Text("Demo")),

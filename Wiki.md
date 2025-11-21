@@ -3643,7 +3643,7 @@ TrainingInfo:
 | endTime        | long                | Training end time          |
 | validTime      | int                 | Training duration          |
 | steps          | int                 | Steps                      |
-| distance       | int                 | Distance                   |
+| distance       | int                 | Distance (in centimeters)  |
 | calories       | int                 | Calories                   |
 | hrList         | List<HeartRateData> | Heart rate data with timestamp (every 10 seconds) |
 | cadences       | List<int>           | cadences list (steps per minute) |
@@ -3652,10 +3652,22 @@ TrainingInfo:
 | stridesPer10s  | List<int>           | detailed strides list (distance per 10 seconds in centimeters) |
 | hrZone         | Map<String, Map<String, dynamic>> | Heart rate zone statistics with percentage and duration |
 | hrInterval     | int                 | Heart rate measurement interval in seconds (default: 10) |
-| cadencesInterval | int               | Cadences measurement interval in seconds (default: 10) |
-| stridesInterval | int                | Strides measurement interval in seconds (default: 10) |
+| cadencesInterval | int               | Cadences measurement interval in seconds (always: 10) |
+| stridesInterval | int                | Strides measurement interval in seconds (always: 10) |
 | cadencesList   | List<CadenceData>   | Cadence data with timestamp (every 10 seconds) |
 | stridesList    | List<StrideData>    | Stride data with timestamp (every 10 seconds) |
+| avgElevation   | int                 | Average elevation during training (meters) |
+| maxElevation   | int                 | Maximum elevation during training (meters) |
+| minElevation   | int                 | Minimum elevation during training (meters) |
+| avgPace        | int                 | Average pace during training (seconds per meter) |
+| maxPace        | int                 | Slowest pace during training (seconds per meter) |
+| minPace        | int                 | Fastest pace during training (seconds per meter) |
+| paceList       | List<PaceData>      | Pace data with timestamp (every 10 seconds) |
+
+**Pace Data Structure:**
+- `PaceData`: Contains timestamp and pace value for each minute of training
+  - `timestamp`: Unix timestamp of every 10-second timestamp from the stridesList (seconds)
+  - `pace`: Pace value for that second (seconds per kilometre)
 
 **hrZone Structure:**
 - L0 (0-120 bpm): Warm-up and relaxation zone
@@ -4258,6 +4270,7 @@ Location
 | --------- | ---------- | ----------------- |
 | latitude  | double     | latitude          |
 | longitude | double     | longitude         |
+| isValid   | bool       | Whether the coordinate is valid (non-zero and within valid range) |
 
 ## 57.2 Send the current time zone and location.
 

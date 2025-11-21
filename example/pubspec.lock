@@ -206,7 +206,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.2.30-norealtek-itouch-2025.8.26"
+    version: "1.2.40-norealtek-itouch-2025.11.20"
   path:
     dependency: transitive
     description:

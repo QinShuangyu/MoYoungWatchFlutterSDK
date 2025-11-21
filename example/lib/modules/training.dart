@@ -77,6 +77,17 @@ class _TrainingPage extends State<TrainingPage> {
   //   }
   // }
 
+  /// Format pace from seconds per kilometer to mm:ss/km format
+  /// 将配速从秒/公里格式化为分:秒/公里格式
+  String _formatPace(int paceInSecondsPerKm) {
+    if (paceInSecondsPerKm <= 0) return "无效配速";
+
+    // 值已经是 s/km，直接计算分钟和秒数
+    int minutes = paceInSecondsPerKm ~/ 60;
+    int seconds = paceInSecondsPerKm % 60;
+    return "${minutes.toString().padLeft(1, '0')}:${seconds.toString().padLeft(2, '0')}/km";
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -150,6 +161,53 @@ class _TrainingPage extends State<TrainingPage> {
                       "  Cadences List (带时间戳步频): ${_trainingList[i].cadencesList?.map((c) => '{timestamp: ${c.timestamp}, cadence: ${c.cadence}}').toList()}"),
                   Text(
                       "  Strides List (带时间戳步幅): ${_trainingList[i].stridesList?.map((s) => '{timestamp: ${s.timestamp}, stride: ${s.stride}}').toList()}"),
+                  // Display elevation data
+                  // 显示海拔数据
+                  if (_trainingList[i].avgElevation != null) ...[
+                    const Text("  Elevation Data (海拔数据):",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.green)),
+                    Text(
+                        "    Average Elevation (平均海拔): ${_trainingList[i].avgElevation}米"),
+                    Text(
+                        "    Max Elevation (最高海拔): ${_trainingList[i].maxElevation}米"),
+                    Text(
+                        "    Min Elevation (最低海拔): ${_trainingList[i].minElevation}米"),
+                    if (_trainingList[i].maxElevation != null &&
+                        _trainingList[i].minElevation != null)
+                      Text(
+                          "    Elevation Range (海拔变化): ${(_trainingList[i].maxElevation! - _trainingList[i].minElevation!).abs()}米"),
+                  ],
+                  // Display pace data
+                  // 显示配速数据
+                  if (_trainingList[i].avgPace != null) ...[
+                    const Text("  Pace Data (配速数据):",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.blue)),
+                    Text(
+                        "    Average Pace (平均配速): ${_trainingList[i].avgPace!}s/km (${_formatPace(_trainingList[i].avgPace!)})"),
+                    Text(
+                        "    Fastest Pace (最快配速): ${_trainingList[i].minPace!}s/km (${_formatPace(_trainingList[i].minPace!)})"),
+                    Text(
+                        "    Slowest Pace (最慢配速): ${_trainingList[i].maxPace!}s/km (${_formatPace(_trainingList[i].maxPace!)})"),
+                  ],
+                  // Display pace list data
+                  // 显示配速列表数据
+                  if (_trainingList[i].paceList != null &&
+                      _trainingList[i].paceList!.isNotEmpty) ...[
+                    const Text("  Pace List (每10秒配速):",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.orange)),
+                    Text(
+                        "    Total Points: ${_trainingList[i].paceList!.length}"),
+                    Text(
+                        "    Sample Data: ${_trainingList[i].paceList!.take(5).map((p) {
+                      // 计算当前数据点是训练开始后的第几秒
+                      final secondsOffset =
+                          p.timestamp - (_trainingList[i].startTime ?? 0);
+                      return '(${secondsOffset}s: ${p.pace})';
+                    }).join(', ')}${_trainingList[i].paceList!.length > 5 ? '...' : ''}"),
+                  ],
                   // Display heart rate zone statistics
                   // 显示心率区间统计
                   if (_trainingList[i].hrZone != null) ...[

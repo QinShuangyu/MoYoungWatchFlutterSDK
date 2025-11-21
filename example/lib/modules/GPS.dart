@@ -26,6 +26,8 @@ class _GPSPage extends State<GPSPage> {
   List<int>? list;
   GpsPathInfo? gpsPathInfo;
   Location? location;
+  int epoProgress = 0;
+  String epoStatus = "";
   // Map<String, dynamic> _logStats = {};
 
   @override
@@ -55,6 +57,18 @@ class _GPSPage extends State<GPSPage> {
                 break;
               case GpsChangeType.locationChanged:
                 location = event.location;
+                break;
+              case GpsChangeType.updateEpoChange:
+                epoProgress = event.progress;
+                if (epoProgress == 0) {
+                  epoStatus = "Starting...";
+                } else if (epoProgress == 100) {
+                  epoStatus = "Completed!";
+                } else if (epoProgress == -1) {
+                  epoStatus = "Error!";
+                } else {
+                  epoStatus = "Updating: $epoProgress%";
+                }
                 break;
               case GpsChangeType.updateGpsLocationChange:
                 // Handle updateGpsLocationChange if needed
@@ -166,6 +180,14 @@ class _GPSPage extends State<GPSPage> {
                           'gpsPathInfo: ${gpsPathInfo != null ? gpsPathInfoToJson(gpsPathInfo!) : "null"}'),
                       Text(
                           'location: ${location != null ? locationToJson(location!) : "null"}'),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'EPO Update Status:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(epoStatus),
+                      if (epoProgress >= 0 && epoProgress <= 100)
+                        LinearProgressIndicator(value: epoProgress / 100.0),
                     ],
                   ),
                 ),
