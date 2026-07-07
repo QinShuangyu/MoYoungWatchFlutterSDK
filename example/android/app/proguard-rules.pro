@@ -19,6 +19,14 @@
 
 -keep class com.crrepa.ble.** { *; }
 -keep class com.moyoung.moyoung_ble_plugin.** { *; }
+
+# 解决 R8 报错：Missing classes detected while running R8
+-dontwarn com.jieli.bmp_convert.**
+-dontwarn com.realsil.sdk.core.bluetooth.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.conscrypt.**
+-dontwarn org.openjsse.**
+
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
     public static int v(...);

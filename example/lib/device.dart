@@ -101,7 +101,7 @@ class _DevicePage extends State<DevicePage> {
   void subscriptStream() {
     _streamSubscriptions.add(
       _blePlugin.gpsChangeEveStm.listen((GpsChangeEventBean event) {
-        debugPrint('DevicePage received GPS event: type=${event.type}');
+        // debugPrint('DevicePage received GPS event: type=${event.type}');
         if (event.type == 6) {
           setState(() {
             _watchGpsStatus = "Watch requested GPS update";
@@ -130,7 +130,7 @@ class _DevicePage extends State<DevicePage> {
               _autoConnect = event.autoConnect;
               if (_connetionState == 2) {
                 _isConn = true;
-                _performNewYorkSync();
+                // _performNewYorkSync(); // Sync time and GPS for New York(UTC-5)
               } else {
                 _isConn = false;
               }
@@ -228,16 +228,16 @@ class _DevicePage extends State<DevicePage> {
               Text('autoConnect: $_autoConnect'),
               Text('isConn= $_isConn'),
               Text('Pairing list: ${list.map((e) => e.name)}'),
-              const SizedBox(height: 10),
-              Text('Time Sync: $_syncTimeStatus',
-                  style: const TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold)),
-              Text('GPS Sync: $_syncGpsStatus',
-                  style: const TextStyle(
-                      color: Colors.green, fontWeight: FontWeight.bold)),
-              Text('Watch GPS: $_watchGpsStatus',
-                  style: const TextStyle(
-                      color: Colors.red, fontWeight: FontWeight.bold)),
+              // const SizedBox(height: 10),
+              // Text('Time Sync: $_syncTimeStatus',
+              //     style: const TextStyle(
+              //         color: Colors.blue, fontWeight: FontWeight.bold)),
+              // Text('GPS Sync: $_syncGpsStatus',
+              //     style: const TextStyle(
+              //         color: Colors.green, fontWeight: FontWeight.bold)),
+              // Text('Watch GPS: $_watchGpsStatus',
+              //     style: const TextStyle(
+              //         color: Colors.red, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               ElevatedButton(
                   child: const Text('isConnected()'),

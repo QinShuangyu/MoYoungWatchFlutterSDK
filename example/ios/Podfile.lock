@@ -10,6 +10,8 @@ PODS:
   - moyoung_ble_plugin (1.0.79):
     - Flutter
     - HandyJSON
+    - MoyoungSharedFrameworks
+  - MoyoungSharedFrameworks (1.0.0)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -26,9 +28,14 @@ DEPENDENCIES:
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - HandyJSON (from `https://github.com/Miles-Matheson/HandyJSON.git`)
   - moyoung_ble_plugin (from `.symlinks/plugins/moyoung_ble_plugin/ios`)
+  - MoyoungSharedFrameworks
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - MoyoungSharedFrameworks
 
 EXTERNAL SOURCES:
   Flutter:
@@ -56,16 +63,17 @@ CHECKOUT OPTIONS:
     :git: https://github.com/Miles-Matheson/HandyJSON.git
 
 SPEC CHECKSUMS:
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_contacts: 5383945387e7ca37cf963d4be57c21f2fc15ca9f
-  flutter_foreground_task: a159d2c2173b33699ddb3e6c2a067045d7cebb89
-  fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
+  flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
+  fluttertoast: 21eecd6935e7064cc1fcb733a4c5a428f3f24f0f
   HandyJSON: a9c67202df97805a0ba4a00e30b50e9a30ac28f3
-  moyoung_ble_plugin: 45d67540a69402e1dcdfed5ba0262c3ce8b4c5f9
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  moyoung_ble_plugin: 5efdcd9b1576d968733d795abc8fda95e81c5130
+  MoyoungSharedFrameworks: ec55bc069197b5527077b79634bbb53c5fd533ac
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
 
-PODFILE CHECKSUM: 07b328e1b405bd997ca850de58e10ee65915ae30
+PODFILE CHECKSUM: 19e31a57cfe050008618807d8a95237db98e0bd4
 
 COCOAPODS: 1.16.2

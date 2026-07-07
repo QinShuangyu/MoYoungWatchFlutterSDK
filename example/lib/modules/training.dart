@@ -48,6 +48,13 @@ class _TrainingPage extends State<TrainingPage> {
                 _trainingList = event.trainingList!;
                 printLongString(
                     'trainingChange result', jsonEncode(event.toJson()));
+                
+                // Debug log for elevation and pace issue
+                for (var info in _trainingList) {
+                  print("Flutter received TrainingInfo: type=${info.type}, "
+                      "avgElevation=${info.avgElevation}, "
+                      "avgPace=${info.avgPace}");
+                }
                 break;
               default:
                 break;

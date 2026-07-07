@@ -144,32 +144,39 @@ class _WatchFacePage extends State<WatchFacePage> {
               Text("timeTopContent: $_timeTopContent"),
               Text("width: $_width"),
               Text("supportWatchFaceList: $_supportWatchFaceList"),
-              Text("watchFacelist: ${_watchFacelist.map((item) => watchFaceBeanToJson(item))}"),
+              Text(
+                  "watchFacelist: ${_watchFacelist.map((item) => watchFaceBeanToJson(item))}"),
               Text("code: $_code"),
               Text("id: $_id"),
               Text("jieliWatchFace: $_jieliWatchFace"),
               Text("preview: $_preview"),
               Text("file: $_file"),
               Text("size: $_watchFaceSize"),
-              Text("watchFaceDetailsInfo: ${watchFaceDetailsBeanToJson(_watchFaceDetailsInfo!)}"),
+              Text(
+                  "watchFaceDetailsInfo: ${watchFaceDetailsBeanToJson(_watchFaceDetailsInfo!)}"),
               ElevatedButton(
                 child: const Text('sendDisplayWatchFace(1)'),
-                onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.firstWatchFace),
+                onPressed: () => widget.blePlugin
+                    .sendDisplayWatchFace(WatchFaceType.firstWatchFace),
               ),
               ElevatedButton(
                   child: const Text('sendDisplayWatchFace(2)'),
-                  onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.secondWatchFace)),
+                  onPressed: () => widget.blePlugin
+                      .sendDisplayWatchFace(WatchFaceType.secondWatchFace)),
               ElevatedButton(
                 child: const Text('sendDisplayWatchFace(3)'),
-                onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.thirdWatchFace),
+                onPressed: () => widget.blePlugin
+                    .sendDisplayWatchFace(WatchFaceType.thirdWatchFace),
               ),
               ElevatedButton(
                   child: const Text('sendDisplayWatchFace(4)'),
-                  onPressed: () => widget.blePlugin.sendDisplayWatchFace(WatchFaceType.newCustomizeWatchFace)),
+                  onPressed: () => widget.blePlugin.sendDisplayWatchFace(
+                      WatchFaceType.newCustomizeWatchFace)),
               ElevatedButton(
                   child: const Text('queryDisplayWatchFace()'),
                   onPressed: () async {
-                    int displayWatchFace = await widget.blePlugin.queryDisplayWatchFace;
+                    int displayWatchFace =
+                        await widget.blePlugin.queryDisplayWatchFace;
                     setState(() {
                       _displayWatchFace = displayWatchFace;
                     });
@@ -177,15 +184,18 @@ class _WatchFacePage extends State<WatchFacePage> {
               ElevatedButton(
                   child: const Text('queryWatchFaceLayout()'),
                   onPressed: () async {
-                    _watchFaceLayoutInfo = await widget.blePlugin.queryWatchFaceLayout;
+                    _watchFaceLayoutInfo =
+                        await widget.blePlugin.queryWatchFaceLayout;
                     setState(() {
-                      _backgroundPictureMd5 = _watchFaceLayoutInfo!.backgroundPictureMd5;
+                      _backgroundPictureMd5 =
+                          _watchFaceLayoutInfo!.backgroundPictureMd5;
                       _compressionType = _watchFaceLayoutInfo!.compressionType;
                       _height = _watchFaceLayoutInfo!.height;
                       _textColor = _watchFaceLayoutInfo!.textColor;
                       _thumHeight = _watchFaceLayoutInfo!.thumHeight;
                       _thumWidth = _watchFaceLayoutInfo!.thumWidth;
-                      _timeBottomContent = _watchFaceLayoutInfo!.timeBottomContent;
+                      _timeBottomContent =
+                          _watchFaceLayoutInfo!.timeBottomContent;
                       _timePosition = _watchFaceLayoutInfo!.timePosition;
                       _timeTopContent = _watchFaceLayoutInfo!.timeTopContent;
                       _width = _watchFaceLayoutInfo!.width;
@@ -196,29 +206,46 @@ class _WatchFacePage extends State<WatchFacePage> {
                   onPressed: () => {
                         if (_watchFaceLayoutInfo != null)
                           {
-                            _watchFaceLayoutInfo!.textColor = const Color(0xFFFF0000),
-                            widget.blePlugin.sendWatchFaceLayout(_watchFaceLayoutInfo!),
+                            _watchFaceLayoutInfo!.textColor =
+                                const Color(0xFFFF0000),
+                            widget.blePlugin
+                                .sendWatchFaceLayout(_watchFaceLayoutInfo!),
                           }
                       }),
               ElevatedButton(
+                  child: const Text('JL707 test: layout display upper'),
+                  onPressed: () => sendJL707LayoutForTest(
+                      WatchFaceLayoutType.watchFaceTimeTop)),
+              ElevatedButton(
+                  child: const Text('JL707 test: layout display under'),
+                  onPressed: () => sendJL707LayoutForTest(
+                      WatchFaceLayoutType.watchFaceTimeBottom)),
+              ElevatedButton(
                   child: const Text('sendWatchFaceBackground()'),
                   onPressed: () => {
-                        if (_watchFaceLayoutInfo != null) {sendWatchFaceBackground()}
+                        if (_watchFaceLayoutInfo != null)
+                          {sendWatchFaceBackground()}
                       }),
               ElevatedButton(
                 child: const Text("abortWatchFaceBackground()"),
                 onPressed: () => widget.blePlugin.abortWatchFaceBackground,
               ),
-              ElevatedButton(child: const Text("queryAvailableStorage()"), onPressed: queryAvailableStorage),
+              ElevatedButton(
+                  child: const Text("queryAvailableStorage()"),
+                  onPressed: queryAvailableStorage),
               Column(
                 children: [
                   const Text("Steps to get the id of the watch face"),
-                  ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                  ElevatedButton(
+                      child: const Text('1. querySupportWatchFace()'),
+                      onPressed: querySupportWatchFace),
                   ElevatedButton(
                       child: const Text('2. queryWatchFaceOfID()'),
                       onPressed: () async {
                         if (_displayWatchFace != -1) {
-                          WatchFaceIdBean watchFaceIdBean = await widget.blePlugin.queryWatchFaceOfID(_displayWatchFace);
+                          WatchFaceIdBean watchFaceIdBean = await widget
+                              .blePlugin
+                              .queryWatchFaceOfID(_displayWatchFace);
                           setState(() {
                             _code = watchFaceIdBean.code;
                             _watchFace = watchFaceIdBean.watchFace;
@@ -233,62 +260,97 @@ class _WatchFacePage extends State<WatchFacePage> {
               Column(
                 children: [
                   const Text("Get the watch face market the old way"),
-                  ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                  ElevatedButton(
+                      child: const Text('1. querySupportWatchFace()'),
+                      onPressed: querySupportWatchFace),
                   ElevatedButton(
                     child: const Text("2. queryFirmwareVersion()"),
                     onPressed: queryFirmwareVersion,
                   ),
-                  ElevatedButton(child: const Text('3. queryWatchFaceStore()'), onPressed: queryOrdinaryWatchFaceStore),
+                  ElevatedButton(
+                      child: const Text('3. queryWatchFaceStore()'),
+                      onPressed: queryOrdinaryWatchFaceStore),
                 ],
               ),
               Column(
                 children: [
                   const Text("Query the ordinary watchFace store"),
-                  ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                  ElevatedButton(
+                      child: const Text('1. querySupportWatchFace()'),
+                      onPressed: querySupportWatchFace),
                   ElevatedButton(
                     child: const Text("2. queryFirmwareVersion()"),
                     onPressed: queryFirmwareVersion,
                   ),
-                  ElevatedButton(child: const Text('3. queryAvailableStorage()'), onPressed: queryAvailableStorage),
+                  ElevatedButton(
+                      child: const Text('3. queryAvailableStorage()'),
+                      onPressed: queryAvailableStorage),
                   ElevatedButton(
                       child: const Text('4. queryWatchFaceStoreTagList()'),
-                      onPressed: () => queryWatchFaceStoreTagList(SupportWatchFaceType.ordinary)),
+                      onPressed: () => queryWatchFaceStoreTagList(
+                          SupportWatchFaceType.ordinary)),
                   ElevatedButton(
-                      child: const Text('5. queryWatchFaceStoreList()'), onPressed: () => queryWatchFaceStoreList(SupportWatchFaceType.ordinary)),
+                      child: const Text('5. queryWatchFaceStoreList()'),
+                      onPressed: () => queryWatchFaceStoreList(
+                          SupportWatchFaceType.ordinary)),
                   ElevatedButton(
-                      child: const Text('6. queryWatchFaceDetail()'), onPressed: () => queryWatchFaceDetail(SupportWatchFaceType.ordinary)),
+                      child: const Text('6. queryWatchFaceDetail()'),
+                      onPressed: () =>
+                          queryWatchFaceDetail(SupportWatchFaceType.ordinary)),
                 ],
               ),
               Column(
                 children: [
                   const Text("Query the sifli watchFace store"),
-                  ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                  ElevatedButton(
+                      child: const Text('1. querySupportWatchFace()'),
+                      onPressed: querySupportWatchFace),
                   ElevatedButton(
                     child: const Text("2. queryFirmwareVersion()"),
                     onPressed: queryFirmwareVersion,
                   ),
-                  ElevatedButton(child: const Text('3. queryAvailableStorage()'), onPressed: queryAvailableStorage),
                   ElevatedButton(
-                      child: const Text('4. queryWatchFaceStoreTagList()'), onPressed: () => queryWatchFaceStoreTagList(SupportWatchFaceType.sifli)),
+                      child: const Text('3. queryAvailableStorage()'),
+                      onPressed: queryAvailableStorage),
                   ElevatedButton(
-                      child: const Text('5. queryWatchFaceStoreList()'), onPressed: () => queryWatchFaceStoreList(SupportWatchFaceType.sifli)),
-                  ElevatedButton(child: const Text('6. queryWatchFaceDetail()'), onPressed: () => queryWatchFaceDetail(SupportWatchFaceType.sifli)),
+                      child: const Text('4. queryWatchFaceStoreTagList()'),
+                      onPressed: () => queryWatchFaceStoreTagList(
+                          SupportWatchFaceType.sifli)),
+                  ElevatedButton(
+                      child: const Text('5. queryWatchFaceStoreList()'),
+                      onPressed: () =>
+                          queryWatchFaceStoreList(SupportWatchFaceType.sifli)),
+                  ElevatedButton(
+                      child: const Text('6. queryWatchFaceDetail()'),
+                      onPressed: () =>
+                          queryWatchFaceDetail(SupportWatchFaceType.sifli)),
                 ],
               ),
               Column(
                 children: [
                   const Text("Query the jieli watchFace store"),
-                  ElevatedButton(child: const Text('1. querySupportWatchFace()'), onPressed: querySupportWatchFace),
+                  ElevatedButton(
+                      child: const Text('1. querySupportWatchFace()'),
+                      onPressed: querySupportWatchFace),
                   ElevatedButton(
                     child: const Text("2. queryFirmwareVersion()"),
                     onPressed: queryFirmwareVersion,
                   ),
-                  ElevatedButton(child: const Text('3. queryJieliWatchFaceInfo()'), onPressed: queryJieliWatchFaceInfo),
                   ElevatedButton(
-                      child: const Text('4. queryWatchFaceStoreTagList()'), onPressed: () => queryWatchFaceStoreTagList(SupportWatchFaceType.jieli)),
+                      child: const Text('3. queryJieliWatchFaceInfo()'),
+                      onPressed: queryJieliWatchFaceInfo),
                   ElevatedButton(
-                      child: const Text('5. queryWatchFaceStoreList()'), onPressed: () => queryWatchFaceStoreList(SupportWatchFaceType.jieli)),
-                  ElevatedButton(child: const Text('6. queryWatchFaceDetail()'), onPressed: () => queryWatchFaceDetail(SupportWatchFaceType.jieli)),
+                      child: const Text('4. queryWatchFaceStoreTagList()'),
+                      onPressed: () => queryWatchFaceStoreTagList(
+                          SupportWatchFaceType.jieli)),
+                  ElevatedButton(
+                      child: const Text('5. queryWatchFaceStoreList()'),
+                      onPressed: () =>
+                          queryWatchFaceStoreList(SupportWatchFaceType.jieli)),
+                  ElevatedButton(
+                      child: const Text('6. queryWatchFaceDetail()'),
+                      onPressed: () =>
+                          queryWatchFaceDetail(SupportWatchFaceType.jieli)),
                 ],
               ),
               Column(
@@ -296,11 +358,13 @@ class _WatchFacePage extends State<WatchFacePage> {
                   const Text("Steps to upload the watch face"),
                   const Text("1. Query watchFace store"),
                   ElevatedButton(
-                    child: const Text('2. sendWatchFace(_watchFaceDetailsInfo)'),
+                    child:
+                        const Text('2. sendWatchFace(_watchFaceDetailsInfo)'),
                     onPressed: () => sendWatchFace(_watchFaceDetailsInfo!),
                   ),
                   ElevatedButton(
-                    child: const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
+                    child:
+                        const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
                     onPressed: () => sendWatchFaceId(_watchFaceDetailsInfo!),
                   ),
                   ElevatedButton(
@@ -323,12 +387,15 @@ class _WatchFacePage extends State<WatchFacePage> {
                         if (_watchFaceDetailsInfo!.file.isNotEmpty) {
                           downloadFile(_watchFaceDetailsInfo!.file);
                         } else {
-                          downloadFile("http://qcdn.moyoung.com/files/adc090779afd57d382e2847e41ab0e83.bin");
+                          downloadFile(
+                              "http://qcdn.moyoung.com/files/adc090779afd57d382e2847e41ab0e83.bin");
                         }
                       }),
                   ElevatedButton(
-                    child: const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
-                    onPressed: () => widget.blePlugin.sendWatchFaceId(6, isMultiple),
+                    child:
+                        const Text('3. sendWatchFaceId(_watchFaceDetailsInfo)'),
+                    onPressed: () =>
+                        widget.blePlugin.sendWatchFaceId(6, isMultiple),
                   ),
                 ],
               ),
@@ -356,19 +423,60 @@ class _WatchFacePage extends State<WatchFacePage> {
     widget.blePlugin.sendWatchFaceBackground(bgBean);
   }
 
+  Future<void> sendJL707LayoutForTest(int timePosition) async {
+    WatchFaceLayoutBean layoutInfo =
+        _watchFaceLayoutInfo ?? await widget.blePlugin.queryWatchFaceLayout;
+    WatchFaceLayoutBean testLayoutInfo = WatchFaceLayoutBean(
+      backgroundPictureMd5: layoutInfo.backgroundPictureMd5,
+      compressionType: layoutInfo.compressionType,
+      height: layoutInfo.height,
+      textColor: const Color(0xFFFF0000),
+      thumHeight: layoutInfo.thumHeight,
+      thumWidth: layoutInfo.thumWidth,
+      timeBottomContent: WatchFaceLayoutType.watchFaceContentStep,
+      timePosition: timePosition,
+      timeTopContent: WatchFaceLayoutType.watchFaceContentDate,
+      width: layoutInfo.width,
+    );
+
+    await widget.blePlugin.sendWatchFaceLayout(testLayoutInfo);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _watchFaceLayoutInfo = testLayoutInfo;
+      _backgroundPictureMd5 = testLayoutInfo.backgroundPictureMd5;
+      _compressionType = testLayoutInfo.compressionType;
+      _height = testLayoutInfo.height;
+      _textColor = testLayoutInfo.textColor;
+      _thumHeight = testLayoutInfo.thumHeight;
+      _thumWidth = testLayoutInfo.thumWidth;
+      _timeBottomContent = testLayoutInfo.timeBottomContent;
+      _timePosition = testLayoutInfo.timePosition;
+      _timeTopContent = testLayoutInfo.timeTopContent;
+      _width = testLayoutInfo.width;
+    });
+  }
+
   Future<void> querySupportWatchFace() async {
     _supportWatchFaceBean = await widget.blePlugin.querySupportWatchFace;
     _watchFaceType = _supportWatchFaceBean!.type;
     setState(() {
       if (_watchFaceType == SupportWatchFaceType.ordinary) {
-        _displayWatchFace = _supportWatchFaceBean!.supportWatchFaceInfo!.displayWatchFace!;
-        _supportWatchFaceList = _supportWatchFaceBean!.supportWatchFaceInfo!.supportWatchFaceList!;
+        _displayWatchFace =
+            _supportWatchFaceBean!.supportWatchFaceInfo!.displayWatchFace!;
+        _supportWatchFaceList =
+            _supportWatchFaceBean!.supportWatchFaceInfo!.supportWatchFaceList!;
       } else if (_watchFaceType == SupportWatchFaceType.sifli) {
-        _supportWatchFaceList = _supportWatchFaceBean!.sifliSupportWatchFaceInfo!.typeList!;
+        _supportWatchFaceList =
+            _supportWatchFaceBean!.sifliSupportWatchFaceInfo!.typeList!;
       } else if (_watchFaceType == SupportWatchFaceType.jieli) {
-        _displayWatchFace = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.displayWatchFace!;
-        _supportWatchFaceList = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!;
-        _watchFaceSize = _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!;
+        _displayWatchFace =
+            _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.displayWatchFace!;
+        _supportWatchFaceList =
+            _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.supportTypeList!;
+        _watchFaceSize =
+            _supportWatchFaceBean!.jieliSupportWatchFaceInfo!.watchFaceMaxSize!;
       }
     });
   }
@@ -384,7 +492,8 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   Future<void> queryJieliWatchFaceInfo() async {
-    JieliWatchFaceBean jieliWatchFace = await widget.blePlugin.queryJieliWatchFaceInfo;
+    JieliWatchFaceBean jieliWatchFace =
+        await widget.blePlugin.queryJieliWatchFaceInfo;
     _apiVersion = jieliWatchFace.apiVersion!;
     _feature = jieliWatchFace.feature!;
     setState(() {
@@ -394,7 +503,8 @@ class _WatchFacePage extends State<WatchFacePage> {
 
   Future<void> queryOrdinaryWatchFaceStore() async {
     if (_firmwareVersion != "" && _supportWatchFaceList.isNotEmpty) {
-      List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStore(
+      List<WatchFaceBean> watchFacelist =
+          await widget.blePlugin.queryWatchFaceStore(
         WatchFaceStoreBean(
           watchFaceSupportList: _supportWatchFaceList,
           firmwareVersion: _firmwareVersion,
@@ -417,7 +527,8 @@ class _WatchFacePage extends State<WatchFacePage> {
 
   Future<void> queryWatchFaceStoreTagList(String storeType) async {
     if (_firmwareVersion != "" && _supportWatchFaceList.isNotEmpty) {
-      WatchFaceStoreTagListResult result = await widget.blePlugin.queryWatchFaceStoreTagList(
+      WatchFaceStoreTagListResult result =
+          await widget.blePlugin.queryWatchFaceStoreTagList(
         WatchFaceStoreTagListBean(
             storeType: storeType,
             typeList: _supportWatchFaceList,
@@ -433,8 +544,11 @@ class _WatchFacePage extends State<WatchFacePage> {
   }
 
   Future<void> queryWatchFaceStoreList(String storeType) async {
-    if (_tagId != -1 && _firmwareVersion != "" && _supportWatchFaceList.isNotEmpty) {
-      List<WatchFaceBean> watchFacelist = await widget.blePlugin.queryWatchFaceStoreList(
+    if (_tagId != -1 &&
+        _firmwareVersion != "" &&
+        _supportWatchFaceList.isNotEmpty) {
+      List<WatchFaceBean> watchFacelist =
+          await widget.blePlugin.queryWatchFaceStoreList(
         WatchFaceStoreListBean(
             watchFaceStoreTagList: WatchFaceStoreTagListBean(
                 storeType: storeType,
@@ -455,7 +569,8 @@ class _WatchFacePage extends State<WatchFacePage> {
 
   Future<void> queryWatchFaceDetail(String storeType) async {
     if (_watchFacelist.isNotEmpty && _firmwareVersion.isNotEmpty) {
-      WatchFaceDetailResultBean watchFaceDetailResult = await widget.blePlugin.queryWatchFaceDetail(
+      WatchFaceDetailResultBean watchFaceDetailResult =
+          await widget.blePlugin.queryWatchFaceDetail(
         WatchFaceStoreTypeBean(
             storeType: storeType,
             id: _watchFacelist[6].id!,
@@ -476,9 +591,11 @@ class _WatchFacePage extends State<WatchFacePage> {
   sendWatchFace(WatchFaceDetailsBean watchFaceDetails) async {
     // Download the file and save
     int index = watchFaceDetails.file.lastIndexOf('/');
-    String name = watchFaceDetails.file.substring(index, watchFaceDetails.file.length);
+    String name =
+        watchFaceDetails.file.substring(index, watchFaceDetails.file.length);
     String pathFile = "";
-    await getApplicationDocumentsDirectory().then((value) => pathFile = value.path + name);
+    await getApplicationDocumentsDirectory()
+        .then((value) => pathFile = value.path + name);
 
     BaseOptions options = BaseOptions(
       baseUrl: watchFaceDetails.file,
@@ -489,8 +606,10 @@ class _WatchFacePage extends State<WatchFacePage> {
     await dio.download(watchFaceDetails.file, pathFile);
 
     //call native interface
-    CustomizeWatchFaceBean info = CustomizeWatchFaceBean(index: watchFaceDetails.id, file: pathFile);
-    await widget.blePlugin.sendWatchFace(SendWatchFaceBean(watchFaceFlutterBean: info, timeout: 30));
+    CustomizeWatchFaceBean info =
+        CustomizeWatchFaceBean(index: watchFaceDetails.id, file: pathFile);
+    await widget.blePlugin.sendWatchFace(
+        SendWatchFaceBean(watchFaceFlutterBean: info, timeout: 30));
   }
 
   sendWatchFaceId(WatchFaceDetailsBean watchFaceDetails) async {
@@ -502,7 +621,8 @@ class _WatchFacePage extends State<WatchFacePage> {
     int index = file.lastIndexOf('/');
     String name = file.substring(index, file.length);
     String pathFile = "";
-    await getApplicationDocumentsDirectory().then((value) => pathFile = value.path + name);
+    await getApplicationDocumentsDirectory()
+        .then((value) => pathFile = value.path + name);
     return pathFile;
   }
 

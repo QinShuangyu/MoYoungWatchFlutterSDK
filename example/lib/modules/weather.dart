@@ -16,7 +16,6 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPage extends State<WeatherPage> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,28 +35,25 @@ class _WeatherPage extends State<WeatherPage> {
                               festival: "儿童节",
                               pm25: 111,
                               temp: 20,
-                              weatherId: 5))),
+                              weatherId: 5,
+                              sunriseHour: 6,
+                              sunriseMinute: 30,
+                              sunsetHour: 18,
+                              sunsetMinute: 45))),
                   ElevatedButton(
                       child: const Text('sendFutureWeather()'),
-                      onPressed: () => widget.blePlugin.sendFutureWeather(
-                              getFutureWeathers()
-                          )),
+                      onPressed: () => widget.blePlugin
+                          .sendFutureWeather(getFutureWeathers())),
                 ],
               ),
-            )
-        )
-    );
+            )));
   }
 
   FutureWeatherListBean getFutureWeathers() {
     FutureWeatherBean futureWeatherBean1 = FutureWeatherBean(
-        weatherId: 5,
-        lowTemperature: 10,
-        highTemperature: 30);
+        weatherId: 5, lowTemperature: 10, highTemperature: 30);
     FutureWeatherBean futureWeatherBean2 = FutureWeatherBean(
-        weatherId: 6,
-        lowTemperature: 11,
-        highTemperature: 40);
+        weatherId: 6, lowTemperature: 11, highTemperature: 40);
 
     List<FutureWeatherBean> futureList = [];
     futureList.add(futureWeatherBean1);
