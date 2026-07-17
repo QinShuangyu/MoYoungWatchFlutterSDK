@@ -28,7 +28,7 @@ dependencies:
   dio: ^4.0.6
 #  bluetooth_enable_fork: ^0.1.6
 
-#  1.2.51-norealtek-itouch-2026.7.7
+#  1.2.53-norealtek-itouch-2026.7.17
   moyoung_ble_plugin:
     # When depending on this package from a real application you should use:
     #   moyoung_ble_plugin: ^x.y.z
